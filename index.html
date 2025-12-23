@@ -1,59 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>설성목장 청담점 공동구매</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: Apple SD Gothic Neo, sans-serif; background:#fffbe6; padding:15px }
+h2 { text-align:center }
+.card { background:#fff; border-radius:12px; padding:12px; margin-bottom:12px }
+.card img { width:100%; border-radius:10px }
+.name { font-weight:bold; margin-top:8px }
+.price { font-size:14px; color:#777 }
+.qty { display:flex; align-items:center; margin-top:8px }
+.qty button { background:#ffe066; border:none; padding:6px 12px; border-radius:8px }
+.qty input { width:40px; text-align:center; margin:0 8px }
+.total { text-align:center; font-size:20px; font-weight:bold; margin:20px 0 }
+input, select { width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin-bottom:12px }
+button.main { width:100%; background:#fee500; border:none; padding:14px; border-radius:10px; font-size:18px; font-weight:bold }
+</style>
+</head>
+
+<body>
+
+<h2>🛒 설성목장 청담점 공동구매</h2>
+
+<input id="nickname" placeholder="카카오톡 닉네임">
+
+<select id="visit">
+  <option value="">방문 수령일 선택</option>
+  <option value="금">금요일</option>
+  <option value="토">토요일</option>
+  <option value="일">일요일</option>
+</select>
+
+<div id="products"></div>
+
+<div class="total">
+총 결제금액: <span id="total">0</span>원
+</div>
+
+<button class="main" onclick="handleOrder()">주문하기</button>
+
 <script>
-/* =================================================
-  Version: 1.1.3
-  목적: 주문 데이터 전송 (no-cors 안정화 버전)
-================================================= */
+/*
+========================================
+ Version: 1.1.0-BASE
+ 목적: 절대 기준 운영 파일
+ 수정 시 반드시 버전 증가
+========================================
+*/
 
-/* ===== [0] 구글 Apps Script URL ===== */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOQBOO7JytKoWe3xiQ3CfQOfjESmSeZl4_HafvdstwgsEzFUafos4l5lOz8zGs07kS/exec";
+/* [1] 상품 데이터 (절대 삭제 금지) */
+const products = [
+  { name:"떡찌니 하트떡 + 꽃모양 떡국떡", price:7900, img:"떡찌니.jpg" },
+  { name:"어린이 한우육포 + 한돈육포", price:27900, img:"어린이육포.jpg" },
+  { name:"한돈 간장불고기", price:7900, img:"간장불고기.jpg" },
+  { name:"한우사골곰탕 + 떡국떡", price:9900, img:"사골국.jpg" }
+];
 
-/* ===== [6] 주문 처리 ===== */
-async function handleOrder(){
+/* [2] 상태 */
+const state = {
+  quantities: products.map(() => 0)
+};
 
-  /* 1. 주문자 정보 */
-  const name = document.getElementById("nickname").value;
-  const visit = document.getElementById("visit").value;
+/* [3] 상품 렌더 */
+const box = document.getElementById("products");
 
-  if(!name || !visit){
-    alert("닉네임과 방문일을 입력해주세요");
-    return;
-  }
+products.forEach((p, i) => {
+  box.innerHTML += `
+    <div class="card">
+      <img src="${p.img}">
+      <div class="name">${p.name}</div>
+      <div class="price">${p.price.toLocaleString()}원</div>
+      <div class="qty">
+        <button onclick="changeQty(${i}, -1)">-</button>
+        <input id="q${i}" value="0" readonly>
+        <button onclick="changeQty(${i}, 1)">+</button>
+      </div>
+    </div>
+  `;
+});
 
-  /* 2. 상품 목록 구성 */
-  const items = products
-    .map((p,i)=>({
-      name: p.name,
-      qty: state.quantities[i],
-      price: p.price
-    }))
-    .filter(i=>i.qty > 0);
-
-  if(items.length === 0){
-    alert("상품을 선택해주세요");
-    return;
-  }
-
-  /* 3. 주문 데이터 */
-  const order = {
-    name,
-    visit,
-    items,
-    total: items.reduce((s,i)=>s + i.qty * i.price, 0)
-  };
-
-  /* 4. 서버 전송 (응답 확인 안 함) */
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: JSON.stringify(order)
-    });
-
-    alert("주문이 접수되었습니다.");
-
-  } catch (error) {
-    alert("네트워크 오류가 발생했습니다.");
-    console.error(error);
-  }
+/* [4] 수량 변경 */
+function changeQty(index, diff) {
+  state.quantities[index] = Math.max(0, state.quantities[index] + diff);
+  document.getElementById("q" + index).value = state.quantities[index];
+  updateTotal();
 }
-</script>
+
+/* [5] 총액 계산 */
+function updateTotal() {
+  let total = 0;
+  products.forEach((p, i) => {
+    total += p.price * stat*
