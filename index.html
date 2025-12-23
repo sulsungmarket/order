@@ -2,193 +2,42 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>설성목장 청담점 공동구매</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-  font-family: Apple SD Gothic Neo, sans-serif;
-  background:#fffbe6;
-  padding:15px;
-}
-h2{text-align:center}
-.card{
-  background:#fff;
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:12px;
-}
-.card img{
-  width:100%;
-  border-radius:10px;
-}
-.name{font-weight:bold;margin-top:8px}
-.price{font-size:14px;color:#777}
-.qty{
-  display:flex;
-  align-items:center;
-  margin-top:8px;
-}
-.qty button{
-  background:#ffe066;
-  border:none;
-  padding:6px 12px;
-  border-radius:8px;
-}
-.qty input{
-  width:40px;
-  text-align:center;
-  margin:0 8px;
-}
-.total{
-  text-align:center;
-  font-size:20px;
-  font-weight:bold;
-  margin:20px 0;
-}
-input,select{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  margin-bottom:12px;
-}
-button.main{
-  width:100%;
-  background:#fee500;
-  border:none;
-  padding:14px;
-  border-radius:10px;
-  font-size:18px;
-  font-weight:bold;
-}
-</style>
+<title>주문 테스트</title>
 </head>
-
 <body>
 
-<h2>설성목장 청담점 공동구매</h2>
+<h2>구글 시트 연동 테스트</h2>
 
-<!-- [A] 주문자 정보 -->
-<input id="nickname" placeholder="카카오톡 닉네임">
-
-<select id="visit">
-  <option value="">방문 수령일 선택</option>
-  <option value="금">금요일</option>
-  <option value="토">토요일</option>
-  <option value="일">일요일</option>
-</select>
-
-<!-- [B] 상품 영역 -->
-<div id="products"></div>
-
-<!-- [C] 총 결제금액 -->
-<div class="total">
-총 결제금액: <span id="total">0</span>원
-</div>
-
-<!-- [D] 주문 버튼 -->
-<button class="main" onclick="handleOrder()">주문하기</button>
+<button onclick="testOrder()">테스트 주문 보내기</button>
 
 <script>
-/* =================================================
-   MASTER CODE v1.0.0
-   기준 백업용 / 이 코드 위에서만 수정
-================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOQBOO7JytKoWe3xiQ3CfQOfjESmSeZl4_HafvdstwgsEzFUafos4l5lOz8zGs07kS/exec";
 
-/* [0] Google Apps Script URL */
-const SCRIPT_URL = "여기에_네_최종_APPS_SCRIPT_URL";
-
-/* [1] 상품 데이터 (CRITICAL) */
-const products = [
-  { name:"떡찌니 하트떡 + 꽃모양 떡국떡", price:7900, img:"떡찌니.jpg" },
-  { name:"어린이 한우육포 + 한돈육포", price:27900, img:"어린이육포.jpg" },
-  { name:"한돈 간장불고기", price:7900, img:"간장불고기.jpg" },
-  { name:"한우사골곰탕 + 떡국떡", price:9900, img:"사골국.jpg" }
-];
-
-/* [2] 상태(State) */
-const state = {
-  quantities: products.map(() => 0)
-};
-
-/* [3] 상품 렌더링 */
-const productBox = document.getElementById("products");
-
-products.forEach((p, i) => {
-  productBox.innerHTML += `
-    <div class="card">
-      <img src="${p.img}">
-      <div class="name">${p.name}</div>
-      <div class="price">${p.price.toLocaleString()}원</div>
-      <div class="qty">
-        <button onclick="changeQty(${i}, -1)">-</button>
-        <input id="q${i}" value="0" readonly>
-        <button onclick="changeQty(${i}, 1)">+</button>
-      </div>
-    </div>
-  `;
-});
-
-/* [4] 수량 변경 */
-function changeQty(index, diff){
-  state.quantities[index] = Math.max(0, state.quantities[index] + diff);
-  document.getElementById("q" + index).value = state.quantities[index];
-  updateTotal();
-}
-
-/* [5] 총액 계산 */
-function updateTotal(){
-  let total = 0;
-  products.forEach((p, i) => {
-    total += p.price * state.quantities[i];
-  });
-  document.getElementById("total").innerText = total.toLocaleString();
-}
-
-/* [6] 주문 처리 */
-async function handleOrder(){
-
-  const name = document.getElementById("nickname").value;
-  const visit = document.getElementById("visit").value;
-
-  if(!name || !visit){
-    alert("닉네임과 방문 수령일을 입력해주세요");
-    return;
-  }
-
-  const items = products
-    .map((p, i) => ({
-      name: p.name,
-      qty: state.quantities[i],
-      price: p.price
-    }))
-    .filter(item => item.qty > 0);
-
-  if(items.length === 0){
-    alert("상품을 선택해주세요");
-    return;
-  }
-
+async function testOrder() {
   const order = {
-    name,
-    visit,
-    items,
-    total: items.reduce((sum, i) => sum + i.qty * i.price, 0)
+    name: "테스트유저",
+    visit: "금",
+    items: [
+      { name: "테스트상품", qty: 1, price: 1000 }
+    ],
+    total: 1000
   };
 
   try {
-    await fetch(SCRIPT_URL, {
+    const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(order)
     });
 
-    alert("주문이 접수되었습니다.");
+    const result = await response.json();
+    alert("응답: " + JSON.stringify(result));
 
-  } catch (error) {
-    alert("네트워크 오류가 발생했습니다.");
-    console.error(error);
+  } catch (e) {
+    alert("통신 실패");
+    console.error(e);
   }
 }
 </script>
