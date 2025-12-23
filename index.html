@@ -142,30 +142,17 @@ async function handleOrder(){
   };
 
   /* 5. 구글 시트 전송 */
-const response = await fetch(SCRIPT_URL, {
+await fetch(SCRIPT_URL, {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
+  mode: "no-cors",
   body: JSON.stringify(order)
 });
 
+alert("주문이 접수되었습니다.");
+  
 if (!response.ok) {
   throw new Error("HTTP ERROR");
 }
-
-const result = await response.json();
-    
-    const result = await response.json();
-
-    if(result.result === "success"){
-      alert("주문이 완료되었습니다!");
-      localStorage.setItem("ordered", "yes");
-      document.body.style.pointerEvents = "none";
-      document.body.style.opacity = "0.6";
-    }else{
-      alert("저장 실패. 관리자에게 문의해주세요.");
-    }
 
   }catch(error){
     alert("네트워크 오류가 발생했습니다.");
@@ -177,6 +164,7 @@ const result = await response.json();
 
 </body>
 </html>
+
 
 
 
