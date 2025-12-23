@@ -51,7 +51,7 @@ button.main{width:100%;background:#fee500;border:none;padding:14px;border-radius
   목적: 주문 데이터 구조 확정
 ================================================= */
 /* ===== [0] 구글 Apps Script URL ===== */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDklLLuI_xHfilFK85GDySX9vdM6naRmEu-gJZfZocdER0o4BHiL0UB5G09nReyvmZ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOQBOO7JytKoWe3xiQ3CfQOfjESmSeZl4_HafvdstwgsEzFUafos4l5lOz8zGs07kS/exec";
 
 
 /* ===== [1] 상품 데이터 ===== */
@@ -142,15 +142,20 @@ async function handleOrder(){
   };
 
   /* 5. 구글 시트 전송 */
-  try{
-    const response = await fetch(SCRIPT_URL, {
+const response = await fetch(SCRIPT_URL, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
   },
   body: JSON.stringify(order)
-    });
+});
 
+if (!response.ok) {
+  throw new Error("HTTP ERROR");
+}
+
+const result = await response.json();
+    
     const result = await response.json();
 
     if(result.result === "success"){
@@ -172,6 +177,7 @@ async function handleOrder(){
 
 </body>
 </html>
+
 
 
 
