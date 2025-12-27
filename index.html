@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>설성푸드 공동구매 주문서</title>
+  <title>설성푸드 공동구매</title>
 
   <style>
     body {
@@ -10,60 +10,46 @@
       background: #f6f7f9;
       padding: 20px;
     }
-
     .container {
       max-width: 420px;
       margin: auto;
-      background: #ffffff;
+      background: #fff;
       padding: 20px;
       border-radius: 14px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
-
     h1 {
       text-align: center;
-      font-size: 20px;
       margin-bottom: 20px;
     }
-
     .product {
       display: flex;
       gap: 12px;
-      margin-bottom: 16px;
       padding-bottom: 16px;
+      margin-bottom: 16px;
       border-bottom: 1px solid #eee;
     }
-
     .product img {
       width: 90px;
       height: 90px;
-      object-fit: cover;
       border-radius: 10px;
+      object-fit: cover;
+      background: #ddd;
     }
-
-    .product-info {
-      flex: 1;
-    }
-
     .product-name {
-      font-size: 15px;
       font-weight: 600;
       margin-bottom: 6px;
     }
-
     .product-price {
-      font-size: 14px;
       color: #2f80ed;
       font-weight: 700;
       margin-bottom: 8px;
     }
-
     .qty-box {
       display: flex;
-      align-items: center;
       gap: 8px;
+      align-items: center;
     }
-
     .qty-box button {
       width: 28px;
       height: 28px;
@@ -71,28 +57,17 @@
       border-radius: 6px;
       background: #e0e0e0;
       font-size: 16px;
+      cursor: pointer;
     }
-
     .qty {
       width: 24px;
       text-align: center;
       font-weight: 600;
     }
-
     .total {
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: 700;
       text-align: right;
-    }
-
-    .notice {
+      font-weight: 700;
       margin-top: 20px;
-      font-size: 13px;
-      background: #f0f2f5;
-      padding: 12px;
-      border-radius: 8px;
-      line-height: 1.5;
     }
   </style>
 </head>
@@ -101,55 +76,43 @@
   <div class="container">
     <h1>설성푸드 공동구매</h1>
 
-    <!-- 상품 1 -->
     <div class="product" data-price="15900">
-      <img src="images/product1.png" />
-      <div class="product-info">
-        <div class="product-name">무항생제 한우 1등급 등심 200g</div>
+      <img />
+      <div>
+        <div class="product-name">한우 등심 200g</div>
         <div class="product-price">15,900원</div>
         <div class="qty-box">
-          <button onclick="changeQty(this, -1)">−</button>
+          <button onclick="changeQty(this,-1)">-</button>
           <div class="qty">0</div>
-          <button onclick="changeQty(this, 1)">+</button>
+          <button onclick="changeQty(this,1)">+</button>
         </div>
       </div>
     </div>
 
-    <!-- 상품 2 -->
-    <div class="product" data-price="9800">
-      <img src="images/product2.png" />
-      <div class="product-info">
-        <div class="product-name">제주한돈 육포 50g × 4팩</div>
-        <div class="product-price">9,800원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this, -1)">−</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this, 1)">+</button>
-        </div>
-      </div>
+    <div class="total">
+      총 합계: <span id="total">0</span>원
     </div>
+  </div>
 
-    <!-- 상품 3 -->
-    <div class="product" data-price="9900">
-      <img src="images/product3.png" />
-      <div class="product-info">
-        <div class="product-name">우된장 한우된장찌개 밀키트 × 2</div>
-        <div class="product-price">9,900원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this, -1)">−</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this, 1)">+</button>
-        </div>
-      </div>
-    </div>
+  <!-- ⚠️ JS는 반드시 body 맨 아래 -->
+  <script>
+    function changeQty(btn, delta) {
+      const qtyEl = btn.parentElement.querySelector('.qty');
+      let qty = parseInt(qtyEl.innerText);
+      qty = Math.max(0, qty + delta);
+      qtyEl.innerText = qty;
+      calcTotal();
+    }
 
-    <!-- 상품 4 -->
-    <div class="product" data-price="19900">
-      <img src="images/product4.png" />
-      <div class="product-info">
-        <div class="product-name">피터루거 스테이크 하우스 밀키트 × 4</div>
-        <div class="product-price">19,900원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this, -1)">−</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this, 1)">+</button>
+    function calcTotal() {
+      let sum = 0;
+      document.querySelectorAll('.product').forEach(p => {
+        const price = parseInt(p.dataset.price);
+        const qty = parseInt(p.querySelector('.qty').innerText);
+        sum += price * qty;
+      });
+      document.getElementById('total').innerText = sum.toLocaleString();
+    }
+  </script>
+</body>
+</html>
