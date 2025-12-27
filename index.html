@@ -26,9 +26,6 @@ async function testOrder() {
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify(order)
     });
 
@@ -44,6 +41,7 @@ async function testOrder() {
 
 </body>
 </html>
+
 
 
 
