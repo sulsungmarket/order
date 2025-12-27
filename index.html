@@ -6,12 +6,12 @@
 
 <!--
 설성푸드 공동구매 주문서
-Version: v1.3.1
-Status: UI + 수량 + 합계 + 주문 검증 안정화
+Version: v1.3.2
+Status: 주문 검증 + 주문문구 생성 + 복사 기능
 Last Update: 2025-01
 
 ※ GitHub Pages 배포용
-※ 기능 확장 고려 구조
+※ 다음 단계: Google Sheet 연동 (v1.4.0)
 -->
 
 <style>
@@ -54,21 +54,31 @@ h1 { text-align:center; margin-bottom:20px; }
 .total {
   font-size:16px; font-weight:700; text-align:right; margin-top:20px;
 }
-.notice {
-  margin-top:16px; font-size:13px; background:#f0f2f5;
-  padding:12px; border-radius:8px;
-}
-#orderBtn {
+#orderBtn, #copyBtn {
   width:100%;
-  margin-top:16px;
+  margin-top:14px;
   padding:14px;
   font-size:16px;
   font-weight:700;
   border:none;
   border-radius:10px;
-  background:#2f80ed;
-  color:#fff;
   cursor:pointer;
+}
+#orderBtn { background:#2f80ed; color:#fff; }
+#copyBtn { background:#27ae60; color:#fff; display:none; }
+
+.notice {
+  margin-top:16px; font-size:13px; background:#f0f2f5;
+  padding:12px; border-radius:8px;
+}
+textarea {
+  width:100%;
+  margin-top:12px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:13px;
+  display:none;
 }
 </style>
 </head>
@@ -92,119 +102,6 @@ h1 { text-align:center; margin-bottom:20px; }
 </select>
 </div>
 
-<!-- 상품 리스트 -->
+<!-- 상품 -->
 <div class="product" data-price="15900">
-<img src="images/product1.png">
-<div>
-<div class="name">무항생제 한우 1등급 등심 200g</div>
-<div class="price">15,900원</div>
-<div class="qty-box">
-<button class="minus">-</button>
-<div class="qty">0</div>
-<button class="plus">+</button>
-</div>
-</div>
-</div>
-
-<div class="product" data-price="9800">
-<img src="images/product2.png">
-<div>
-<div class="name">제주한돈 육포 50g × 4팩</div>
-<div class="price">9,800원</div>
-<div class="qty-box">
-<button class="minus">-</button>
-<div class="qty">0</div>
-<button class="plus">+</button>
-</div>
-</div>
-</div>
-
-<div class="product" data-price="9900">
-<img src="images/product3.png">
-<div>
-<div class="name">우된장 한우된장찌개 밀키트 × 2</div>
-<div class="price">9,900원</div>
-<div class="qty-box">
-<button class="minus">-</button>
-<div class="qty">0</div>
-<button class="plus">+</button>
-</div>
-</div>
-</div>
-
-<div class="product" data-price="19900">
-<img src="images/product4.png">
-<div>
-<div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
-<div class="price">19,900원</div>
-<div class="qty-box">
-<button class="minus">-</button>
-<div class="qty">0</div>
-<button class="plus">+</button>
-</div>
-</div>
-</div>
-
-<div class="total">
-총 합계: <span id="total">0</span>원
-</div>
-
-<button id="orderBtn">주문 완료</button>
-
-<div class="notice">
-입금 계좌<br>
-농협 301-0297-8175-81<br>
-설성푸드
-</div>
-</div>
-
-<script>
-/* ===== 수량 조절 & 합계 계산 ===== */
-document.querySelectorAll(".product").forEach(product => {
-  const qtyEl = product.querySelector(".qty");
-
-  product.querySelector(".plus").addEventListener("click", () => {
-    qtyEl.innerText = Number(qtyEl.innerText) + 1;
-    calc();
-  });
-
-  product.querySelector(".minus").addEventListener("click", () => {
-    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
-    calc();
-  });
-});
-
-function calc() {
-  let total = 0;
-  document.querySelectorAll(".product").forEach(p => {
-    total += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
-  });
-  document.getElementById("total").innerText = total.toLocaleString();
-}
-
-/* ===== 주문 검증 (보안 1차) ===== */
-document.getElementById("orderBtn").addEventListener("click", () => {
-  const nickname = document.getElementById("nickname").value.trim();
-  const visit = document.getElementById("visit").value;
-
-  if (!nickname || !visit) {
-    alert("닉네임과 수령일을 입력해 주세요");
-    return;
-  }
-
-  let hasItem = false;
-  document.querySelectorAll(".qty").forEach(q => {
-    if (Number(q.innerText) > 0) hasItem = true;
-  });
-
-  if (!hasItem) {
-    alert("주문할 상품을 선택해 주세요");
-    return;
-  }
-
-  alert("주문 조건 통과 ✅ (다음 단계 진행)");
-});
-</script>
-
-</body>
-</html>
+<img src="images/produ
