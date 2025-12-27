@@ -240,10 +240,13 @@ function calc() {
 
 /* 주문 완료 */
 document.getElementById("orderBtn").onclick = async () => {
-  const nickname = nicknameEl.value.trim();
-  const visit = visitEl.value;
+  const nickname = document.getElementById("nickname").value.trim();
+  const visit = document.getElementById("visit").value;
 
-  if (!nickname || !visit) return alert("닉네임과 수령일을 입력하세요");
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력하세요");
+    return;
+  }
 
   let items = [];
   let totalNum = 0;
@@ -261,23 +264,39 @@ document.getElementById("orderBtn").onclick = async () => {
     }
   });
 
-  if (!items.length) return alert("상품을 선택하세요");
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
 
   await fetch(SCRIPT_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nickname, visit, items, total: totalNum })
+    body: JSON.stringify({
+      nickname,
+      visit,
+      items,
+      total: totalNum
+    })
   });
+
+  const orderText = document.getElementById("orderText");
+  const copyBtn = document.getElementById("copyBtn");
+  const orderBtn = document.getElementById("orderBtn");
 
   orderText.value =
 `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
 총 ${totalNum.toLocaleString()}원 입금 부탁드립니다 😊`;
 
-  orderText.style.display = copyBtn.style.display = "block";
+  orderText.style.display = "block";
+  copyBtn.style.display = "block";
   orderBtn.disabled = true;
+};
+
 };
 </script>
 
 </body>
 </html>
+
