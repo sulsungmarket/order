@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>설성푸드 공동구매</title>
+  <title>설성푸드 공동구매 주문서</title>
 
   <style>
     body {
@@ -22,6 +22,21 @@
       text-align: center;
       margin-bottom: 20px;
     }
+    .field {
+      margin-bottom: 16px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
     .product {
       display: flex;
       gap: 12px;
@@ -38,12 +53,12 @@
     }
     .product-name {
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .product-price {
       color: #2f80ed;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .qty-box {
       display: flex;
@@ -65,9 +80,17 @@
       font-weight: 600;
     }
     .total {
-      text-align: right;
       font-weight: 700;
+      text-align: right;
       margin-top: 20px;
+      font-size: 16px;
+    }
+    .notice {
+      margin-top: 16px;
+      font-size: 13px;
+      background: #f0f2f5;
+      padding: 12px;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -76,9 +99,26 @@
   <div class="container">
     <h1>설성푸드 공동구매</h1>
 
-        <!-- 상품 1 -->
+    <!-- 닉네임 -->
+    <div class="field">
+      <label>오픈채팅 닉네임</label>
+      <input id="nickname" placeholder="닉네임 입력" />
+    </div>
+
+    <!-- 방문일 -->
+    <div class="field">
+      <label>방문 수령일</label>
+      <select id="visitDay">
+        <option value="">선택</option>
+        <option value="금">금요일</option>
+        <option value="토">토요일</option>
+        <option value="일">일요일</option>
+      </select>
+    </div>
+
+    <!-- 상품들 -->
     <div class="product" data-price="15900">
-      <img />
+      <img src="images/product1.png" />
       <div>
         <div class="product-name">무항생제 한우 1등급 등심 200g</div>
         <div class="product-price">15,900원</div>
@@ -90,9 +130,8 @@
       </div>
     </div>
 
-    <!-- 상품 2 -->
     <div class="product" data-price="9800">
-      <img />
+      <img src="images/product2.png" />
       <div>
         <div class="product-name">제주한돈 육포 50g × 4팩</div>
         <div class="product-price">9,800원</div>
@@ -104,9 +143,8 @@
       </div>
     </div>
 
-    <!-- 상품 3 -->
     <div class="product" data-price="9900">
-      <img />
+      <img src="images/product3.png" />
       <div>
         <div class="product-name">우된장 한우된장찌개 밀키트 × 2</div>
         <div class="product-price">9,900원</div>
@@ -118,57 +156,8 @@
       </div>
     </div>
 
-    <!-- 상품 4 -->
     <div class="product" data-price="19900">
-      <img />
+      <img src="images/product4.png" />
       <div>
         <div class="product-name">피터루거 스테이크 하우스 밀키트 × 4</div>
         <div class="product-price">19,900원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this,-1)">-</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
-    </div>
-
-    <!--
-    🔒 예비 상품 (나중에 주석 해제)
-    <div class="product" data-price="12000">
-      <img />
-      <div>
-        <div class="product-name">예비 상품 A</div>
-        <div class="product-price">12,000원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this,-1)">-</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
-    </div>
-    -->
-
-
-  <!-- ⚠️ JS는 반드시 body 맨 아래 -->
-  <script>
-    function changeQty(btn, delta) {
-      const qtyEl = btn.parentElement.querySelector('.qty');
-      let qty = parseInt(qtyEl.innerText);
-      qty = Math.max(0, qty + delta);
-      qtyEl.innerText = qty;
-      calcTotal();
-    }
-
-    function calcTotal() {
-      let sum = 0;
-      document.querySelectorAll('.product').forEach(p => {
-        const price = parseInt(p.dataset.price);
-        const qty = parseInt(p.querySelector('.qty').innerText);
-        sum += price * qty;
-      });
-      document.getElementById('total').innerText = sum.toLocaleString();
-    }
-  </script>
-</body>
-</html>
-
