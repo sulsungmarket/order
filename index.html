@@ -16,7 +16,7 @@
       margin: auto;
       background: #ffffff;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 14px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
@@ -26,36 +26,67 @@
       margin-bottom: 20px;
     }
 
-    .info {
+    .product {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .product img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .product-price {
+      font-size: 14px;
+      color: #2f80ed;
+      font-weight: 700;
+    }
+
+    .notice {
+      margin-top: 20px;
+      font-size: 13px;
       background: #f0f2f5;
       padding: 12px;
       border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      background: #2f80ed;
-      border: none;
-      color: white;
-      font-size: 16px;
-      border-radius: 8px;
+      line-height: 1.5;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>설성푸드 공동구매 주문서</h1>
+    <h1>설성푸드 공동구매</h1>
 
-    <div class="info">
-      ✅ 화면 테스트 단계입니다.<br />
-      다음 단계에서 상품 / 주문 기능이 추가됩니다.
+    <!-- 현재 판매 상품 -->
+    <div class="product">
+      <img src="images/product1.png" alt="한우 등심" />
+      <div class="product-info">
+        <div class="product-name">무항생제 한우 1등급 등심 200g</div>
+        <div class="product-price">15,900원</div>
+      </div>
     </div>
 
-    <button disabled>주문 기능 준비중</button>
-  </div>
-</body>
-</html>
+    <div class="product">
+      <img src="images/product2.png" alt="제주한돈 육포" />
+      <div class="product-info">
+        <div class="product-name">제주한돈 육포 50g × 4팩</div>
+        <div class="product-price">9,800원</div>
+      </div>
+    </div>
+
+    <div class="product"
