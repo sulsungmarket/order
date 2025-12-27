@@ -55,6 +55,35 @@
       font-size: 14px;
       color: #2f80ed;
       font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .qty-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-box button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 6px;
+      background: #e0e0e0;
+      font-size: 16px;
+    }
+
+    .qty {
+      width: 24px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .total {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: right;
     }
 
     .notice {
@@ -72,21 +101,55 @@
   <div class="container">
     <h1>설성푸드 공동구매</h1>
 
-    <!-- 현재 판매 상품 -->
-    <div class="product">
-      <img src="images/product1.png" alt="한우 등심" />
+    <!-- 상품 1 -->
+    <div class="product" data-price="15900">
+      <img src="images/product1.png" />
       <div class="product-info">
         <div class="product-name">무항생제 한우 1등급 등심 200g</div>
         <div class="product-price">15,900원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this, -1)">−</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this, 1)">+</button>
+        </div>
       </div>
     </div>
 
-    <div class="product">
-      <img src="images/product2.png" alt="제주한돈 육포" />
+    <!-- 상품 2 -->
+    <div class="product" data-price="9800">
+      <img src="images/product2.png" />
       <div class="product-info">
         <div class="product-name">제주한돈 육포 50g × 4팩</div>
         <div class="product-price">9,800원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this, -1)">−</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this, 1)">+</button>
+        </div>
       </div>
     </div>
 
-    <div class="product"
+    <!-- 상품 3 -->
+    <div class="product" data-price="9900">
+      <img src="images/product3.png" />
+      <div class="product-info">
+        <div class="product-name">우된장 한우된장찌개 밀키트 × 2</div>
+        <div class="product-price">9,900원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this, -1)">−</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this, 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상품 4 -->
+    <div class="product" data-price="19900">
+      <img src="images/product4.png" />
+      <div class="product-info">
+        <div class="product-name">피터루거 스테이크 하우스 밀키트 × 4</div>
+        <div class="product-price">19,900원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this, -1)">−</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this, 1)">+</button>
