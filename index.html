@@ -5,13 +5,12 @@
 <title>설성푸드 공동구매</title>
 
 <!--
+설성푸드 공동구매 주문서
 Version: v1.4.0
-기준: 기존 v1.3.2 HTML 유지
-추가: Google Sheet 연동
+Status: 상품 선택 + 주문문구 + Google Sheet 연동
 -->
 
 <style>
-/* === 기존 스타일 그대로 === */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #f6f7f9;
@@ -26,31 +25,65 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 h1 { text-align:center; margin-bottom:20px; }
+
 .field { margin-bottom:16px; }
-.field label { font-size:13px; font-weight:600; display:block; margin-bottom:6px; }
-.field input, .field select {
-  width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
+.field label {
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
 }
+.field input, .field select {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
 .product {
-  display:flex; gap:12px; margin-bottom:16px; padding-bottom:16px;
+  display:flex;
+  gap:12px;
+  margin-bottom:16px;
+  padding-bottom:16px;
   border-bottom:1px solid #eee;
 }
 .product img {
-  width:90px; height:90px; border-radius:10px; background:#ddd;
+  width:90px;
+  height:90px;
+  border-radius:10px;
+  object-fit:cover;
+  background:#ddd;
 }
 .name { font-weight:600; }
 .price { color:#2f80ed; font-weight:700; margin:6px 0; }
+
 .qty-box {
-  display:flex; align-items:center; gap:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 .qty-box button {
-  width:28px; height:28px; border:none; border-radius:6px;
-  background:#e0e0e0; font-size:16px; cursor:pointer;
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:6px;
+  background:#e0e0e0;
+  font-size:16px;
+  cursor:pointer;
 }
-.qty { width:24px; text-align:center; font-weight:600; }
+.qty {
+  width:24px;
+  text-align:center;
+  font-weight:600;
+}
+
 .total {
-  font-size:16px; font-weight:700; text-align:right; margin-top:20px;
+  font-size:16px;
+  font-weight:700;
+  text-align:right;
+  margin-top:20px;
 }
+
 #orderBtn, #copyBtn {
   width:100%;
   margin-top:14px;
@@ -63,6 +96,7 @@ h1 { text-align:center; margin-bottom:20px; }
 }
 #orderBtn { background:#2f80ed; color:#fff; }
 #copyBtn { background:#27ae60; color:#fff; display:none; }
+
 textarea {
   width:100%;
   margin-top:12px;
@@ -87,15 +121,68 @@ textarea {
 <div class="field">
 <label>방문 수령일</label>
 <select id="visit">
-<option value="">선택</option>
-<option value="금">금</option>
-<option value="토">토</option>
-<option value="일">일</option>
+  <option value="">선택</option>
+  <option value="금">금</option>
+  <option value="토">토</option>
+  <option value="일">일</option>
 </select>
 </div>
 
-<!-- 상품 (기존 그대로) -->
-<!-- … 네가 준 product 4개 그대로 … -->
+<!-- ================= 상품 리스트 ================= -->
+
+<div class="product" data-price="15900">
+  <img src="images/product1.png">
+  <div>
+    <div class="name">무항생제 한우 1등급 등심 200g</div>
+    <div class="price">15,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="product" data-price="9800">
+  <img src="images/product2.png">
+  <div>
+    <div class="name">제주한돈 육포 50g × 4팩</div>
+    <div class="price">9,800원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="product" data-price="9900">
+  <img src="images/product3.png">
+  <div>
+    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
+    <div class="price">9,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="product" data-price="19900">
+  <img src="images/product4.png">
+  <div>
+    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
+    <div class="price">19,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 합계 ================= -->
 
 <div class="total">
 총 합계: <span id="total">0</span>원
@@ -108,10 +195,10 @@ textarea {
 </div>
 
 <script>
-/* 🔴 여기에 Google Apps Script 웹앱 URL */
+/* 🔴 Google Apps Script URL */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySkr0IA-ltqpem4FNoTcehkV1xbuqRz7WJAOWynpA9DXSMtbkoxZ737nmWajFje4ji/exec";
 
-/* ===== 수량 & 합계 (기존 그대로) ===== */
+/* ===== 수량 & 합계 ===== */
 document.querySelectorAll(".product").forEach(product => {
   const qtyEl = product.querySelector(".qty");
   product.querySelector(".plus").onclick = () => {
@@ -132,7 +219,7 @@ function calc() {
   document.getElementById("total").innerText = total.toLocaleString();
 }
 
-/* ===== 주문 완료 + 시트 전송 ===== */
+/* ===== 주문 완료 ===== */
 document.getElementById("orderBtn").onclick = async () => {
   const nickname = document.getElementById("nickname").value.trim();
   const visit = document.getElementById("visit").value;
@@ -149,11 +236,7 @@ document.getElementById("orderBtn").onclick = async () => {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
       const price = Number(p.dataset.price);
-      items.push({
-        name: p.querySelector(".name").innerText,
-        qty,
-        price
-      });
+      items.push({ name: p.querySelector(".name").innerText, qty });
       totalNum += price * qty;
     }
   });
@@ -163,18 +246,17 @@ document.getElementById("orderBtn").onclick = async () => {
     return;
   }
 
-  /* 👉 Google Sheet 전송 */
-  await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      nickname,
-      visit,
-      items,
-      total: totalNum
-    })
-  });
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, visit, items, total: totalNum })
+    });
+  } catch {
+    alert("주문 저장 실패. 다시 시도해주세요.");
+    return;
+  }
 
-  /* 👉 기존 주문 문구 */
   const text =
 `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
