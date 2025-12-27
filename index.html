@@ -1,163 +1,162 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>설성푸드 공동구매 주문서</title>
+<meta charset="UTF-8">
+<title>설성푸드 공동구매</title>
 
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f6f7f9;
-      padding: 20px;
-    }
-    .container {
-      max-width: 420px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .field {
-      margin-bottom: 16px;
-    }
-    .field label {
-      font-size: 13px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-    }
-    .field input, .field select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    .product {
-      display: flex;
-      gap: 12px;
-      padding-bottom: 16px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid #eee;
-    }
-    .product img {
-      width: 90px;
-      height: 90px;
-      border-radius: 10px;
-      object-fit: cover;
-      background: #ddd;
-    }
-    .product-name {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .product-price {
-      color: #2f80ed;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .qty-box {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .qty-box button {
-      width: 28px;
-      height: 28px;
-      border: none;
-      border-radius: 6px;
-      background: #e0e0e0;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .qty {
-      width: 24px;
-      text-align: center;
-      font-weight: 600;
-    }
-    .total {
-      font-weight: 700;
-      text-align: right;
-      margin-top: 20px;
-      font-size: 16px;
-    }
-    .notice {
-      margin-top: 16px;
-      font-size: 13px;
-      background: #f0f2f5;
-      padding: 12px;
-      border-radius: 8px;
-    }
-  </style>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f6f7f9;
+  padding: 20px;
+}
+.container {
+  max-width: 420px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+h1 { text-align:center; margin-bottom:20px; }
+.field { margin-bottom:16px; }
+.field label { font-size:13px; font-weight:600; display:block; margin-bottom:6px; }
+.field input, .field select {
+  width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
+}
+.product {
+  display:flex; gap:12px; margin-bottom:16px; padding-bottom:16px;
+  border-bottom:1px solid #eee;
+}
+.product img {
+  width:90px; height:90px; border-radius:10px; background:#ddd;
+}
+.name { font-weight:600; }
+.price { color:#2f80ed; font-weight:700; margin:6px 0; }
+.qty-box {
+  display:flex; align-items:center; gap:8px;
+}
+.qty-box button {
+  width:28px; height:28px; border:none; border-radius:6px;
+  background:#e0e0e0; font-size:16px; cursor:pointer;
+}
+.qty { width:24px; text-align:center; font-weight:600; }
+.total {
+  font-size:16px; font-weight:700; text-align:right; margin-top:20px;
+}
+.notice {
+  margin-top:16px; font-size:13px; background:#f0f2f5;
+  padding:12px; border-radius:8px;
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>설성푸드 공동구매</h1>
+<div class="container">
+<h1>설성푸드 공동구매</h1>
 
-    <!-- 닉네임 -->
-    <div class="field">
-      <label>오픈채팅 닉네임</label>
-      <input id="nickname" placeholder="닉네임 입력" />
-    </div>
+<div class="field">
+<label>오픈채팅 닉네임</label>
+<input id="nickname">
+</div>
 
-    <!-- 방문일 -->
-    <div class="field">
-      <label>방문 수령일</label>
-      <select id="visitDay">
-        <option value="">선택</option>
-        <option value="금">금요일</option>
-        <option value="토">토요일</option>
-        <option value="일">일요일</option>
-      </select>
-    </div>
+<div class="field">
+<label>방문 수령일</label>
+<select id="visit">
+<option value="">선택</option>
+<option>금</option>
+<option>토</option>
+<option>일</option>
+</select>
+</div>
 
-    <!-- 상품들 -->
-    <div class="product" data-price="15900">
-      <img src="images/product1.png" />
-      <div>
-        <div class="product-name">무항생제 한우 1등급 등심 200g</div>
-        <div class="product-price">15,900원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this,-1)">-</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
-    </div>
+<!-- 상품 -->
+<div class="product" data-price="15900">
+<img src="images/product1.png">
+<div>
+<div class="name">한우 등심 200g</div>
+<div class="price">15,900원</div>
+<div class="qty-box">
+<button class="minus">-</button>
+<div class="qty">0</div>
+<button class="plus">+</button>
+</div>
+</div>
+</div>
 
-    <div class="product" data-price="9800">
-      <img src="images/product2.png" />
-      <div>
-        <div class="product-name">제주한돈 육포 50g × 4팩</div>
-        <div class="product-price">9,800원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this,-1)">-</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
-    </div>
+<div class="product" data-price="9800">
+<img src="images/product2.png">
+<div>
+<div class="name">제주한돈 육포</div>
+<div class="price">9,800원</div>
+<div class="qty-box">
+<button class="minus">-</button>
+<div class="qty">0</div>
+<button class="plus">+</button>
+</div>
+</div>
+</div>
 
-    <div class="product" data-price="9900">
-      <img src="images/product3.png" />
-      <div>
-        <div class="product-name">우된장 한우된장찌개 밀키트 × 2</div>
-        <div class="product-price">9,900원</div>
-        <div class="qty-box">
-          <button onclick="changeQty(this,-1)">-</button>
-          <div class="qty">0</div>
-          <button onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
-    </div>
+<div class="product" data-price="9900">
+<img src="images/product3.png">
+<div>
+<div class="name">된장 밀키트</div>
+<div class="price">9,900원</div>
+<div class="qty-box">
+<button class="minus">-</button>
+<div class="qty">0</div>
+<button class="plus">+</button>
+</div>
+</div>
+</div>
 
-    <div class="product" data-price="19900">
-      <img src="images/product4.png" />
-      <div>
-        <div class="product-name">피터루거 스테이크 하우스 밀키트 × 4</div>
-        <div class="product-price">19,900원</div>
+<div class="product" data-price="19900">
+<img src="images/product4.png">
+<div>
+<div class="name">피터루거 밀키트</div>
+<div class="price">19,900원</div>
+<div class="qty-box">
+<button class="minus">-</button>
+<div class="qty">0</div>
+<button class="plus">+</button>
+</div>
+</div>
+</div>
+
+<div class="total">
+총 합계: <span id="total">0</span>원
+</div>
+
+<div class="notice">
+농협 301-0297-8175-81<br>
+설성푸드
+</div>
+</div>
+
+<script>
+document.querySelectorAll(".product").forEach(product => {
+  const price = Number(product.dataset.price);
+  const qtyEl = product.querySelector(".qty");
+
+  product.querySelector(".plus").addEventListener("click", () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  });
+
+  product.querySelector(".minus").addEventListener("click", () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    calc();
+  });
+});
+
+function calc() {
+  let total = 0;
+  document.querySelectorAll(".product").forEach(p => {
+    total += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+  });
+  document.getElementById("total").innerText = total.toLocaleString();
+}
+</script>
+
+</body>
+</html>
