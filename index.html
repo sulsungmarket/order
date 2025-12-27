@@ -2,27 +2,138 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>설성마켓 공동구매 주문서 v1.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>설성마켓 공동구매 주문서</title>
 
 <style>
-  body { font-family: sans-serif; padding: 20px; }
-  .product { border-bottom: 1px solid #ddd; padding: 10px 0; }
-  button { margin: 0 5px; }
-  .disabled { opacity: 0.5; pointer-events: none; }
-  textarea { width: 100%; height: 120px; margin-top: 10px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+  }
+
+  .product {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+  }
+
+  .product-name {
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .product-price {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .qty-control button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #222;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .qty {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .total {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .order-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    font-size: 16px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 140px;
+    margin-top: 12px;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .copy-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 </style>
 </head>
 
 <body>
 
-<h2>설성마켓 공동구매 주문서</h2>
+<h2>설성마켓 공동구매</h2>
 
-<!-- 1️⃣ 오픈채팅 닉네임 -->
-<label>오픈채팅 닉네임</label><br>
-<input type="text" id="nickname" placeholder="닉네임 입력"><br><br>
+<div class="container">
 
-<!-- 2️⃣ 방문 수령일 -->
-<label>방문 수령일</label><br>
+<label>오픈채팅 닉네임</label>
+<input id="nickname" placeholder="닉네임 입력">
+
+<label>방문 수령일</label>
 <select id="visitDate">
   <option value="">선택</option>
   <option value="금">금요일</option>
@@ -30,110 +141,88 @@
   <option value="일">일요일</option>
 </select>
 
-<hr>
-
-<!-- 3️⃣ 상품 영역 -->
 <div id="productList"></div>
 
-<hr>
+<div class="total">총 합계: <span id="totalPrice">0</span>원</div>
 
-<h3>총 합계: <span id="totalPrice">0</span> 원</h3>
+<button class="order-btn" onclick="submitOrder()">주문 완료</button>
 
-<button id="orderBtn" onclick="submitOrder()">주문 완료</button>
-
-<!-- 6️⃣ 주문 완료 문구 -->
-<h3>주문 완료 메시지</h3>
 <textarea id="orderMessage" readonly>주문내역이 없습니다</textarea>
-<button id="copyBtn" onclick="copyMessage()" disabled>📋 주문내역 복사</button>
+<button class="copy-btn" onclick="copyMessage()" disabled id="copyBtn">📋 주문내역 복사</button>
+
+</div>
 
 <script>
-// ================================
-// 🔹 [상품 데이터 영역]
-// 👉 상품 추가/삭제는 여기만 수정
-// ================================
 const products = [
-  { id: 1, name: "무항생제 한우 1등급 등심 200g", price: 15900, qty: 0 },
-  { id: 2, name: "제주한돈 육포 50g x 4팩", price: 9800, qty: 0 },
-  { id: 3, name: "우된장 한우된장찌개 밀키트 x2", price: 9900, qty: 0 },
-  { id: 4, name: "뉴욕 피터루거 스테이크 하우스 밀키트 x4", price: 19900, qty: 0 },
+  { name: "무항생제 한우 1등급 등심 200g", price: 15900, qty: 0 },
+  { name: "제주한돈 육포 50g x 4팩", price: 9800, qty: 0 },
+  { name: "우된장 한우된장찌개 밀키트 x2", price: 9900, qty: 0 },
+  { name: "뉴욕 피터루거 스테이크 하우스 밀키트 x4", price: 19900, qty: 0 },
 
-  // 🔽 [미래 상품 예시] — 필요 시 주석 해제
-  // { id: 5, name: "프리미엄 갈비찜 밀키트", price: 24900, qty: 0 },
-  // { id: 6, name: "수제 떡갈비 세트", price: 12900, qty: 0 },
-  // { id: 7, name: "한우 곰탕 밀키트", price: 8900, qty: 0 },
+  // 확장용
+  // { name: "추가상품", price: 10000, qty: 0 },
 ];
 
-let orderLocked = false;
+let locked = false;
 
-// ================================
-// 상품 UI 렌더링
-// ================================
 function renderProducts() {
-  const container = document.getElementById("productList");
-  container.innerHTML = "";
+  const el = document.getElementById("productList");
+  el.innerHTML = "";
 
-  products.forEach((p, index) => {
+  products.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = "product";
-
     div.innerHTML = `
-      <strong>${p.name}</strong><br>
-      ${p.price.toLocaleString()}원<br>
-      <button onclick="changeQty(${index}, -1)">-</button>
-      <span id="qty-${index}">${p.qty}</span>
-      <button onclick="changeQty(${index}, 1)">+</button>
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">${p.price.toLocaleString()}원</div>
+      <div class="qty-control">
+        <button onclick="changeQty(${i}, -1)">−</button>
+        <div class="qty">${p.qty}</div>
+        <button onclick="changeQty(${i}, 1)">＋</button>
+      </div>
     `;
-
-    container.appendChild(div);
+    el.appendChild(div);
   });
 }
 
-function changeQty(index, diff) {
-  if (orderLocked) return;
-
-  products[index].qty = Math.max(0, products[index].qty + diff);
-  document.getElementById(`qty-${index}`).innerText = products[index].qty;
+function changeQty(i, d) {
+  if (locked) return;
+  products[i].qty = Math.max(0, products[i].qty + d);
+  renderProducts();
   updateTotal();
 }
 
 function updateTotal() {
-  const total = products.reduce((sum, p) => sum + p.qty * p.price, 0);
-  document.getElementById("totalPrice").innerText = total.toLocaleString();
+  const t = products.reduce((s,p)=>s+p.qty*p.price,0);
+  document.getElementById("totalPrice").innerText = t.toLocaleString();
 }
 
-// ================================
-// 주문 완료 처리
-// ================================
 function submitOrder() {
-  const nickname = document.getElementById("nickname").value.trim();
-  const visit = document.getElementById("visitDate").value;
-  const selected = products.filter(p => p.qty > 0);
+  const nick = nickname.value.trim();
+  const visit = visitDate.value;
+  const sel = products.filter(p=>p.qty>0);
 
-  if (!nickname || !visit || selected.length === 0) {
-    alert("닉네임 / 방문일 / 상품을 확인해주세요");
+  if (!nick || !visit || sel.length===0) {
+    alert("입력값을 확인해주세요");
     return;
   }
 
-  orderLocked = true;
-  document.getElementById("orderBtn").classList.add("disabled");
-
-  // 🔹 주문 완료 문구 생성
-  let message = `${nickname}님\n`;
-
-  selected.forEach(p => {
-    message += `${p.name} ${p.qty}개\n`;
-  });
-
-  const total = selected.reduce((s, p) => s + p.qty * p.price, 0);
-
-  message += `\n총 ${total.toLocaleString()}원\n\n`;
-  message += `농협 301-0297-8175-81\n설성푸드\n으로 입금 부탁드립니다 🙏\n감사합니다!`;
-
-  document.getElementById("orderMessage").value = message;
-  document.getElementById("copyBtn").disabled = false;
+  locked = true;
+  let msg = `${nick}님\n`;
+  sel.forEach(p=>msg+=`${p.name} ${p.qty}개\n`);
+  msg += `\n총 ${sel.reduce((s,p)=>s+p.qty*p.price,0).toLocaleString()}원\n\n농협 301-0297-8175-81\n설성푸드`;
+  orderMessage.value = msg;
+  copyBtn.disabled = false;
 }
 
-// ================================
-// 주문 문구 복사
-// ================================
-function cop
+function copyMessage() {
+  orderMessage.select();
+  document.execCommand("copy");
+  alert("복사 완료! 오픈채팅에 붙여넣기 하세요.");
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>
