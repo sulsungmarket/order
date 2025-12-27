@@ -5,35 +5,33 @@
 <title>설성푸드 공동구매</title>
 
 <!--
-설성푸드 공동구매 주문서
-Version: v1.3.2
-Status: 주문 검증 + 주문문구 생성 + 복사 기능
-Last Update: 2025-01
-
-※ GitHub Pages 배포용
-※ 다음 단계: Google Sheet 연동 (v1.4.0)
+Version: v1.4.0 (STABLE)
+- 주문 문구 정상
+- Google Sheet 연동 완료
+- 상품 다수 / 이미지 교체 구조
 -->
 
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f6f7f9;
-  padding: 20px;
+  background:#f6f7f9;
+  padding:20px;
 }
 .container {
-  max-width: 420px;
-  margin: auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  max-width:420px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
 }
 h1 { text-align:center; margin-bottom:20px; }
+
 .field { margin-bottom:16px; }
 .field label { font-size:13px; font-weight:600; display:block; margin-bottom:6px; }
 .field input, .field select {
   width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
 }
+
 .product {
   display:flex; gap:12px; margin-bottom:16px; padding-bottom:16px;
   border-bottom:1px solid #eee;
@@ -43,6 +41,7 @@ h1 { text-align:center; margin-bottom:20px; }
 }
 .name { font-weight:600; }
 .price { color:#2f80ed; font-weight:700; margin:6px 0; }
+
 .qty-box {
   display:flex; align-items:center; gap:8px;
 }
@@ -51,9 +50,14 @@ h1 { text-align:center; margin-bottom:20px; }
   background:#e0e0e0; font-size:16px; cursor:pointer;
 }
 .qty { width:24px; text-align:center; font-weight:600; }
+
 .total {
-  font-size:16px; font-weight:700; text-align:right; margin-top:20px;
+  font-size:16px;
+  font-weight:700;
+  text-align:right;
+  margin-top:20px;
 }
+
 #orderBtn, #copyBtn {
   width:100%;
   margin-top:14px;
@@ -67,10 +71,6 @@ h1 { text-align:center; margin-bottom:20px; }
 #orderBtn { background:#2f80ed; color:#fff; }
 #copyBtn { background:#27ae60; color:#fff; display:none; }
 
-.notice {
-  margin-top:16px; font-size:13px; background:#f0f2f5;
-  padding:12px; border-radius:8px;
-}
 textarea {
   width:100%;
   margin-top:12px;
@@ -102,6 +102,131 @@ textarea {
 </select>
 </div>
 
-<!-- 상품 -->
+<!-- ===== 상품 영역 (매주 여기만 수정) ===== -->
 <div class="product" data-price="15900">
-<img src="images/produ
+  <img src="images/product1.jpg">
+  <div>
+    <div class="name">한우 불고기 500g</div>
+    <div class="price">15,900원</div>
+    <div class="qty-box">
+      <button onclick="changeQty(this,-1)">-</button>
+      <div class="qty">0</div>
+      <button onclick="changeQty(this,1)">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="product" data-price="12900">
+  <img src="images/product2.jpg">
+  <div>
+    <div class="name">한돈 제육 500g</div>
+    <div class="price">12,900원</div>
+    <div class="qty-box">
+      <button onclick="changeQty(this,-1)">-</button>
+      <div class="qty">0</div>
+      <button onclick="changeQty(this,1)">+</button>
+    </div>
+  </div>
+</div>
+<!-- ======================================= -->
+
+<div class="total">총 합계: <span id="totalPrice">0</span>원</div>
+
+<button id="orderBtn">주문 완료</button>
+<button id="copyBtn">주문 문구 복사</button>
+
+<textarea id="orderText"></textarea>
+</div>
+
+<script>
+/* 🔴 여기에 Google Apps Script 웹앱 URL 붙여넣기 */
+const SCRIPT_URL = "여기에_웹앱_URL";
+
+/* 수량 변경 */
+function changeQty(btn, delta) {
+  const qtyEl = btn.parentElement.querySelector('.qty');
+  let qty = parseInt(qtyEl.innerText) + delta;
+  if (qty < 0) qty = 0;
+  qtyEl.innerText = qty;
+  updateTotal();
+}
+
+/* 총합 계산 */
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll('.product').forEach(p => {
+    const price = parseInt(p.dataset.price);
+    const qty = parseInt(p.querySelector('.qty').innerText);
+    total += price * qty;
+  });
+  document.getElementById('totalPrice').innerText = total.toLocaleString();
+}
+
+/* 주문 */
+document.getElementById('orderBtn').onclick = async () => {
+  const nickname = document.getElementById('nickname').value.trim();
+  const visit = document.getElementById('visit').value;
+
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력해주세요");
+    return;
+  }
+
+  const items = [];
+  let total = 0;
+
+  document.querySelectorAll('.product').forEach(p => {
+    const name = p.querySelector('.name').innerText;
+    const price = parseInt(p.dataset.price);
+    const qty = parseInt(p.querySelector('.qty').innerText);
+
+    if (qty > 0) {
+      items.push({ name, qty, price });
+      total += price * qty;
+    }
+  });
+
+  if (items.length === 0) {
+    alert("상품을 선택해주세요");
+    return;
+  }
+
+  const orderData = { nickname, visit, items, total };
+
+  /* 구글 시트 전송 */
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(orderData)
+  });
+
+  /* 주문 문구 */
+  let itemsText = "";
+  items.forEach(i => {
+    itemsText += `- ${i.name} x ${i.qty} = ${(i.price * i.qty).toLocaleString()}원\n`;
+  });
+
+  document.getElementById('orderText').value =
+`[설성푸드 공동구매 주문]
+닉네임: ${nickname}
+수령일: ${visit}
+
+주문 내역:
+${itemsText}
+총 합계: ${total.toLocaleString()}원`;
+
+  document.getElementById('orderText').style.display = "block";
+  document.getElementById('copyBtn').style.display = "block";
+  alert("주문이 접수되었습니다");
+};
+
+/* 복사 */
+document.getElementById('copyBtn').onclick = () => {
+  const t = document.getElementById('orderText');
+  t.select();
+  document.execCommand("copy");
+  alert("주문 문구가 복사되었습니다");
+};
+</script>
+
+</body>
+</html>
