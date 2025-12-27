@@ -127,6 +127,24 @@ h1 { text-align:center; margin-bottom:20px; }
 총 합계: <span id="total">0</span>원
 </div>
 
+  <button id="orderBtn" style="
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  border-radius:10px;
+  background:#2f80ed;
+  color:#fff;
+  cursor:pointer;
+">
+주문 완료
+</button>
+
+
+
+  
 <div class="notice">
 농협 301-0297-8175-81<br>
 설성푸드
@@ -157,6 +175,28 @@ function calc() {
   document.getElementById("total").innerText = total.toLocaleString();
 }
 </script>
+document.getElementById("orderBtn").addEventListener("click", () => {
+  const nickname = document.getElementById("nickname").value.trim();
+  const visit = document.getElementById("visit").value;
+
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력해 주세요");
+    return;
+  }
+
+  let hasItem = false;
+  document.querySelectorAll(".qty").forEach(q => {
+    if (Number(q.innerText) > 0) hasItem = true;
+  });
+
+  if (!hasItem) {
+    alert("주문할 상품을 선택해 주세요");
+    return;
+  }
+
+  alert("주문 조건 통과 ✅ (다음 단계 진행 가능)");
+});
 
 </body>
 </html>
+
