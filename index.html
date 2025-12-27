@@ -76,10 +76,11 @@
   <div class="container">
     <h1>설성푸드 공동구매</h1>
 
+        <!-- 상품 1 -->
     <div class="product" data-price="15900">
       <img />
       <div>
-        <div class="product-name">한우 등심 200g</div>
+        <div class="product-name">무항생제 한우 1등급 등심 200g</div>
         <div class="product-price">15,900원</div>
         <div class="qty-box">
           <button onclick="changeQty(this,-1)">-</button>
@@ -89,10 +90,64 @@
       </div>
     </div>
 
-    <div class="total">
-      총 합계: <span id="total">0</span>원
+    <!-- 상품 2 -->
+    <div class="product" data-price="9800">
+      <img />
+      <div>
+        <div class="product-name">제주한돈 육포 50g × 4팩</div>
+        <div class="product-price">9,800원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this,-1)">-</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- 상품 3 -->
+    <div class="product" data-price="9900">
+      <img />
+      <div>
+        <div class="product-name">우된장 한우된장찌개 밀키트 × 2</div>
+        <div class="product-price">9,900원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this,-1)">-</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상품 4 -->
+    <div class="product" data-price="19900">
+      <img />
+      <div>
+        <div class="product-name">피터루거 스테이크 하우스 밀키트 × 4</div>
+        <div class="product-price">19,900원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this,-1)">-</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!--
+    🔒 예비 상품 (나중에 주석 해제)
+    <div class="product" data-price="12000">
+      <img />
+      <div>
+        <div class="product-name">예비 상품 A</div>
+        <div class="product-price">12,000원</div>
+        <div class="qty-box">
+          <button onclick="changeQty(this,-1)">-</button>
+          <div class="qty">0</div>
+          <button onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+    -->
+
 
   <!-- ⚠️ JS는 반드시 body 맨 아래 -->
   <script>
@@ -116,3 +171,4 @@
   </script>
 </body>
 </html>
+
