@@ -1,47 +1,139 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>주문 테스트</title>
+<meta charset="UTF-8" />
+<title>설성마켓 공동구매 주문서 v1.1</title>
+
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  .product { border-bottom: 1px solid #ddd; padding: 10px 0; }
+  button { margin: 0 5px; }
+  .disabled { opacity: 0.5; pointer-events: none; }
+  textarea { width: 100%; height: 120px; margin-top: 10px; }
+</style>
 </head>
+
 <body>
 
-<h2>구글 시트 연동 테스트</h2>
+<h2>설성마켓 공동구매 주문서</h2>
 
-<button onclick="testOrder()">테스트 주문 보내기</button>
+<!-- 1️⃣ 오픈채팅 닉네임 -->
+<label>오픈채팅 닉네임</label><br>
+<input type="text" id="nickname" placeholder="닉네임 입력"><br><br>
+
+<!-- 2️⃣ 방문 수령일 -->
+<label>방문 수령일</label><br>
+<select id="visitDate">
+  <option value="">선택</option>
+  <option value="금">금요일</option>
+  <option value="토">토요일</option>
+  <option value="일">일요일</option>
+</select>
+
+<hr>
+
+<!-- 3️⃣ 상품 영역 -->
+<div id="productList"></div>
+
+<hr>
+
+<h3>총 합계: <span id="totalPrice">0</span> 원</h3>
+
+<button id="orderBtn" onclick="submitOrder()">주문 완료</button>
+
+<!-- 6️⃣ 주문 완료 문구 -->
+<h3>주문 완료 메시지</h3>
+<textarea id="orderMessage" readonly>주문내역이 없습니다</textarea>
+<button id="copyBtn" onclick="copyMessage()" disabled>📋 주문내역 복사</button>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzj2oQUiXhGW9jjZbvjS4yzZni2hSpY_3QgHluTkcVPsm_vTLhsWd3VLdyW_Fys-wXM/exec";
+// ================================
+// 🔹 [상품 데이터 영역]
+// 👉 상품 추가/삭제는 여기만 수정
+// ================================
+const products = [
+  { id: 1, name: "무항생제 한우 1등급 등심 200g", price: 15900, qty: 0 },
+  { id: 2, name: "제주한돈 육포 50g x 4팩", price: 9800, qty: 0 },
+  { id: 3, name: "우된장 한우된장찌개 밀키트 x2", price: 9900, qty: 0 },
+  { id: 4, name: "뉴욕 피터루거 스테이크 하우스 밀키트 x4", price: 19900, qty: 0 },
 
-async function testOrder() {
-  const order = {
-    name: "테스트유저",
-    visit: "금",
-    items: [
-      { name: "테스트상품", qty: 1, price: 1000 }
-    ],
-    total: 1000
-  };
+  // 🔽 [미래 상품 예시] — 필요 시 주석 해제
+  // { id: 5, name: "프리미엄 갈비찜 밀키트", price: 24900, qty: 0 },
+  // { id: 6, name: "수제 떡갈비 세트", price: 12900, qty: 0 },
+  // { id: 7, name: "한우 곰탕 밀키트", price: 8900, qty: 0 },
+];
 
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(order)
-    });
+let orderLocked = false;
 
-    const result = await response.json();
-    alert("응답: " + JSON.stringify(result));
+// ================================
+// 상품 UI 렌더링
+// ================================
+function renderProducts() {
+  const container = document.getElementById("productList");
+  container.innerHTML = "";
 
-  } catch (e) {
-    alert("통신 실패");
-    console.error(e);
-  }
+  products.forEach((p, index) => {
+    const div = document.createElement("div");
+    div.className = "product";
+
+    div.innerHTML = `
+      <strong>${p.name}</strong><br>
+      ${p.price.toLocaleString()}원<br>
+      <button onclick="changeQty(${index}, -1)">-</button>
+      <span id="qty-${index}">${p.qty}</span>
+      <button onclick="changeQty(${index}, 1)">+</button>
+    `;
+
+    container.appendChild(div);
+  });
 }
-</script>
 
-</body>
-</html>
+function changeQty(index, diff) {
+  if (orderLocked) return;
 
+  products[index].qty = Math.max(0, products[index].qty + diff);
+  document.getElementById(`qty-${index}`).innerText = products[index].qty;
+  updateTotal();
+}
 
+function updateTotal() {
+  const total = products.reduce((sum, p) => sum + p.qty * p.price, 0);
+  document.getElementById("totalPrice").innerText = total.toLocaleString();
+}
 
+// ================================
+// 주문 완료 처리
+// ================================
+function submitOrder() {
+  const nickname = document.getElementById("nickname").value.trim();
+  const visit = document.getElementById("visitDate").value;
+  const selected = products.filter(p => p.qty > 0);
 
+  if (!nickname || !visit || selected.length === 0) {
+    alert("닉네임 / 방문일 / 상품을 확인해주세요");
+    return;
+  }
+
+  orderLocked = true;
+  document.getElementById("orderBtn").classList.add("disabled");
+
+  // 🔹 주문 완료 문구 생성
+  let message = `${nickname}님\n`;
+
+  selected.forEach(p => {
+    message += `${p.name} ${p.qty}개\n`;
+  });
+
+  const total = selected.reduce((s, p) => s + p.qty * p.price, 0);
+
+  message += `\n총 ${total.toLocaleString()}원\n\n`;
+  message += `농협 301-0297-8175-81\n설성푸드\n으로 입금 부탁드립니다 🙏\n감사합니다!`;
+
+  document.getElementById("orderMessage").value = message;
+  document.getElementById("copyBtn").disabled = false;
+}
+
+// ================================
+// 주문 문구 복사
+// ================================
+function cop
