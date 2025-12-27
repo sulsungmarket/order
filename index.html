@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <title>설성푸드 공동구매</title>
 
+<!--
+설성푸드 공동구매 주문서
+Version: v1.3.1
+Status: UI + 수량 + 합계 + 주문 검증 안정화
+Last Update: 2025-01
+
+※ GitHub Pages 배포용
+※ 기능 확장 고려 구조
+-->
+
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -48,6 +58,18 @@ h1 { text-align:center; margin-bottom:20px; }
   margin-top:16px; font-size:13px; background:#f0f2f5;
   padding:12px; border-radius:8px;
 }
+#orderBtn {
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  border-radius:10px;
+  background:#2f80ed;
+  color:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -57,24 +79,24 @@ h1 { text-align:center; margin-bottom:20px; }
 
 <div class="field">
 <label>오픈채팅 닉네임</label>
-<input id="nickname">
+<input id="nickname" placeholder="카카오톡 닉네임 입력">
 </div>
 
 <div class="field">
 <label>방문 수령일</label>
 <select id="visit">
 <option value="">선택</option>
-<option>금</option>
-<option>토</option>
-<option>일</option>
+<option value="금">금</option>
+<option value="토">토</option>
+<option value="일">일</option>
 </select>
 </div>
 
-<!-- 상품 -->
+<!-- 상품 리스트 -->
 <div class="product" data-price="15900">
 <img src="images/product1.png">
 <div>
-<div class="name">한우 등심 200g</div>
+<div class="name">무항생제 한우 1등급 등심 200g</div>
 <div class="price">15,900원</div>
 <div class="qty-box">
 <button class="minus">-</button>
@@ -87,7 +109,7 @@ h1 { text-align:center; margin-bottom:20px; }
 <div class="product" data-price="9800">
 <img src="images/product2.png">
 <div>
-<div class="name">제주한돈 육포</div>
+<div class="name">제주한돈 육포 50g × 4팩</div>
 <div class="price">9,800원</div>
 <div class="qty-box">
 <button class="minus">-</button>
@@ -100,7 +122,7 @@ h1 { text-align:center; margin-bottom:20px; }
 <div class="product" data-price="9900">
 <img src="images/product3.png">
 <div>
-<div class="name">된장 밀키트</div>
+<div class="name">우된장 한우된장찌개 밀키트 × 2</div>
 <div class="price">9,900원</div>
 <div class="qty-box">
 <button class="minus">-</button>
@@ -113,7 +135,7 @@ h1 { text-align:center; margin-bottom:20px; }
 <div class="product" data-price="19900">
 <img src="images/product4.png">
 <div>
-<div class="name">피터루거 밀키트</div>
+<div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
 <div class="price">19,900원</div>
 <div class="qty-box">
 <button class="minus">-</button>
@@ -127,33 +149,18 @@ h1 { text-align:center; margin-bottom:20px; }
 총 합계: <span id="total">0</span>원
 </div>
 
-  <button id="orderBtn" style="
-  width:100%;
-  margin-top:16px;
-  padding:14px;
-  font-size:16px;
-  font-weight:700;
-  border:none;
-  border-radius:10px;
-  background:#2f80ed;
-  color:#fff;
-  cursor:pointer;
-">
-주문 완료
-</button>
+<button id="orderBtn">주문 완료</button>
 
-
-
-  
 <div class="notice">
+입금 계좌<br>
 농협 301-0297-8175-81<br>
 설성푸드
 </div>
 </div>
 
 <script>
+/* ===== 수량 조절 & 합계 계산 ===== */
 document.querySelectorAll(".product").forEach(product => {
-  const price = Number(product.dataset.price);
   const qtyEl = product.querySelector(".qty");
 
   product.querySelector(".plus").addEventListener("click", () => {
@@ -174,7 +181,8 @@ function calc() {
   });
   document.getElementById("total").innerText = total.toLocaleString();
 }
-</script>
+
+/* ===== 주문 검증 (보안 1차) ===== */
 document.getElementById("orderBtn").addEventListener("click", () => {
   const nickname = document.getElementById("nickname").value.trim();
   const visit = document.getElementById("visit").value;
@@ -194,9 +202,9 @@ document.getElementById("orderBtn").addEventListener("click", () => {
     return;
   }
 
-  alert("주문 조건 통과 ✅ (다음 단계 진행 가능)");
+  alert("주문 조건 통과 ✅ (다음 단계 진행)");
 });
+</script>
 
 </body>
 </html>
-
