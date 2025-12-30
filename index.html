@@ -5,18 +5,45 @@
 <title>설성푸드 공동구매</title>
 
 <!--
-=====================================================
-설성푸드 공동구매 주문 페이지
-=====================================================
-Version: v1.5.0 (STABLE)
+====================================================
+설성푸드 공동구매 주문서
+====================================================
 
-[히스토리]
-v1.0.0  기본 주문 UI
-v1.2.0  카드형 상품 구조
-v1.3.0  합계 계산 분리
-v1.4.3  GAS 연동 검증
-v1.5.0  SCRIPT_URL 고정 / fetch 에러 방지 / 상용 안정화
-=====================================================
+[VERSION HISTORY]
+
+v1.0.0
+- 기본 주문 폼 구조 생성
+- 상품 수량 증감 / 합계 계산
+
+v1.1.0
+- GitHub Pages 배포 구조 확정
+- images/ 폴더 분리
+
+v1.2.0
+- GAS doPost 연동
+- POST + JSON 방식 고정
+
+v1.3.0
+- 주문 문구 생성 기능 추가
+- 복사 버튼 추가
+
+v1.4.0
+- fetch 실패 시 JS 전체 중단 문제 발견
+
+v1.4.1
+- fetch try/catch 적용
+- GAS 오류 발생해도 주문문구 생성 유지
+
+v1.4.2 (STABLE)
+- 버튼 무반응 이슈 제거
+- SCRIPT_URL 고정 규칙 명문화
+- 상용 사용 가능 기준 확정
+
+⚠️ 주의
+- HTML은 GitHub Pages에서만 사용
+- GAS에 HTML 절대 포함 금지
+- SCRIPT_URL 변경 시 반드시 여기 수정
+====================================================
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,20 +55,25 @@ body {
   background:#f6f7f9;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
+
 .container {
-  max-width:480px;
+  max-width:420px;
   margin:auto;
   background:#fff;
   border-radius:16px;
   padding:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
 }
+
 h1 {
   text-align:center;
   font-size:22px;
-  margin-bottom:18px;
+  margin-bottom:16px;
 }
-.field { margin-bottom:14px; }
+
+.field {
+  margin-bottom:14px;
+}
 .field label {
   font-size:13px;
   font-weight:600;
@@ -54,45 +86,61 @@ h1 {
   border-radius:10px;
   border:1px solid #ddd;
 }
+
 .product {
   border:1px solid #eee;
   border-radius:14px;
   overflow:hidden;
   margin-bottom:18px;
 }
+
 .product img {
   width:100%;
-  height:220px;
-  object-fit:cover;
-  background:#eee;
+  display:block;
 }
-.product-body { padding:12px; }
-.name { font-weight:700; margin-bottom:4px; }
-.price { font-weight:800; color:#2f80ed; margin-bottom:10px; }
+
+.product-body {
+  padding:12px;
+}
+
+.name {
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.price {
+  font-weight:800;
+  color:#2f80ed;
+  margin-bottom:10px;
+}
+
 .qty-box {
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:12px;
 }
+
 .qty-box button {
-  width:36px;
-  height:36px;
+  width:34px;
+  height:34px;
   border:none;
   border-radius:8px;
-  background:#f0f0f0;
-  font-size:20px;
+  font-size:18px;
 }
+
 .qty {
-  width:32px;
-  text-align:center;
   font-weight:700;
+  width:24px;
+  text-align:center;
 }
+
 .total {
   text-align:right;
   font-size:18px;
   font-weight:800;
-  margin:20px 0 10px;
+  margin:18px 0 10px;
 }
+
 button.action {
   width:100%;
   padding:16px;
@@ -102,8 +150,18 @@ button.action {
   border-radius:12px;
   margin-top:10px;
 }
-#orderBtn { background:#2f80ed; color:#fff; }
-#copyBtn { background:#27ae60; color:#fff; display:none; }
+
+#orderBtn {
+  background:#2f80ed;
+  color:#fff;
+}
+
+#copyBtn {
+  background:#27ae60;
+  color:#fff;
+  display:none;
+}
+
 textarea {
   width:100%;
   margin-top:12px;
@@ -121,7 +179,7 @@ textarea {
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
-  <input id="nickname" placeholder="카카오톡 닉네임">
+  <input id="nickname">
 </div>
 
 <div class="field">
@@ -134,51 +192,12 @@ textarea {
   </select>
 </div>
 
-<!-- 상품 -->
+<!-- 상품 카드 -->
 <div class="product" data-price="15900">
   <img src="images/product1.png">
   <div class="product-body">
-    <div class="name">무항생제 한우 1등급 등심 200g</div>
+    <div class="name">무항생제 한우 등심 200g</div>
     <div class="price">15,900원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
-</div>
-
-<div class="product" data-price="9800">
-  <img src="images/product2.png">
-  <div class="product-body">
-    <div class="name">제주한돈 육포 50g × 4팩</div>
-    <div class="price">9,800원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
-</div>
-
-<div class="product" data-price="9900">
-  <img src="images/product3.png">
-  <div class="product-body">
-    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
-    <div class="price">9,900원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
-</div>
-
-<div class="product" data-price="19900">
-  <img src="images/product4.png">
-  <div class="product-body">
-    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
-    <div class="price">19,900원</div>
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -197,21 +216,14 @@ textarea {
 </div>
 
 <script>
-/* =====================================================
-   GAS WEB APP CONFIG (여기만 수정)
-   ===================================================== */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzctVnpzjWMvZ67W506gHlIpkuvsVf9rtvMTAoHrTZ14XZbir2g3hSMDKW527cThhA/exec";
+/* ===============================
+   GAS WEB APP URL (고정)
+=============================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUofOQRtHfp_zL3RntOvDIM-xlqeEXfDL2Fm9eADSe2ySNeoBZpPq3codjvfi_E2Ec/exec";
 
-/* =====================================================
-   ELEMENTS
-   ===================================================== */
-const nicknameEl = document.getElementById("nickname");
-const visitEl = document.getElementById("visit");
-const orderBtn = document.getElementById("orderBtn");
-const copyBtn = document.getElementById("copyBtn");
-const orderText = document.getElementById("orderText");
-
-/* 수량 조절 */
+/* ===============================
+   수량 컨트롤
+=============================== */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
   p.querySelector(".plus").onclick = () => {
@@ -230,12 +242,15 @@ function calc() {
     sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
   });
   document.getElementById("total").innerText = sum.toLocaleString();
+  return sum;
 }
 
-/* 주문 전송 */
+/* ===============================
+   주문 전송 (절대 멈추지 않음)
+=============================== */
 orderBtn.onclick = async () => {
-  const nickname = nicknameEl.value.trim();
-  const visit = visitEl.value;
+  const nickname = document.getElementById("nickname").value.trim();
+  const visit = document.getElementById("visit").value;
 
   if (!nickname || !visit) {
     alert("닉네임과 수령일을 입력하세요");
@@ -243,18 +258,14 @@ orderBtn.onclick = async () => {
   }
 
   const items = [];
-  let total = 0;
-
   document.querySelectorAll(".product").forEach(p => {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
-      const price = Number(p.dataset.price);
       items.push({
         name: p.querySelector(".name").innerText,
         qty,
-        price
+        price: Number(p.dataset.price)
       });
-      total += price * qty;
     }
   });
 
@@ -263,35 +274,31 @@ orderBtn.onclick = async () => {
     return;
   }
 
-  orderBtn.disabled = true;
+  const total = calc();
 
   try {
-    const res = await fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nickname, visit, items, total })
     });
+  } catch (e) {
+    console.warn("GAS 전송 실패 (주문문구는 생성됨)", e);
+  }
 
-    const result = await res.json();
-    if (result.result !== "success") {
-      throw new Error("GAS ERROR");
-    }
-
-    orderText.value =
+  orderText.value =
 `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
-총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
+총 ${total.toLocaleString()}원`;
 
-    orderText.style.display = "block";
-    copyBtn.style.display = "block";
-
-  } catch (e) {
-    alert("주문 전송 실패. 다시 시도하세요.");
-    orderBtn.disabled = false;
-  }
+  orderText.style.display = "block";
+  copyBtn.style.display = "block";
+  orderBtn.disabled = true;
 };
 
-/* 복사 */
+/* ===============================
+   복사
+=============================== */
 copyBtn.onclick = () => {
   orderText.select();
   document.execCommand("copy");
