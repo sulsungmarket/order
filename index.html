@@ -5,11 +5,18 @@
 <title>설성푸드 공동구매</title>
 
 <!--
-Version: v1.4.3 VERIFIED
-- GAS doPost 완전 호환
-- 모바일 확대 불필요
-- 상품 카드형 UI
-- 주문 → 시트 저장 검증 완료
+=====================================================
+설성푸드 공동구매 주문 페이지
+=====================================================
+Version: v1.5.0 (STABLE)
+
+[히스토리]
+v1.0.0  기본 주문 UI
+v1.2.0  카드형 상품 구조
+v1.3.0  합계 계산 분리
+v1.4.3  GAS 연동 검증
+v1.5.0  SCRIPT_URL 고정 / fetch 에러 방지 / 상용 안정화
+=====================================================
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,9 +26,8 @@ body {
   margin:0;
   padding:16px;
   background:#f6f7f9;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-
 .container {
   max-width:480px;
   margin:auto;
@@ -30,59 +36,39 @@ body {
   padding:16px;
   box-shadow:0 8px 24px rgba(0,0,0,0.08);
 }
-
 h1 {
   text-align:center;
   font-size:22px;
   margin-bottom:18px;
 }
-
-.field {
-  margin-bottom:14px;
-}
+.field { margin-bottom:14px; }
 .field label {
   font-size:13px;
   font-weight:600;
   display:block;
   margin-bottom:6px;
 }
-.field input,
-.field select {
+.field input, .field select {
   width:100%;
   padding:12px;
   border-radius:10px;
   border:1px solid #ddd;
 }
-
-/* 상품 카드 */
 .product {
   border:1px solid #eee;
   border-radius:14px;
   overflow:hidden;
   margin-bottom:18px;
 }
-
 .product img {
   width:100%;
   height:220px;
   object-fit:cover;
   background:#eee;
 }
-
-.product-body {
-  padding:12px;
-}
-
-.name {
-  font-weight:700;
-  margin-bottom:4px;
-}
-.price {
-  font-weight:800;
-  color:#2f80ed;
-  margin-bottom:10px;
-}
-
+.product-body { padding:12px; }
+.name { font-weight:700; margin-bottom:4px; }
+.price { font-weight:800; color:#2f80ed; margin-bottom:10px; }
 .qty-box {
   display:flex;
   align-items:center;
@@ -101,14 +87,12 @@ h1 {
   text-align:center;
   font-weight:700;
 }
-
 .total {
   text-align:right;
   font-size:18px;
   font-weight:800;
   margin:20px 0 10px;
 }
-
 button.action {
   width:100%;
   padding:16px;
@@ -118,17 +102,8 @@ button.action {
   border-radius:12px;
   margin-top:10px;
 }
-
-#orderBtn {
-  background:#2f80ed;
-  color:#fff;
-}
-#copyBtn {
-  background:#27ae60;
-  color:#fff;
-  display:none;
-}
-
+#orderBtn { background:#2f80ed; color:#fff; }
+#copyBtn { background:#27ae60; color:#fff; display:none; }
 textarea {
   width:100%;
   margin-top:12px;
@@ -159,7 +134,7 @@ textarea {
   </select>
 </div>
 
-<!-- 상품 1 -->
+<!-- 상품 -->
 <div class="product" data-price="15900">
   <img src="images/product1.png">
   <div class="product-body">
@@ -173,7 +148,6 @@ textarea {
   </div>
 </div>
 
-<!-- 상품 2 -->
 <div class="product" data-price="9800">
   <img src="images/product2.png">
   <div class="product-body">
@@ -187,7 +161,6 @@ textarea {
   </div>
 </div>
 
-<!-- 상품 3 -->
 <div class="product" data-price="9900">
   <img src="images/product3.png">
   <div class="product-body">
@@ -201,7 +174,6 @@ textarea {
   </div>
 </div>
 
-<!-- 상품 4 -->
 <div class="product" data-price="19900">
   <img src="images/product4.png">
   <div class="product-body">
@@ -225,8 +197,14 @@ textarea {
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSCytB9-EymQeVm32UzVwx12mVeR9R-JnKt7Tmf9OP1-4b-zufGBDgSW85Br4QF3sU/exec";
+/* =====================================================
+   GAS WEB APP CONFIG (여기만 수정)
+   ===================================================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzctVnpzjWMvZ67W506gHlIpkuvsVf9rtvMTAoHrTZ14XZbir2g3hSMDKW527cThhA/exec";
 
+/* =====================================================
+   ELEMENTS
+   ===================================================== */
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
 const orderBtn = document.getElementById("orderBtn");
@@ -264,7 +242,7 @@ orderBtn.onclick = async () => {
     return;
   }
 
-  let items = [];
+  const items = [];
   let total = 0;
 
   document.querySelectorAll(".product").forEach(p => {
@@ -285,20 +263,32 @@ orderBtn.onclick = async () => {
     return;
   }
 
-  await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nickname, visit, items, total })
-  });
+  orderBtn.disabled = true;
 
-  orderText.value =
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, visit, items, total })
+    });
+
+    const result = await res.json();
+    if (result.result !== "success") {
+      throw new Error("GAS ERROR");
+    }
+
+    orderText.value =
 `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
 총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
 
-  orderText.style.display = "block";
-  copyBtn.style.display = "block";
-  orderBtn.disabled = true;
+    orderText.style.display = "block";
+    copyBtn.style.display = "block";
+
+  } catch (e) {
+    alert("주문 전송 실패. 다시 시도하세요.");
+    orderBtn.disabled = false;
+  }
 };
 
 /* 복사 */
