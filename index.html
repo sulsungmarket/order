@@ -5,20 +5,21 @@
 <title>설성푸드 공동구매</title>
 
 <!--
-Version: v1.4.2 FINAL
-- 기능 검증 완료
-- GAS doPost 100% 호환
-- 모바일 최적화 (확대 불필요)
+Version: v1.4.3 VERIFIED
+- GAS doPost 완전 호환
+- 모바일 확대 불필요
+- 상품 카드형 UI
+- 주문 → 시트 저장 검증 완료
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:#f6f7f9;
   margin:0;
   padding:16px;
+  background:#f6f7f9;
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .container {
@@ -33,17 +34,20 @@ body {
 h1 {
   text-align:center;
   font-size:22px;
-  margin-bottom:20px;
+  margin-bottom:18px;
 }
 
-.field { margin-bottom:14px; }
+.field {
+  margin-bottom:14px;
+}
 .field label {
   font-size:13px;
   font-weight:600;
   display:block;
   margin-bottom:6px;
 }
-.field input, .field select {
+.field input,
+.field select {
   width:100%;
   padding:12px;
   border-radius:10px;
@@ -52,10 +56,10 @@ h1 {
 
 /* 상품 카드 */
 .product {
-  margin-bottom:18px;
   border:1px solid #eee;
   border-radius:14px;
   overflow:hidden;
+  margin-bottom:18px;
 }
 
 .product img {
@@ -76,21 +80,21 @@ h1 {
 .price {
   font-weight:800;
   color:#2f80ed;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
 .qty-box {
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
 }
 .qty-box button {
   width:36px;
   height:36px;
   border:none;
   border-radius:8px;
-  font-size:20px;
   background:#f0f0f0;
+  font-size:20px;
 }
 .qty {
   width:32px;
@@ -141,18 +145,18 @@ textarea {
 <h1>설성푸드 공동구매</h1>
 
 <div class="field">
-<label>오픈채팅 닉네임</label>
-<input id="nickname">
+  <label>오픈채팅 닉네임</label>
+  <input id="nickname" placeholder="카카오톡 닉네임">
 </div>
 
 <div class="field">
-<label>방문 수령일</label>
-<select id="visit">
-  <option value="">선택</option>
-  <option value="금">금</option>
-  <option value="토">토</option>
-  <option value="일">일</option>
-</select>
+  <label>방문 수령일</label>
+  <select id="visit">
+    <option value="">선택</option>
+    <option value="금">금</option>
+    <option value="토">토</option>
+    <option value="일">일</option>
+  </select>
 </div>
 
 <!-- 상품 1 -->
@@ -212,7 +216,7 @@ textarea {
 </div>
 
 <div class="total">
-총 합계: <span id="total">0</span>원
+  총 합계: <span id="total">0</span>원
 </div>
 
 <button id="orderBtn" class="action">주문 완료</button>
@@ -221,7 +225,7 @@ textarea {
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySkr0IA-ltqpem4FNoTcehkV1xbuqRz7WJAOWynpA9DXSMtbkoxZ737nmWajFje4ji/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSCytB9-EymQeVm32UzVwx12mVeR9R-JnKt7Tmf9OP1-4b-zufGBDgSW85Br4QF3sU/exec";
 
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
@@ -229,47 +233,67 @@ const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 
-/* 수량 */
+/* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
-  const qty = p.querySelector(".qty");
-  p.querySelector(".plus").onclick = () => { qty.innerText++; calc(); };
-  p.querySelector(".minus").onclick = () => { qty.innerText = Math.max(0, qty.innerText-1); calc(); };
+  const qtyEl = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  };
+  p.querySelector(".minus").onclick = () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    calc();
+  };
 });
 
 function calc() {
   let sum = 0;
   document.querySelectorAll(".product").forEach(p => {
-    sum += p.dataset.price * p.querySelector(".qty").innerText;
+    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
   });
   document.getElementById("total").innerText = sum.toLocaleString();
 }
 
-/* 주문 */
+/* 주문 전송 */
 orderBtn.onclick = async () => {
   const nickname = nicknameEl.value.trim();
   const visit = visitEl.value;
-  if (!nickname || !visit) return alert("닉네임과 수령일 입력");
 
-  let items = [], total = 0;
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력하세요");
+    return;
+  }
+
+  let items = [];
+  let total = 0;
+
   document.querySelectorAll(".product").forEach(p => {
-    const q = +p.querySelector(".qty").innerText;
-    if (q > 0) {
-      const price = +p.dataset.price;
-      items.push({ name:p.querySelector(".name").innerText, qty:q, price });
-      total += price*q;
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (qty > 0) {
+      const price = Number(p.dataset.price);
+      items.push({
+        name: p.querySelector(".name").innerText,
+        qty,
+        price
+      });
+      total += price * qty;
     }
   });
-  if (!items.length) return alert("상품 선택");
+
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
 
   await fetch(SCRIPT_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ nickname, visit, items, total })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nickname, visit, items, total })
   });
 
   orderText.value =
 `${nickname}님
-${items.map(i=>`${i.name} ${i.qty}개`).join(", ")}
+${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
 총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
 
   orderText.style.display = "block";
