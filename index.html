@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>청담점 공동구매 주문서</title>
+<title>설성푸드 공동구매</title>
 
 <!--
 ====================================================
@@ -17,18 +17,16 @@ v1.4.3 (ORIGINAL)
 - 주문문구 생성
 - GAS doPost 연동 검증 완료
 
-v1.4.4 (STABLE)
-- JS 템플릿 문자열 에러 수정
-- fetch 실패 시 try/catch 처리
+v1.4.4 (STABLE PATCH)
+- JS 템플릿 문자열 문법 에러 수정
+- fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
 - 기존 구조 / 상품 / 스타일 절대 변경 없음
 
-v1.4.5
-- 판매기간 제어 로직 추가 (MODE 개념)
+v1.4.5-SALEMODE (PATCH)
+- 판매기간 제어 모드 추가 (항상오픈 기본)
+- 기존 로직 영향 없음
+- PATCH 블록 제거 시 완전 롤백 가능
 
-v1.4.6 (STABLE / BASELINE)
-- nickname 변수 충돌 해결 (ReferenceError 수정)
-- 상품 DOM / 기존 주문 로직 100% 유지
-- SALE_MODE 적용 (기본 ALWAYS_OPEN)
 ====================================================
 -->
 
@@ -41,6 +39,7 @@ body {
   background:#f6f7f9;
   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
 .container {
   max-width:480px;
   margin:auto;
@@ -49,42 +48,123 @@ body {
   padding:16px;
   box-shadow:0 8px 24px rgba(0,0,0,0.08);
 }
-h1 { text-align:center; font-size:22px; margin-bottom:18px; }
-.field { margin-bottom:14px; }
-.field label { font-size:13px; font-weight:600; display:block; margin-bottom:6px; }
-.field input, .field select {
-  width:100%; padding:12px; border-radius:10px; border:1px solid #ddd;
+
+h1 {
+  text-align:center;
+  font-size:22px;
+  margin-bottom:18px;
 }
-.product { border:1px solid #eee; border-radius:14px; overflow:hidden; margin-bottom:18px; }
-.product img { width:100%; height:220px; object-fit:cover; background:#eee; }
-.product-body { padding:12px; }
-.name { font-weight:700; margin-bottom:4px; }
-.price { font-weight:800; color:#2f80ed; margin-bottom:10px; }
-.qty-box { display:flex; align-items:center; gap:14px; }
-.qty-box button {
-  width:36px; height:36px; border:none; border-radius:8px;
-  background:#f0f0f0; font-size:20px;
+
+.field {
+  margin-bottom:14px;
 }
-.qty { width:32px; text-align:center; font-weight:700; }
-.total { text-align:right; font-size:18px; font-weight:800; margin:20px 0 10px; }
-button.action {
-  width:100%; padding:16px; font-size:16px; font-weight:700;
-  border:none; border-radius:12px; margin-top:10px;
+.field label {
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
 }
-#orderBtn { background:#2f80ed; color:#fff; }
-#copyBtn { background:#27ae60; color:#fff; display:none; }
-textarea {
-  width:100%; margin-top:12px; padding:12px;
-  border-radius:10px; border:1px solid #ccc; display:none;
-}
-#notice {
-  display:none;
-  background:#fff3cd;
-  color:#856404;
+.field input,
+.field select {
+  width:100%;
   padding:12px;
   border-radius:10px;
-  margin-bottom:12px;
+  border:1px solid #ddd;
+}
+
+/* 상품 카드 */
+.product {
+  border:1px solid #eee;
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+
+.product img {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  background:#eee;
+}
+
+.product-body {
+  padding:12px;
+}
+
+.name {
+  font-weight:700;
+  margin-bottom:4px;
+}
+.price {
+  font-weight:800;
+  color:#2f80ed;
+  margin-bottom:10px;
+}
+
+.qty-box {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.qty-box button {
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:8px;
+  background:#f0f0f0;
+  font-size:20px;
+}
+.qty {
+  width:32px;
+  text-align:center;
+  font-weight:700;
+}
+
+.total {
+  text-align:right;
+  font-size:18px;
+  font-weight:800;
+  margin:20px 0 10px;
+}
+
+button.action {
+  width:100%;
+  padding:16px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+#orderBtn {
+  background:#2f80ed;
+  color:#fff;
+}
+#copyBtn {
+  background:#27ae60;
+  color:#fff;
+  display:none;
+}
+
+textarea {
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  display:none;
+}
+
+/* 판매마감 안내 */
+#notice {
+  display:none;
+  margin:12px 0;
+  padding:12px;
+  background:#fff3cd;
+  border-radius:10px;
   font-size:14px;
+  color:#856404;
   text-align:center;
 }
 </style>
@@ -92,15 +172,13 @@ textarea {
 
 <body>
 <div class="container">
-<h1>청담점 공동구매 주문서</h1>
+<h1>설성푸드 공동구매</h1>
 
-<div id="notice">
-주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.
-</div>
+<div id="notice">현재 주문 가능한 시간이 아닙니다.</div>
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
-  <input id="nickname">
+  <input id="nickname" placeholder="카카오톡 닉네임">
 </div>
 
 <div class="field">
@@ -170,7 +248,7 @@ textarea {
 </div>
 
 <div class="total">
-총 합계: <span id="total">0</span>원
+  총 합계: <span id="total">0</span>원
 </div>
 
 <button id="orderBtn" class="action">주문 완료</button>
@@ -179,26 +257,46 @@ textarea {
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlySQIDzRZdN1RvzsgcgTwz3Z92ULogX3X5Pi8ZqtJF-FyJAswlVANVX-qBtSj5kXz/exec";
+/*
+====================================================
+GAS 연동 설정
+====================================================
+*/
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
-/* ===============================
-   판매기간 설정
-=============================== */
+const nicknameEl = document.getElementById("nickname");
+const visitEl = document.getElementById("visit");
+const orderBtn = document.getElementById("orderBtn");
+const copyBtn = document.getElementById("copyBtn");
+const orderText = document.getElementById("orderText");
+
+/* ====================================================
+[v1.4.5 PATCH] 판매기간 제어
+==================================================== */
 const SALE_MODE = "ALWAYS_OPEN"; 
-// "ALWAYS_OPEN" | "ALWAYS_CLOSED" | "WEEKLY" | "DATE_RANGE"
+// "ALWAYS_OPEN" | "ALWAYS_CLOSED"
 
 function checkSalePeriod() {
   if (SALE_MODE === "ALWAYS_OPEN") return;
-  document.getElementById("orderBtn").disabled = true;
+
+  orderBtn.disabled = true;
   document.getElementById("notice").style.display = "block";
 }
-checkSalePeriod();
 
-/* ===== 수량 조절 ===== */
+checkSalePeriod();
+/* ===== PATCH END ===== */
+
+/* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
-  const q = p.querySelector(".qty");
-  p.querySelector(".plus").onclick = () => { q.innerText++; calc(); };
-  p.querySelector(".minus").onclick = () => { q.innerText = Math.max(0, q.innerText - 1); calc(); };
+  const qtyEl = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  };
+  p.querySelector(".minus").onclick = () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    calc();
+  };
 });
 
 function calc() {
@@ -209,57 +307,64 @@ function calc() {
   document.getElementById("total").innerText = sum.toLocaleString();
 }
 
-/* ===== 주문 ===== */
-document.getElementById("orderBtn").onclick = async () => {
-  const nicknameInput = document.getElementById("nickname");
-  const nickname = nicknameInput.value.trim();
-  const visit = document.getElementById("visit").value;
+/* 주문 전송 */
+orderBtn.onclick = async () => {
+  const nickname = nicknameEl.value.trim();
+  const visit = visitEl.value;
 
-  if (!nickname || !visit) return alert("닉네임과 수령일을 입력하세요");
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력하세요");
+    return;
+  }
 
   let items = [];
-  let totalPrice = 0;
+  let total = 0;
 
   document.querySelectorAll(".product").forEach(p => {
-    const q = Number(p.querySelector(".qty").innerText);
-    if (q > 0) {
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (qty > 0) {
       const price = Number(p.dataset.price);
-      items.push({ name: p.querySelector(".name").innerText, qty: q, price });
-      totalPrice += price * q;
+      items.push({
+        name: p.querySelector(".name").innerText,
+        qty,
+        price
+      });
+      total += price * qty;
     }
   });
 
-  if (!items.length) return alert("상품을 선택하세요");
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
 
   try {
     await fetch(SCRIPT_URL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname, visit, items, total: totalPrice })
+      body: JSON.stringify({ nickname, visit, items, total })
     });
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error("GAS 전송 실패:", err);
   }
 
-  document.getElementById("orderText").value =
-`${nickname}님
+  orderText.value = `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
-총 ${totalPrice.toLocaleString()}원`;
+총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
 
   orderText.style.display = "block";
   copyBtn.style.display = "block";
   orderBtn.disabled = true;
 };
 
+/* 복사 */
 copyBtn.onclick = () => {
   orderText.select();
   document.execCommand("copy");
   alert("복사 완료");
 };
 </script>
+
 </body>
 </html>
-
-
-
-
