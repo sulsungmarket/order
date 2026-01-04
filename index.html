@@ -262,7 +262,7 @@ textarea {
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_ep_0VRrSdAG5lKXB-ppr6_xZ60MzCIEqYcMkafng8n-5QAg3CXrpsWVOUNpnYUpr/exec";
 
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
@@ -270,21 +270,73 @@ const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 
+<script>
 /* ====================================================
-[v1.4.5 PATCH] 판매기간 제어
+[v1.4.5-SALEMODE] 판매기간 제어 (FULL MODE)
 ==================================================== */
-const SALE_MODE = "ALWAYS_OPEN"; 
-// "ALWAYS_OPEN" | "ALWAYS_CLOSED"
+
+/*
+모드 선택:
+"ALWAYS_OPEN"    테스트용 (항상 열림)
+"ALWAYS_CLOSED"  강제 마감
+"WEEKLY"         매주 반복
+"DATE_RANGE"     특정 기간
+*/
+const SALE_MODE = "ALWAYS_OPEN"; // ← 지금은 테스트용
+
+/* WEEKLY 설정 */
+const WEEKLY_SETTING = {
+  start: { day: 1, hour: 10, minute: 30 }, // 월 10:30
+  end:   { day: 3, hour: 16, minute: 0 }   // 수 16:00
+};
+
+/* DATE_RANGE 설정 */
+const DATE_RANGE_SETTING = {
+  start: new Date("2026-01-08T10:30:00"),
+  end:   new Date("2026-01-10T16:00:00")
+};
 
 function checkSalePeriod() {
-  if (SALE_MODE === "ALWAYS_OPEN") return;
+  const now = new Date();
+  let open = false;
 
-  orderBtn.disabled = true;
-  document.getElementById("notice").style.display = "block";
+  if (SALE_MODE === "ALWAYS_OPEN") open = true;
+  if (SALE_MODE === "ALWAYS_CLOSED") open = false;
+
+  if (SALE_MODE === "WEEKLY") {
+    const day = now.getDay();
+    const h = now.getHours();
+    const m = now.getMinutes();
+
+    if (
+      (day === WEEKLY_SETTING.start.day &&
+        (h > WEEKLY_SETTING.start.hour ||
+        (h === WEEKLY_SETTING.start.hour && m >= WEEKLY_SETTING.start.minute))) ||
+      (day > WEEKLY_SETTING.start.day && day < WEEKLY_SETTING.end.day) ||
+      (day === WEEKLY_SETTING.end.day &&
+        (h < WEEKLY_SETTING.end.hour ||
+        (h === WEEKLY_SETTING.end.hour && m <= WEEKLY_SETTING.end.minute)))
+    ) {
+      open = true;
+    }
+  }
+
+  if (SALE_MODE === "DATE_RANGE") {
+    if (now >= DATE_RANGE_SETTING.start && now <= DATE_RANGE_SETTING.end) {
+      open = true;
+    }
+  }
+
+  if (!open) {
+    orderBtn.disabled = true;
+    document.getElementById("notice").style.display = "block";
+  }
 }
 
 checkSalePeriod();
 /* ===== PATCH END ===== */
+</script>
+
 
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
@@ -368,3 +420,4 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
