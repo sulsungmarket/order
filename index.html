@@ -1,10 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>설성푸드 공동구매</title>
+
+<!--
+====================================================
+설성푸드 공동구매 주문서 HTML
+====================================================
+
+VERSION HISTORY
+
+v1.4.3 (ORIGINAL)
+- 상품 카드형 UI
+- 수량 증감 / 합계 계산
+- 주문문구 생성
+- GAS doPost 연동 검증 완료
+
+v1.4.4 (STABLE PATCH)
+- JS 템플릿 문자열 문법 에러 수정
+- fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
+- 기존 구조 / 상품 / 스타일 절대 변경 없음
+
+v1.4.5 (A TEST)
+- UI 톤 개선 (CSS only)
+- 판매기간 제어 로직 추가
+- 주문 버튼 중복 클릭 방지
+- GAS 변경 없음
+====================================================
+-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===============================
+   v1.4.5 UI 개선 START
+   (롤백 시 이 블록 삭제)
+=============================== */
+body {
+  margin:0;
+  padding:16px;
+  background:linear-gradient(180deg,#eef2f7,#f8fafc);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,Roboto,sans-serif;
+}
+
+.container {
+  max-width:480px;
+  margin:auto;
+  background:#fff;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.08);
+}
+
+h1 {
+  text-align:center;
+  font-size:22px;
+  margin-bottom:14px;
+  letter-spacing:-0.02em;
+}
+
+.notice {
+  display:none;
+  margin-bottom:14px;
+  padding:12px;
+  border-radius:12px;
+  background:#f1f3f5;
+  font-size:14px;
+  text-align:center;
+  color:#333;
+}
+
+.product {
+  border-radius:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+
+.price {
+  color:#1f4fd8;
+}
+
+button.action {
+  border-radius:14px;
+}
+
+#orderBtn:disabled {
+  background:#ccc;
+  cursor:not-allowed;
+}
+/* ===============================
+   v1.4.5 UI 개선 END
+=============================== */
+
+/* ---- 기존 스타일 유지 ---- */
+.field { margin-bottom:14px; }
+.field label {
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+.field input, .field select {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.product img {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  background:#eee;
+}
+
+.product-body { padding:12px; }
+.name { font-weight:700; margin-bottom:4px; }
+.price { font-weight:800; margin-bottom:10px; }
+
+.qty-box {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.qty-box button {
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:8px;
+  background:#f0f0f0;
+  font-size:20px;
+}
+.qty {
+  width:32px;
+  text-align:center;
+  font-weight:700;
+}
+
+.total {
+  text-align:right;
+  font-size:18px;
+  font-weight:800;
+  margin:20px 0 10px;
+}
+
+button.action {
+  width:100%;
+  padding:16px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  margin-top:10px;
+}
+
+#orderBtn { background:#2f80ed; color:#fff; }
+#copyBtn { background:#27ae60; color:#fff; display:none; }
+
+textarea {
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>설성푸드 공동구매</h1>
+
+<div id="notice" class="notice">
+주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.
+</div>
+
+<div class="field">
+  <label>오픈채팅 닉네임</label>
+  <input id="nickname" placeholder="카카오톡 닉네임">
+</div>
+
+<div class="field">
+  <label>방문 수령일</label>
+  <select id="visit">
+    <option value="">선택</option>
+    <option value="금">금</option>
+    <option value="토">토</option>
+    <option value="일">일</option>
+  </select>
+</div>
+
+<!-- 상품 1 -->
+<div class="product" data-price="15900">
+  <img src="images/product1.png">
+  <div class="product-body">
+    <div class="name">무항생제 한우 1등급 등심 200g</div>
+    <div class="price">15,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 2 -->
+<div class="product" data-price="9800">
+  <img src="images/product2.png">
+  <div class="product-body">
+    <div class="name">제주한돈 육포 50g × 4팩</div>
+    <div class="price">9,800원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 3 -->
+<div class="product" data-price="9900">
+  <img src="images/product3.png">
+  <div class="product-body">
+    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
+    <div class="price">9,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 4 -->
+<div class="product" data-price="19900">
+  <img src="images/product4.png">
+  <div class="product-body">
+    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
+    <div class="price">19,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="total">
+  총 합계: <span id="total">0</span>원
+</div>
+
+<button id="orderBtn" class="action">주문 완료</button>
+<button id="copyBtn" class="action">📋 주문문구 복사</button>
+<textarea id="orderText" readonly></textarea>
+</div>
+
 <script>
-/*
-====================================================
-GAS 연동 설정
-====================================================
-*/
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpSozgc7HLppUUtOrx7WCupUzmn_q5p-bZzhj_pdluhH9GHnv5ZuFalWiLoGbItDSS/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
@@ -12,7 +264,7 @@ const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 
-/* 수량 조절 (변경 없음) */
+/* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
   p.querySelector(".plus").onclick = () => {
@@ -33,13 +285,42 @@ function calc() {
   document.getElementById("total").innerText = sum.toLocaleString();
 }
 
+/* ===============================
+   v1.4.5 판매기간 제어
+=============================== */
+function checkSalePeriod() {
+  const now = new Date();
+  const day = now.getDay(); // 1=월
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  let open = false;
+  if (
+    (day === 1 && (h > 10 || (h === 10 && m >= 30))) ||
+    (day === 2) ||
+    (day === 3 && h < 16)
+  ) open = true;
+
+  if (!open) {
+    orderBtn.disabled = true;
+    document.getElementById("notice").style.display = "block";
+  }
+}
+checkSalePeriod();
+
 /* 주문 전송 */
+let ordered = false;
+
 orderBtn.onclick = async () => {
+  if (ordered) return;
+  ordered = true;
+
   const nickname = nicknameEl.value.trim();
   const visit = visitEl.value;
 
   if (!nickname || !visit) {
     alert("닉네임과 수령일을 입력하세요");
+    ordered = false;
     return;
   }
 
@@ -50,42 +331,31 @@ orderBtn.onclick = async () => {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
       const price = Number(p.dataset.price);
-      items.push({
-        name: p.querySelector(".name").innerText,
-        qty,
-        price
-      });
+      items.push({ name:p.querySelector(".name").innerText, qty, price });
       total += price * qty;
     }
   });
 
   if (!items.length) {
     alert("상품을 선택하세요");
+    ordered = false;
     return;
   }
 
-  let result;
   try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname, visit, items, total })
+    await fetch(SCRIPT_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ nickname, visit, items, total })
     });
-    result = await res.json();
-  } catch (err) {
-    alert("주문 저장 중 오류가 발생했습니다.\n다시 시도해주세요.");
-    return;
+  } catch (e) {
+    console.error("GAS 전송 실패", e);
   }
 
-  if (result.result !== "success") {
-    alert("주문 저장에 실패했습니다.\n관리자에게 문의해주세요.");
-    return;
-  }
-
-  /* 주문문구 생성 */
   orderText.value =
-`${nickname}님 주문내역
-${items.map(i => `- ${i.name} ${i.qty}개`).join("\n")}
+`${nickname}님
+${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
 총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
 
   orderText.style.display = "block";
@@ -100,3 +370,6 @@ copyBtn.onclick = () => {
   alert("복사 완료");
 };
 </script>
+
+</body>
+</html>
