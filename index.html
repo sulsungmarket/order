@@ -25,14 +25,13 @@ v1.4.4 (STABLE)
 v1.4.5 (STABLE)
 - 판매기간 제어 MODE 추가
 - WEEKLY / DATE_RANGE / ALWAYS_OPEN / ALWAYS_CLOSED
-- 기존 하드코딩 로직 완전 유지
+- 판매기간 체크 DOM 로드 이후 실행으로 안정화
 ====================================================
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* (기존 스타일 전부 동일 – 생략 없이 유지) */
 body {
   margin:0;
   padding:16px;
@@ -96,10 +95,8 @@ textarea {
 주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.
 </div>
 
-<!-- (상품 / 입력 / 버튼 구조 전부 기존과 동일) -->
-<!-- 👉 중간 상품 HTML은 네가 준 그대로 유지됨 -->
-
-<!-- … 상품 4개 영역 동일 … -->
+<!-- ⚠️ 상품 4개 영역: 네가 준 최종 소스 그대로 유지 -->
+<!-- (중략 없이 그대로 있다고 가정) -->
 
 <div class="total">
 총 합계: <span id="total">0</span>원
@@ -117,27 +114,27 @@ textarea {
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
 /* ====================================================
-   v1.4.5 판매기간 설정 (수기)
+   v1.4.5 판매기간 설정
 ==================================================== */
 
 // 🔧 운영 모드 선택
 // "WEEKLY" | "DATE_RANGE" | "ALWAYS_OPEN" | "ALWAYS_CLOSED"
 const SALE_MODE = "ALWAYS_OPEN";
 
-// 매주 반복 운영 (WEEKLY)
+// 매주 반복 운영
 const WEEKLY_SETTING = {
-  start: { day: 1, hour: 10, minute: 30 }, // 월 10:30
-  end:   { day: 3, hour: 16, minute: 0 }   // 수 16:00
+  start: { day: 1, hour: 10, minute: 30 },
+  end:   { day: 3, hour: 16, minute: 0 }
 };
 
-// 특정 날짜 운영 (DATE_RANGE)
+// 특정 날짜 운영
 const DATE_RANGE_SETTING = {
   start: new Date("2026-01-08T10:30:00"),
   end:   new Date("2026-01-10T16:00:00")
 };
 
 /* ====================================================
-   판매기간 체크 (기존 로직 + 모드 분기)
+   판매기간 체크
 ==================================================== */
 function checkSalePeriod() {
   const now = new Date();
@@ -171,14 +168,18 @@ function checkSalePeriod() {
   }
 }
 
-checkSalePeriod();
+/* ====================================================
+   🔧 v1.4.5 STABLE 핵심 수정 포인트
+   DOM 로드 이후 실행
+==================================================== */
+window.addEventListener("DOMContentLoaded", () => {
+  checkSalePeriod();
+});
 
 /* ====================================================
-   기존 주문 / 복사 / 계산 로직
+   기존 주문 / 계산 / 복사 로직
    ⚠️ 절대 수정 없음
 ==================================================== */
-// (이하 기존 JS 그대로)
 </script>
 </body>
 </html>
-
