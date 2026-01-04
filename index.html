@@ -3,42 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <title>설성푸드 공동구매</title>
-
-<!--
-====================================================
-설성푸드 공동구매 주문서 HTML
-====================================================
-
-VERSION HISTORY
-
-v1.4.3 (ORIGINAL)
-- 상품 카드형 UI
-- 수량 증감 / 합계 계산
-- 주문문구 생성
-- GAS doPost 연동 검증 완료
-
-v1.4.4 (STABLE PATCH)
-- JS 템플릿 문자열 문법 에러 수정 (주문문구 생성 중단 이슈 해결)
-- fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
-- 기존 구조 / 상품 / 스타일 절대 변경 없음
-
-※ 주의
-- HTML은 GitHub Pages 전용
-- SCRIPT_URL 변경 시 반드시 여기서 수정
-- 기존 코드 삭제 금지
-====================================================
--->
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:#f6f7f9;
   margin:0;
   padding:16px;
-  background:#f6f7f9;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-
 .container {
   max-width:480px;
   margin:auto;
@@ -47,85 +20,50 @@ body {
   padding:16px;
   box-shadow:0 8px 24px rgba(0,0,0,0.08);
 }
-
 h1 {
   text-align:center;
   font-size:22px;
-  margin-bottom:18px;
+  margin-bottom:20px;
 }
-
-.field {
-  margin-bottom:14px;
-}
+.field { margin-bottom:14px; }
 .field label {
   font-size:13px;
   font-weight:600;
   display:block;
   margin-bottom:6px;
 }
-.field input,
-.field select {
+.field input, .field select {
   width:100%;
   padding:12px;
   border-radius:10px;
   border:1px solid #ddd;
 }
-
-/* 상품 카드 */
 .product {
+  margin-bottom:18px;
   border:1px solid #eee;
   border-radius:14px;
   overflow:hidden;
-  margin-bottom:18px;
 }
-
 .product img {
   width:100%;
   height:220px;
   object-fit:cover;
-  background:#eee;
 }
-
-.product-body {
-  padding:12px;
-}
-
-.name {
-  font-weight:700;
-  margin-bottom:4px;
-}
-.price {
-  font-weight:800;
-  color:#2f80ed;
-  margin-bottom:10px;
-}
-
-.qty-box {
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
+.product-body { padding:12px; }
+.name { font-weight:700; }
+.price { font-weight:800; }
+.qty-box { display:flex; gap:12px; align-items:center; }
 .qty-box button {
-  width:36px;
-  height:36px;
-  border:none;
-  border-radius:8px;
-  background:#f0f0f0;
-  font-size:20px;
+  width:36px; height:36px;
+  border:none; border-radius:8px;
 }
-.qty {
-  width:32px;
-  text-align:center;
-  font-weight:700;
-}
-
+.qty { width:32px; text-align:center; }
 .total {
   text-align:right;
   font-size:18px;
   font-weight:800;
   margin:20px 0 10px;
 }
-
 button.action {
   width:100%;
   padding:16px;
@@ -135,17 +73,8 @@ button.action {
   border-radius:12px;
   margin-top:10px;
 }
-
-#orderBtn {
-  background:#2f80ed;
-  color:#fff;
-}
-#copyBtn {
-  background:#27ae60;
-  color:#fff;
-  display:none;
-}
-
+#orderBtn { background:#111; color:#fff; }
+#copyBtn { background:#444; color:#fff; display:none; }
 textarea {
   width:100%;
   margin-top:12px;
@@ -154,6 +83,16 @@ textarea {
   border:1px solid #ccc;
   display:none;
 }
+
+/* =========================
+   [ADD v1.01] UI Tone 개선
+========================= */
+h1 { font-weight:800; letter-spacing:-0.02em; }
+.price { color:#111; }
+.container { box-shadow:0 10px 30px rgba(0,0,0,.06); }
+/* =========================
+   [END ADD v1.01]
+========================= */
 </style>
 </head>
 
@@ -162,78 +101,35 @@ textarea {
 <h1>설성푸드 공동구매</h1>
 
 <div class="field">
-  <label>오픈채팅 닉네임</label>
-  <input id="nickname" placeholder="카카오톡 닉네임">
+<label>오픈채팅 닉네임</label>
+<input id="nickname">
 </div>
 
 <div class="field">
-  <label>방문 수령일</label>
-  <select id="visit">
-    <option value="">선택</option>
-    <option value="금">금</option>
-    <option value="토">토</option>
-    <option value="일">일</option>
-  </select>
+<label>방문 수령일</label>
+<select id="visit">
+<option value="">선택</option>
+<option value="금">금</option>
+<option value="토">토</option>
+<option value="일">일</option>
+</select>
 </div>
 
-<!-- 상품 1 -->
 <div class="product" data-price="15900">
-  <img src="images/product1.png">
-  <div class="product-body">
-    <div class="name">무항생제 한우 1등급 등심 200g</div>
-    <div class="price">15,900원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
+<img src="images/product1.png">
+<div class="product-body">
+<div class="name">무항생제 한우 1등급 등심 200g</div>
+<div class="price">15,900원</div>
+<div class="qty-box">
+<button class="minus">-</button>
+<div class="qty">0</div>
+<button class="plus">+</button>
 </div>
-
-<!-- 상품 2 -->
-<div class="product" data-price="9800">
-  <img src="images/product2.png">
-  <div class="product-body">
-    <div class="name">제주한돈 육포 50g × 4팩</div>
-    <div class="price">9,800원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
 </div>
-
-<!-- 상품 3 -->
-<div class="product" data-price="9900">
-  <img src="images/product3.png">
-  <div class="product-body">
-    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
-    <div class="price">9,900원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
-</div>
-
-<!-- 상품 4 -->
-<div class="product" data-price="19900">
-  <img src="images/product4.png">
-  <div class="product-body">
-    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
-    <div class="price">19,900원</div>
-    <div class="qty-box">
-      <button class="minus">-</button>
-      <div class="qty">0</div>
-      <button class="plus">+</button>
-    </div>
-  </div>
 </div>
 
 <div class="total">
-  총 합계: <span id="total">0</span>원
+총 합계: <span id="total">0</span>원
 </div>
 
 <button id="orderBtn" class="action">주문 완료</button>
@@ -242,28 +138,37 @@ textarea {
 </div>
 
 <script>
-/*
-====================================================
-GAS 연동 설정
-====================================================
-*/
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
+const SCRIPT_URL = "여기에_본인_GAS_URL";
 
-const nicknameEl = document.getElementById("nickname");
-const visitEl = document.getElementById("visit");
-const orderBtn = document.getElementById("orderBtn");
-const copyBtn = document.getElementById("copyBtn");
-const orderText = document.getElementById("orderText");
+/* =========================
+   [ADD v1.03] 주문 기간 제어 (하드코딩)
+   매주 월 10:30 ~ 수 16:00
+========================= */
+const ORDER_START = new Date("2026-01-05T10:30:00");
+const ORDER_END   = new Date("2026-01-07T16:00:00");
 
-/* 수량 조절 */
+function checkOrderPeriod() {
+  const now = new Date();
+  return now >= ORDER_START && now <= ORDER_END;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!checkOrderPeriod()) {
+    const btn = document.getElementById("orderBtn");
+    btn.disabled = true;
+    btn.innerText = "주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.";
+    btn.style.opacity = 0.5;
+  }
+});
+/* =========================
+   [END ADD v1.03]
+========================= */
+
 document.querySelectorAll(".product").forEach(p => {
-  const qtyEl = p.querySelector(".qty");
-  p.querySelector(".plus").onclick = () => {
-    qtyEl.innerText = Number(qtyEl.innerText) + 1;
-    calc();
-  };
+  const qty = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => { qty.innerText++; calc(); };
   p.querySelector(".minus").onclick = () => {
-    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    qty.innerText = Math.max(0, qty.innerText - 1);
     calc();
   };
 });
@@ -271,73 +176,67 @@ document.querySelectorAll(".product").forEach(p => {
 function calc() {
   let sum = 0;
   document.querySelectorAll(".product").forEach(p => {
-    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+    sum += p.dataset.price * p.querySelector(".qty").innerText;
   });
   document.getElementById("total").innerText = sum.toLocaleString();
 }
 
-/* 주문 전송 */
-orderBtn.onclick = async () => {
-  const nickname = nicknameEl.value.trim();
-  const visit = visitEl.value;
+function makeOrderText(nickname, visit, items, total) {
+  let lines = [];
+  lines.push(`🛒 설성푸드 공동구매 주문`);
+  lines.push(`────────────`);
+  lines.push(`닉네임: ${nickname}`);
+  lines.push(`수령일: ${visit}`);
+  lines.push(`────────────`);
+  items.forEach(i => {
+    lines.push(`• ${i.name}`);
+    lines.push(`  └ ${i.qty}개 × ${i.price.toLocaleString()}원`);
+  });
+  lines.push(`────────────`);
+  lines.push(`💰 총 합계: ${total.toLocaleString()}원`);
+  return lines.join("\n");
+}
 
-  if (!nickname || !visit) {
-    alert("닉네임과 수령일을 입력하세요");
-    return;
+document.getElementById("orderBtn").onclick = async () => {
+
+  if (!checkOrderPeriod()) {
+    return alert("주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.");
   }
 
-  let items = [];
-  let total = 0;
+  const nickname = document.getElementById("nickname").value.trim();
+  const visit = document.getElementById("visit").value;
+  if (!nickname || !visit) return alert("닉네임/수령일 입력");
 
+  let items = [], total = 0;
   document.querySelectorAll(".product").forEach(p => {
-    const qty = Number(p.querySelector(".qty").innerText);
-    if (qty > 0) {
-      const price = Number(p.dataset.price);
-      items.push({
-        name: p.querySelector(".name").innerText,
-        qty,
-        price
-      });
-      total += price * qty;
+    const q = +p.querySelector(".qty").innerText;
+    if (q > 0) {
+      const price = +p.dataset.price;
+      items.push({ name:p.querySelector(".name").innerText, qty:q, price });
+      total += price * q;
     }
   });
+  if (!items.length) return alert("상품 선택");
 
-  if (!items.length) {
-    alert("상품을 선택하세요");
-    return;
-  }
+  await fetch(SCRIPT_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ nickname, visit, items, total })
+  });
 
-  /* GAS 전송 – 실패해도 화면은 계속 진행 */
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname, visit, items, total })
-    });
-  } catch (err) {
-    console.error("GAS 전송 실패:", err);
-  }
+  const text = makeOrderText(nickname, visit, items, total);
+  const ta = document.getElementById("orderText");
+  ta.value = text;
+  ta.style.display = "block";
 
-  /* 주문문구 생성 (JS 문법 안정화 완료) */
-  orderText.value = `${nickname}님
-${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
-총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
-
-  orderText.style.display = "block";
+  const copyBtn = document.getElementById("copyBtn");
   copyBtn.style.display = "block";
-  orderBtn.disabled = true;
-};
-
-/* 복사 */
-copyBtn.onclick = () => {
-  orderText.select();
-  document.execCommand("copy");
-  alert("복사 완료");
+  copyBtn.onclick = () => {
+    ta.select();
+    document.execCommand("copy");
+    alert("주문문구가 복사되었습니다");
+  };
 };
 </script>
-
 </body>
 </html>
-
-
