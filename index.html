@@ -22,49 +22,71 @@ v1.4.4 (STABLE)
 - fetch 실패 시 try/catch 처리
 - 기존 구조 / 상품 / 스타일 절대 변경 없음
 
-v1.4.5 (STABLE)
-- 판매기간 제어 MODE 추가
-- WEEKLY / DATE_RANGE / ALWAYS_OPEN / ALWAYS_CLOSED
+v1.4.5
+- 판매기간 제어 로직 추가 (MODE 개념)
 
-v1.4.6 (STABLE / ANCHOR)
-- 주문 버튼 미동작 치명 버그 수정
-- nickname 변수 스코프 충돌 해결
-- 기능 / 상품 / UI 변경 없음
+v1.4.6 (STABLE / BASELINE)
+- nickname 변수 충돌 해결 (ReferenceError 수정)
+- 상품 DOM / 기존 주문 로직 100% 유지
+- SALE_MODE 적용 (기본 ALWAYS_OPEN)
 ====================================================
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* === 기존 스타일 그대로 === */
-body { margin:0; padding:16px; background:#f6f7f9;
-  font-family:-apple-system, BlinkMacSystemFont,"Segoe UI",sans-serif; }
-.container { max-width:480px; margin:auto; background:#fff;
-  border-radius:16px; padding:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+body {
+  margin:0;
+  padding:16px;
+  background:#f6f7f9;
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.container {
+  max-width:480px;
+  margin:auto;
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+}
 h1 { text-align:center; font-size:22px; margin-bottom:18px; }
 .field { margin-bottom:14px; }
 .field label { font-size:13px; font-weight:600; display:block; margin-bottom:6px; }
-.field input,.field select { width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; }
+.field input, .field select {
+  width:100%; padding:12px; border-radius:10px; border:1px solid #ddd;
+}
 .product { border:1px solid #eee; border-radius:14px; overflow:hidden; margin-bottom:18px; }
-.product img { width:100%; aspect-ratio: 4 / 3; object-fit:cover; background:#eee; }
+.product img { width:100%; height:220px; object-fit:cover; background:#eee; }
 .product-body { padding:12px; }
 .name { font-weight:700; margin-bottom:4px; }
 .price { font-weight:800; color:#2f80ed; margin-bottom:10px; }
 .qty-box { display:flex; align-items:center; gap:14px; }
-.qty-box button { width:36px; height:36px; border:none; border-radius:8px;
-  background:#f0f0f0; font-size:20px; }
+.qty-box button {
+  width:36px; height:36px; border:none; border-radius:8px;
+  background:#f0f0f0; font-size:20px;
+}
 .qty { width:32px; text-align:center; font-weight:700; }
 .total { text-align:right; font-size:18px; font-weight:800; margin:20px 0 10px; }
-button.action { width:100%; padding:16px; font-size:16px; font-weight:700;
-  border:none; border-radius:12px; margin-top:10px; }
+button.action {
+  width:100%; padding:16px; font-size:16px; font-weight:700;
+  border:none; border-radius:12px; margin-top:10px;
+}
 #orderBtn { background:#2f80ed; color:#fff; }
 #copyBtn { background:#27ae60; color:#fff; display:none; }
-textarea { width:100%; margin-top:12px; padding:12px;
-  border-radius:10px; border:1px solid #ccc; display:none; }
-#notice { display:none; background:#fff3cd; color:#856404;
-  padding:12px; border-radius:10px; margin-bottom:12px;
-  font-size:14px; text-align:center; }
+textarea {
+  width:100%; margin-top:12px; padding:12px;
+  border-radius:10px; border:1px solid #ccc; display:none;
+}
+#notice {
+  display:none;
+  background:#fff3cd;
+  color:#856404;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:12px;
+  font-size:14px;
+  text-align:center;
+}
 </style>
 </head>
 
@@ -91,8 +113,61 @@ textarea { width:100%; margin-top:12px; padding:12px;
   </select>
 </div>
 
-<!-- 상품 1~4 : 기존 그대로 (생략 없음) -->
-<!-- 👉 네가 준 상품 HTML 그대로 유지 -->
+<!-- 상품 1 -->
+<div class="product" data-price="15900">
+  <img src="images/product1.png">
+  <div class="product-body">
+    <div class="name">무항생제 한우 1등급 등심 200g</div>
+    <div class="price">15,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 2 -->
+<div class="product" data-price="9800">
+  <img src="images/product2.png">
+  <div class="product-body">
+    <div class="name">제주한돈 육포 50g × 4팩</div>
+    <div class="price">9,800원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 3 -->
+<div class="product" data-price="9900">
+  <img src="images/product3.png">
+  <div class="product-body">
+    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
+    <div class="price">9,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 4 -->
+<div class="product" data-price="19900">
+  <img src="images/product4.png">
+  <div class="product-body">
+    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
+    <div class="price">19,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
 
 <div class="total">
 총 합계: <span id="total">0</span>원
@@ -106,64 +181,77 @@ textarea { width:100%; margin-top:12px; padding:12px;
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
-/* ===== v1.4.5 판매기간 ===== */
-const SALE_MODE = "ALWAYS_OPEN";
+/* ===============================
+   판매기간 설정
+=============================== */
+const SALE_MODE = "ALWAYS_OPEN"; 
+// "ALWAYS_OPEN" | "ALWAYS_CLOSED" | "WEEKLY" | "DATE_RANGE"
 
-function checkSalePeriod(){
-  if(SALE_MODE!=="ALWAYS_OPEN"){
-    orderBtn.disabled=true;
-    notice.style.display="block";
-  }
+function checkSalePeriod() {
+  if (SALE_MODE === "ALWAYS_OPEN") return;
+  document.getElementById("orderBtn").disabled = true;
+  document.getElementById("notice").style.display = "block";
 }
-document.addEventListener("DOMContentLoaded",checkSalePeriod);
+checkSalePeriod();
 
-/* ===== 기존 주문 로직 (v1.4.6 PATCH 포함) ===== */
-document.querySelectorAll(".product").forEach(p=>{
-  const q=p.querySelector(".qty");
-  p.querySelector(".plus").onclick=()=>{q.innerText++;calc();};
-  p.querySelector(".minus").onclick=()=>{q.innerText=Math.max(0,q.innerText-1);calc();};
+/* ===== 수량 조절 ===== */
+document.querySelectorAll(".product").forEach(p => {
+  const q = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => { q.innerText++; calc(); };
+  p.querySelector(".minus").onclick = () => { q.innerText = Math.max(0, q.innerText - 1); calc(); };
 });
-function calc(){
-  let sum=0;
-  document.querySelectorAll(".product").forEach(p=>{
-    sum+=p.dataset.price*p.querySelector(".qty").innerText;
+
+function calc() {
+  let sum = 0;
+  document.querySelectorAll(".product").forEach(p => {
+    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
   });
-  total.innerText=sum.toLocaleString();
+  document.getElementById("total").innerText = sum.toLocaleString();
 }
 
-/* ===== [v1.4.6 PATCH] nickname 충돌 해결 ===== */
-orderBtn.onclick = async () => {
+/* ===== 주문 ===== */
+document.getElementById("orderBtn").onclick = async () => {
   const nicknameInput = document.getElementById("nickname");
   const nickname = nicknameInput.value.trim();
   const visit = document.getElementById("visit").value;
-  
-  if(!nickname||!visit) return alert("닉네임/수령일 입력");
 
-  let items=[],totalPrice=0;
-  document.querySelectorAll(".product").forEach(p=>{
-    const q=+p.querySelector(".qty").innerText;
-    if(q>0){
-      const price=+p.dataset.price;
-      items.push({name:p.querySelector(".name").innerText,qty:q,price});
-      totalPrice+=price*q;
+  if (!nickname || !visit) return alert("닉네임과 수령일을 입력하세요");
+
+  let items = [];
+  let totalPrice = 0;
+
+  document.querySelectorAll(".product").forEach(p => {
+    const q = Number(p.querySelector(".qty").innerText);
+    if (q > 0) {
+      const price = Number(p.dataset.price);
+      items.push({ name: p.querySelector(".name").innerText, qty: q, price });
+      totalPrice += price * q;
     }
   });
-  if(!items.length) return alert("상품 선택");
 
-  try{
-    await fetch(SCRIPT_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({nickname,visit,items,total:totalPrice})
+  if (!items.length) return alert("상품을 선택하세요");
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, visit, items, total: totalPrice })
     });
-  }catch(e){}
+  } catch (e) {
+    console.error(e);
+  }
 
-  orderText.value=`${nickname}님\n${items.map(i=>`${i.name} ${i.qty}개`).join(", ")}\n총 ${totalPrice.toLocaleString()}원`;
-  orderText.style.display="block";
-  copyBtn.style.display="block";
-  orderBtn.disabled=true;
+  document.getElementById("orderText").value =
+`${nickname}님
+${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
+총 ${totalPrice.toLocaleString()}원`;
+
+  orderText.style.display = "block";
+  copyBtn.style.display = "block";
+  orderBtn.disabled = true;
 };
-copyBtn.onclick=()=>{
+
+copyBtn.onclick = () => {
   orderText.select();
   document.execCommand("copy");
   alert("복사 완료");
@@ -171,4 +259,3 @@ copyBtn.onclick=()=>{
 </script>
 </body>
 </html>
-
