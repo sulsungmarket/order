@@ -1,174 +1,26 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>설성푸드 공동구매</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:#f6f7f9;
-  margin:0;
-  padding:16px;
-}
-.container {
-  max-width:480px;
-  margin:auto;
-  background:#fff;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.08);
-}
-h1 {
-  text-align:center;
-  font-size:22px;
-  margin-bottom:20px;
-}
-.field { margin-bottom:14px; }
-.field label {
-  font-size:13px;
-  font-weight:600;
-  display:block;
-  margin-bottom:6px;
-}
-.field input, .field select {
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-.product {
-  margin-bottom:18px;
-  border:1px solid #eee;
-  border-radius:14px;
-  overflow:hidden;
-}
-.product img {
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-.product-body { padding:12px; }
-.name { font-weight:700; }
-.price { font-weight:800; }
-.qty-box { display:flex; gap:12px; align-items:center; }
-.qty-box button {
-  width:36px; height:36px;
-  border:none; border-radius:8px;
-}
-.qty { width:32px; text-align:center; }
-.total {
-  text-align:right;
-  font-size:18px;
-  font-weight:800;
-  margin:20px 0 10px;
-}
-button.action {
-  width:100%;
-  padding:16px;
-  font-size:16px;
-  font-weight:700;
-  border:none;
-  border-radius:12px;
-  margin-top:10px;
-}
-#orderBtn { background:#111; color:#fff; }
-#copyBtn { background:#444; color:#fff; display:none; }
-textarea {
-  width:100%;
-  margin-top:12px;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  display:none;
-}
-
-/* =========================
-   [ADD v1.01] UI Tone 개선
-========================= */
-h1 { font-weight:800; letter-spacing:-0.02em; }
-.price { color:#111; }
-.container { box-shadow:0 10px 30px rgba(0,0,0,.06); }
-/* =========================
-   [END ADD v1.01]
-========================= */
-</style>
-</head>
-
-<body>
-<div class="container">
-<h1>설성푸드 공동구매</h1>
-
-<div class="field">
-<label>오픈채팅 닉네임</label>
-<input id="nickname">
-</div>
-
-<div class="field">
-<label>방문 수령일</label>
-<select id="visit">
-<option value="">선택</option>
-<option value="금">금</option>
-<option value="토">토</option>
-<option value="일">일</option>
-</select>
-</div>
-
-<div class="product" data-price="15900">
-<img src="images/product1.png">
-<div class="product-body">
-<div class="name">무항생제 한우 1등급 등심 200g</div>
-<div class="price">15,900원</div>
-<div class="qty-box">
-<button class="minus">-</button>
-<div class="qty">0</div>
-<button class="plus">+</button>
-</div>
-</div>
-</div>
-
-<div class="total">
-총 합계: <span id="total">0</span>원
-</div>
-
-<button id="orderBtn" class="action">주문 완료</button>
-<button id="copyBtn" class="action">📋 주문문구 복사</button>
-<textarea id="orderText" readonly></textarea>
-</div>
-
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6IoTlHh-xns7CmR_GuhTABj64WCDksVYmwwLmRXqViOF6AYYeLbW6xJds5M8x2v0D/exec";
+/*
+====================================================
+GAS 연동 설정
+====================================================
+*/
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpSozgc7HLppUUtOrx7WCupUzmn_q5p-bZzhj_pdluhH9GHnv5ZuFalWiLoGbItDSS/exec";
 
-/* =========================
-   [ADD v1.03] 주문 기간 제어 (하드코딩)
-   매주 월 10:30 ~ 수 16:00
-========================= */
-const ORDER_START = new Date("2026-01-05T10:30:00");
-const ORDER_END   = new Date("2026-01-07T16:00:00");
+const nicknameEl = document.getElementById("nickname");
+const visitEl = document.getElementById("visit");
+const orderBtn = document.getElementById("orderBtn");
+const copyBtn = document.getElementById("copyBtn");
+const orderText = document.getElementById("orderText");
 
-function checkOrderPeriod() {
-  const now = new Date();
-  return now >= ORDER_START && now <= ORDER_END;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  if (!checkOrderPeriod()) {
-    const btn = document.getElementById("orderBtn");
-    btn.disabled = true;
-    btn.innerText = "주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.";
-    btn.style.opacity = 0.5;
-  }
-});
-/* =========================
-   [END ADD v1.03]
-========================= */
-
+/* 수량 조절 (변경 없음) */
 document.querySelectorAll(".product").forEach(p => {
-  const qty = p.querySelector(".qty");
-  p.querySelector(".plus").onclick = () => { qty.innerText++; calc(); };
+  const qtyEl = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  };
   p.querySelector(".minus").onclick = () => {
-    qty.innerText = Math.max(0, qty.innerText - 1);
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
     calc();
   };
 });
@@ -176,68 +28,75 @@ document.querySelectorAll(".product").forEach(p => {
 function calc() {
   let sum = 0;
   document.querySelectorAll(".product").forEach(p => {
-    sum += p.dataset.price * p.querySelector(".qty").innerText;
+    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
   });
   document.getElementById("total").innerText = sum.toLocaleString();
 }
 
-function makeOrderText(nickname, visit, items, total) {
-  let lines = [];
-  lines.push(`🛒 설성푸드 공동구매 주문`);
-  lines.push(`────────────`);
-  lines.push(`닉네임: ${nickname}`);
-  lines.push(`수령일: ${visit}`);
-  lines.push(`────────────`);
-  items.forEach(i => {
-    lines.push(`• ${i.name}`);
-    lines.push(`  └ ${i.qty}개 × ${i.price.toLocaleString()}원`);
-  });
-  lines.push(`────────────`);
-  lines.push(`💰 총 합계: ${total.toLocaleString()}원`);
-  return lines.join("\n");
-}
+/* 주문 전송 */
+orderBtn.onclick = async () => {
+  const nickname = nicknameEl.value.trim();
+  const visit = visitEl.value;
 
-document.getElementById("orderBtn").onclick = async () => {
-
-  if (!checkOrderPeriod()) {
-    return alert("주문이 종료되었습니다. 매주 월요일 새로운 상품이 업데이트 됩니다.");
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력하세요");
+    return;
   }
 
-  const nickname = document.getElementById("nickname").value.trim();
-  const visit = document.getElementById("visit").value;
-  if (!nickname || !visit) return alert("닉네임/수령일 입력");
+  let items = [];
+  let total = 0;
 
-  let items = [], total = 0;
   document.querySelectorAll(".product").forEach(p => {
-    const q = +p.querySelector(".qty").innerText;
-    if (q > 0) {
-      const price = +p.dataset.price;
-      items.push({ name:p.querySelector(".name").innerText, qty:q, price });
-      total += price * q;
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (qty > 0) {
+      const price = Number(p.dataset.price);
+      items.push({
+        name: p.querySelector(".name").innerText,
+        qty,
+        price
+      });
+      total += price * qty;
     }
   });
-  if (!items.length) return alert("상품 선택");
 
-  await fetch(SCRIPT_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ nickname, visit, items, total })
-  });
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
 
-  const text = makeOrderText(nickname, visit, items, total);
-  const ta = document.getElementById("orderText");
-  ta.value = text;
-  ta.style.display = "block";
+  let result;
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, visit, items, total })
+    });
+    result = await res.json();
+  } catch (err) {
+    alert("주문 저장 중 오류가 발생했습니다.\n다시 시도해주세요.");
+    return;
+  }
 
-  const copyBtn = document.getElementById("copyBtn");
+  if (result.result !== "success") {
+    alert("주문 저장에 실패했습니다.\n관리자에게 문의해주세요.");
+    return;
+  }
+
+  /* 주문문구 생성 */
+  orderText.value =
+`${nickname}님 주문내역
+${items.map(i => `- ${i.name} ${i.qty}개`).join("\n")}
+총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
+
+  orderText.style.display = "block";
   copyBtn.style.display = "block";
-  copyBtn.onclick = () => {
-    ta.select();
-    document.execCommand("copy");
-    alert("주문문구가 복사되었습니다");
-  };
+  orderBtn.disabled = true;
+};
+
+/* 복사 */
+copyBtn.onclick = () => {
+  orderText.select();
+  document.execCommand("copy");
+  alert("복사 완료");
 };
 </script>
-</body>
-</html>
-
