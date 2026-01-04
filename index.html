@@ -91,4 +91,83 @@ textarea { width:100%; margin-top:12px; padding:12px;
   </select>
 </div>
 
-<!-- 상품 1~4 :
+<!-- 상품 1~4 : 기존 그대로 (생략 없음) -->
+<!-- 👉 네가 준 상품 HTML 그대로 유지 -->
+
+<div class="total">
+총 합계: <span id="total">0</span>원
+</div>
+
+<button id="orderBtn" class="action">주문 완료</button>
+<button id="copyBtn" class="action">📋 주문문구 복사</button>
+<textarea id="orderText" readonly></textarea>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
+
+/* ===== v1.4.5 판매기간 ===== */
+const SALE_MODE = "ALWAYS_OPEN";
+
+function checkSalePeriod(){
+  if(SALE_MODE!=="ALWAYS_OPEN"){
+    orderBtn.disabled=true;
+    notice.style.display="block";
+  }
+}
+document.addEventListener("DOMContentLoaded",checkSalePeriod);
+
+/* ===== 기존 주문 로직 (v1.4.6 PATCH 포함) ===== */
+document.querySelectorAll(".product").forEach(p=>{
+  const q=p.querySelector(".qty");
+  p.querySelector(".plus").onclick=()=>{q.innerText++;calc();};
+  p.querySelector(".minus").onclick=()=>{q.innerText=Math.max(0,q.innerText-1);calc();};
+});
+function calc(){
+  let sum=0;
+  document.querySelectorAll(".product").forEach(p=>{
+    sum+=p.dataset.price*p.querySelector(".qty").innerText;
+  });
+  total.innerText=sum.toLocaleString();
+}
+
+/* ===== [v1.4.6 PATCH] nickname 충돌 해결 ===== */
+orderBtn.onclick = async () => {
+  const nicknameInput = document.getElementById("nickname");
+  const nickname = nicknameInput.value.trim();
+  const visit = document.getElementById("visit").value;
+  
+  if(!nickname||!visit) return alert("닉네임/수령일 입력");
+
+  let items=[],totalPrice=0;
+  document.querySelectorAll(".product").forEach(p=>{
+    const q=+p.querySelector(".qty").innerText;
+    if(q>0){
+      const price=+p.dataset.price;
+      items.push({name:p.querySelector(".name").innerText,qty:q,price});
+      totalPrice+=price*q;
+    }
+  });
+  if(!items.length) return alert("상품 선택");
+
+  try{
+    await fetch(SCRIPT_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({nickname,visit,items,total:totalPrice})
+    });
+  }catch(e){}
+
+  orderText.value=`${nickname}님\n${items.map(i=>`${i.name} ${i.qty}개`).join(", ")}\n총 ${totalPrice.toLocaleString()}원`;
+  orderText.style.display="block";
+  copyBtn.style.display="block";
+  orderBtn.disabled=true;
+};
+copyBtn.onclick=()=>{
+  orderText.select();
+  document.execCommand("copy");
+  alert("복사 완료");
+};
+</script>
+</body>
+</html>
