@@ -18,15 +18,14 @@ v1.4.3 (ORIGINAL)
 - GAS doPost 연동 검증 완료
 
 v1.4.4 (STABLE PATCH)
-- JS 템플릿 문자열 문법 에러 수정
+- JS 템플릿 문자열 문법 에러 수정 (주문문구 생성 중단 이슈 해결)
 - fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
 - 기존 구조 / 상품 / 스타일 절대 변경 없음
 
-v1.4.5-SALEMODE (PATCH)
-- 판매기간 제어 모드 추가 (항상오픈 기본)
-- 기존 로직 영향 없음
-- PATCH 블록 제거 시 완전 롤백 가능
-
+※ 주의
+- HTML은 GitHub Pages 전용
+- SCRIPT_URL 변경 시 반드시 여기서 수정
+- 기존 코드 삭제 금지
 ====================================================
 -->
 
@@ -155,26 +154,12 @@ textarea {
   border:1px solid #ccc;
   display:none;
 }
-
-/* 판매마감 안내 */
-#notice {
-  display:none;
-  margin:12px 0;
-  padding:12px;
-  background:#fff3cd;
-  border-radius:10px;
-  font-size:14px;
-  color:#856404;
-  text-align:center;
-}
 </style>
 </head>
 
 <body>
 <div class="container">
 <h1>설성푸드 공동구매</h1>
-
-<div id="notice">현재 주문 가능한 시간이 아닙니다.</div>
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
@@ -262,81 +247,13 @@ textarea {
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_ep_0VRrSdAG5lKXB-ppr6_xZ60MzCIEqYcMkafng8n-5QAg3CXrpsWVOUNpnYUpr/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
 const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
-
-<script>
-/* ====================================================
-[v1.4.5-SALEMODE] 판매기간 제어 (FULL MODE)
-==================================================== */
-
-/*
-모드 선택:
-"ALWAYS_OPEN"    테스트용 (항상 열림)
-"ALWAYS_CLOSED"  강제 마감
-"WEEKLY"         매주 반복
-"DATE_RANGE"     특정 기간
-*/
-const SALE_MODE = "ALWAYS_OPEN"; // ← 지금은 테스트용
-
-/* WEEKLY 설정 */
-const WEEKLY_SETTING = {
-  start: { day: 1, hour: 10, minute: 30 }, // 월 10:30
-  end:   { day: 3, hour: 16, minute: 0 }   // 수 16:00
-};
-
-/* DATE_RANGE 설정 */
-const DATE_RANGE_SETTING = {
-  start: new Date("2026-01-08T10:30:00"),
-  end:   new Date("2026-01-10T16:00:00")
-};
-
-function checkSalePeriod() {
-  const now = new Date();
-  let open = false;
-
-  if (SALE_MODE === "ALWAYS_OPEN") open = true;
-  if (SALE_MODE === "ALWAYS_CLOSED") open = false;
-
-  if (SALE_MODE === "WEEKLY") {
-    const day = now.getDay();
-    const h = now.getHours();
-    const m = now.getMinutes();
-
-    if (
-      (day === WEEKLY_SETTING.start.day &&
-        (h > WEEKLY_SETTING.start.hour ||
-        (h === WEEKLY_SETTING.start.hour && m >= WEEKLY_SETTING.start.minute))) ||
-      (day > WEEKLY_SETTING.start.day && day < WEEKLY_SETTING.end.day) ||
-      (day === WEEKLY_SETTING.end.day &&
-        (h < WEEKLY_SETTING.end.hour ||
-        (h === WEEKLY_SETTING.end.hour && m <= WEEKLY_SETTING.end.minute)))
-    ) {
-      open = true;
-    }
-  }
-
-  if (SALE_MODE === "DATE_RANGE") {
-    if (now >= DATE_RANGE_SETTING.start && now <= DATE_RANGE_SETTING.end) {
-      open = true;
-    }
-  }
-
-  if (!open) {
-    orderBtn.disabled = true;
-    document.getElementById("notice").style.display = "block";
-  }
-}
-
-checkSalePeriod();
-/* ===== PATCH END ===== */
-</script>
-
 
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
@@ -390,6 +307,7 @@ orderBtn.onclick = async () => {
     return;
   }
 
+  /* GAS 전송 – 실패해도 화면은 계속 진행 */
   try {
     await fetch(SCRIPT_URL, {
       method: "POST",
@@ -401,6 +319,7 @@ orderBtn.onclick = async () => {
     console.error("GAS 전송 실패:", err);
   }
 
+  /* 주문문구 생성 (JS 문법 안정화 완료) */
   orderText.value = `${nickname}님
 ${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
 총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
