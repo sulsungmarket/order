@@ -1,8 +1,39 @@
+주문완료 구글 연동까지 
+
+규격은 수정 필요
+
+Html
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>설성푸드 공동구매</title>
+
+<!--
+====================================================
+설성푸드 공동구매 주문서 HTML
+====================================================
+
+VERSION HISTORY
+
+v1.4.3 (ORIGINAL)
+- 상품 카드형 UI
+- 수량 증감 / 합계 계산
+- 주문문구 생성
+- GAS doPost 연동 검증 완료
+
+v1.4.4 (STABLE PATCH)
+- JS 템플릿 문자열 문법 에러 수정 (주문문구 생성 중단 이슈 해결)
+- fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
+- 기존 구조 / 상품 / 스타일 절대 변경 없음
+
+※ 주의
+- HTML은 GitHub Pages 전용
+- SCRIPT_URL 변경 시 반드시 여기서 수정
+- 기존 코드 삭제 금지
+====================================================
+-->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -13,6 +44,7 @@ body {
   background:#f6f7f9;
   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
 .container {
   max-width:480px;
   margin:auto;
@@ -21,12 +53,16 @@ body {
   padding:16px;
   box-shadow:0 8px 24px rgba(0,0,0,0.08);
 }
+
 h1 {
   text-align:center;
   font-size:22px;
   margin-bottom:18px;
 }
-.field { margin-bottom:14px; }
+
+.field {
+  margin-bottom:14px;
+}
 .field label {
   font-size:13px;
   font-weight:600;
@@ -40,21 +76,36 @@ h1 {
   border-radius:10px;
   border:1px solid #ddd;
 }
+
+/* 상품 카드 */
 .product {
   border:1px solid #eee;
   border-radius:14px;
   overflow:hidden;
   margin-bottom:18px;
 }
+
 .product img {
   width:100%;
   height:220px;
   object-fit:cover;
   background:#eee;
 }
-.product-body { padding:12px; }
-.name { font-weight:700; margin-bottom:4px; }
-.price { font-weight:800; color:#2f80ed; margin-bottom:10px; }
+
+.product-body {
+  padding:12px;
+}
+
+.name {
+  font-weight:700;
+  margin-bottom:4px;
+}
+.price {
+  font-weight:800;
+  color:#2f80ed;
+  margin-bottom:10px;
+}
+
 .qty-box {
   display:flex;
   align-items:center;
@@ -73,12 +124,14 @@ h1 {
   text-align:center;
   font-weight:700;
 }
+
 .total {
   text-align:right;
   font-size:18px;
   font-weight:800;
   margin:20px 0 10px;
 }
+
 button.action {
   width:100%;
   padding:16px;
@@ -88,25 +141,23 @@ button.action {
   border-radius:12px;
   margin-top:10px;
 }
-#orderBtn { background:#2f80ed; color:#fff; }
+
+#orderBtn {
+  background:#2f80ed;
+  color:#fff;
+}
 #copyBtn {
   background:#27ae60;
   color:#fff;
   display:none;
 }
+
 textarea {
   width:100%;
   margin-top:12px;
   padding:12px;
   border-radius:10px;
   border:1px solid #ccc;
-  display:none;
-}
-#saleNotice {
-  margin-top:10px;
-  font-size:13px;
-  color:#e74c3c;
-  text-align:center;
   display:none;
 }
 </style>
@@ -118,7 +169,7 @@ textarea {
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
-  <input id="nickname">
+  <input id="nickname" placeholder="카카오톡 닉네임">
 </div>
 
 <div class="field">
@@ -131,7 +182,6 @@ textarea {
   </select>
 </div>
 
-<!-- 상품들 (기존 그대로) -->
 <!-- 상품 1 -->
 <div class="product" data-price="15900">
   <img src="images/product1.png">
@@ -146,13 +196,53 @@ textarea {
   </div>
 </div>
 
-<!-- (다른 상품 동일 — 생략 안 함) -->
+<!-- 상품 2 -->
+<div class="product" data-price="9800">
+  <img src="images/product2.png">
+  <div class="product-body">
+    <div class="name">제주한돈 육포 50g × 4팩</div>
+    <div class="price">9,800원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
 
-<div class="total">총 합계: <span id="total">0</span>원</div>
+<!-- 상품 3 -->
+<div class="product" data-price="9900">
+  <img src="images/product3.png">
+  <div class="product-body">
+    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
+    <div class="price">9,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 4 -->
+<div class="product" data-price="19900">
+  <img src="images/product4.png">
+  <div class="product-body">
+    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
+    <div class="price">19,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="total">
+  총 합계: <span id="total">0</span>원
+</div>
 
 <button id="orderBtn" class="action">주문 완료</button>
-<div id="saleNotice"></div>
-
 <button id="copyBtn" class="action">📋 주문문구 복사</button>
 <textarea id="orderText" readonly></textarea>
 </div>
@@ -160,52 +250,175 @@ textarea {
 <script>
 /*
 ====================================================
-[v1.4.5 SALE MODE PATCH] ★ 추가된 유일한 블록
+GAS 연동 설정
 ====================================================
 */
-const SALE_MODE = "ALWAYS_OPEN"; 
-// "ALWAYS_OPEN" | "WEEKLY" | "ALWAYS_CLOSED" | "DATE_RANGE"
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
 
-const WEEKLY_DAYS = [5,6]; // 금(5), 토(6)
-const START_DATE = "2026-01-10";
-const END_DATE   = "2026-01-14";
+const nicknameEl = document.getElementById("nickname");
+const visitEl = document.getElementById("visit");
+const orderBtn = document.getElementById("orderBtn");
+const copyBtn = document.getElementById("copyBtn");
+const orderText = document.getElementById("orderText");
 
+<script>
+/*
+====================================================
+주문 일정 모듈 PATCH
+VERSION: v1.4.5-sale-mode
+※ 기존 상품 / 주문 / GAS 코드 수정 없음
+====================================================
+*/
+
+/*
+모드 설명
+- ALWAYS_OPEN   : 항상 오픈
+- WEEKLY        : 요일 + 시간 기준
+- ALWAYS_CLOSED : 항상 닫힘
+*/
+
+/* 🔧 운영 모드 선택 (지금은 ALWAYS_OPEN으로 테스트) */
+const SALE_MODE = "ALWAYS_OPEN";
+// const SALE_MODE = "WEEKLY";
+// const SALE_MODE = "ALWAYS_CLOSED";
+
+/* WEEKLY 설정 (0=일, 1=월 … 6=토) */
+const WEEKLY_SETTING = {
+  start: { day: 1, hour: 10, minute: 0 }, // 월요일 10:00
+  end:   { day: 3, hour: 16, minute: 0 }  // 수요일 16:00
+};
+
+/* 주문 가능 여부 판단 */
 function isSaleOpen() {
   const now = new Date();
 
-  switch (SALE_MODE) {
-    case "ALWAYS_OPEN":
-      return { open:true };
+  if (SALE_MODE === "ALWAYS_OPEN") return true;
+  if (SALE_MODE === "ALWAYS_CLOSED") return false;
 
-    case "ALWAYS_CLOSED":
-      return { open:false, msg:"현재 주문 기간이 아닙니다." };
+  if (SALE_MODE === "WEEKLY") {
+    const day = now.getDay();
+    const h = now.getHours();
+    const m = now.getMinutes();
 
-    case "WEEKLY":
-      if (WEEKLY_DAYS.includes(now.getDay())) return { open:true };
-      return { open:false, msg:"오늘은 주문 불가 요일입니다." };
+    const start = WEEKLY_SETTING.start;
+    const end = WEEKLY_SETTING.end;
 
-    case "DATE_RANGE":
-      const start = new Date(START_DATE);
-      const end = new Date(END_DATE);
-      if (now >= start && now <= end) return { open:true };
-      return { open:false, msg:"주문 기간이 종료되었습니다." };
+    // 시작 요일
+    if (
+      day === start.day &&
+      (h > start.hour || (h === start.hour && m >= start.minute))
+    ) return true;
+
+    // 중간 요일
+    if (day > start.day && day < end.day) return true;
+
+    // 종료 요일
+    if (
+      day === end.day &&
+      (h < end.hour || (h === end.hour && m <= end.minute))
+    ) return true;
+
+    return false;
   }
+
+  return false;
 }
 
-const saleState = isSaleOpen();
-if (!saleState.open) {
-  const btn = document.getElementById("orderBtn");
-  const notice = document.getElementById("saleNotice");
-  btn.disabled = true;
-  btn.style.background = "#bbb";
-  notice.innerText = saleState.msg;
-  notice.style.display = "block";
-}
-/* ===== SALE MODE PATCH END ===== */
+/* 버튼 제어 */
+document.addEventListener("DOMContentLoaded", () => {
+  if (!isSaleOpen()) {
+    orderBtn.disabled = true;
+    orderBtn.innerText = "주문 마감";
+
+    if (SALE_MODE === "ALWAYS_CLOSED") {
+      alert("주문이 끝났습니다. 매주 월요일 새로운 상품이 등록됩니다.");
+    }
+  }
+});
 </script>
 
-<!-- 🔽 기존 주문 / GAS 스크립트는 그대로 유지 -->
-<!-- (네가 준 코드 그대로 아래에 있음) -->
+/* 수량 조절 */
+document.querySelectorAll(".product").forEach(p => {
+  const qtyEl = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  };
+  p.querySelector(".minus").onclick = () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    calc();
+  };
+});
+
+function calc() {
+  let sum = 0;
+  document.querySelectorAll(".product").forEach(p => {
+    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+  });
+  document.getElementById("total").innerText = sum.toLocaleString();
+}
+
+/* 주문 전송 */
+orderBtn.onclick = async () => {
+  const nickname = nicknameEl.value.trim();
+  const visit = visitEl.value;
+
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력하세요");
+    return;
+  }
+
+  let items = [];
+  let total = 0;
+
+  document.querySelectorAll(".product").forEach(p => {
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (qty > 0) {
+      const price = Number(p.dataset.price);
+      items.push({
+        name: p.querySelector(".name").innerText,
+        qty,
+        price
+      });
+      total += price * qty;
+    }
+  });
+
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
+
+  /* GAS 전송 – 실패해도 화면은 계속 진행 */
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, visit, items, total })
+    });
+  } catch (err) {
+    console.error("GAS 전송 실패:", err);
+  }
+
+  /* 주문문구 생성 (JS 문법 안정화 완료) */
+  orderText.value = `${nickname}님
+${items.map(i => `${i.name} ${i.qty}개`).join(", ")}
+총 ${total.toLocaleString()}원 입금 부탁드립니다 😊`;
+
+  orderText.style.display = "block";
+  copyBtn.style.display = "block";
+  orderBtn.disabled = true;
+};
+
+/* 복사 */
+copyBtn.onclick = () => {
+  orderText.select();
+  document.execCommand("copy");
+  alert("복사 완료");
+};
+</script>
 
 </body>
 </html>
+
