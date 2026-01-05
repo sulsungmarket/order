@@ -242,6 +242,8 @@ textarea {
   총 합계: <span id="total">0</span>원
 </div>
 
+<div id="saleNotice" style="display:none; margin-bottom:12px; color:#d63031; font-weight:700;"></div>
+
 <button id="orderBtn" class="action">주문 완료</button>
 <button id="copyBtn" class="action">📋 주문문구 복사</button>
 <textarea id="orderText" readonly></textarea>
@@ -254,6 +256,48 @@ GAS 연동 설정
 ====================================================
 */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhe734NOzgGe3PfiDwUNKw6oaT_sqw_Ys2CrI9-Y2t_jEO5iw24wNcUgSBt2OSkDhA/exec";
+
+/*
+====================================================
+주문 일정 모듈
+VERSION: v1.4.4-sale-weekly-min
+※ 기존 주문 / 상품 / GAS 코드 수정 없음
+====================================================
+*/
+
+/*
+모드 값
+- "ALWAYS_OPEN"
+- "WEEKLY"
+- "ALWAYS_CLOSE"
+*/
+const SALE_MODE = "ALWAYS_OPEN";
+// const SALE_MODE = "WEEKLY";
+// const SALE_MODE = "ALWAYS_CLOSE";
+
+/* WEEKLY 설정 */
+const WEEKLY_OPEN_DAYS = [5, 6]; // 금(5), 토(6)
+const WEEKLY_START_HOUR = 10;    // 오전 10시
+const WEEKLY_END_HOUR = 22;      // 오후 10시
+
+function isSaleOpen() {
+  const now = new Date();
+
+  if (SALE_MODE === "ALWAYS_OPEN") return true;
+  if (SALE_MODE === "ALWAYS_CLOSE") return false;
+
+  if (SALE_MODE === "WEEKLY") {
+    const day = now.getDay();
+    const hour = now.getHours();
+    return (
+      WEEKLY_OPEN_DAYS.includes(day) &&
+      hour >= WEEKLY_START_HOUR &&
+      hour < WEEKLY_END_HOUR
+    );
+  }
+
+  return false;
+}
 
 const nicknameEl = document.getElementById("nickname");
 const visitEl = document.getElementById("visit");
@@ -280,6 +324,27 @@ function calc() {
     sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
   });
   document.getElementById("total").innerText = sum.toLocaleString();
+}
+if (!isSaleOpen()) {
+  orderBtn.disabled = true;
+  orderBtn.innerText = "주문 마감";
+  orderBtn.style.background = "#999";
+}
+const noticeEl = document.getElementById("saleNotice");
+
+if (!isSaleOpen()) {
+  let msg = "현재 주문이 불가능합니다.";
+
+  if (SALE_MODE === "ALWAYS_CLOSE") {
+    msg = "주문이 끝났습니다. 매주 월요일 새로운 상품이 등록됩니다.";
+  }
+
+  if (SALE_MODE === "WEEKLY") {
+    msg = "지정된 요일과 시간에만 주문이 가능합니다.";
+  }
+
+  noticeEl.innerText = msg;
+  noticeEl.style.display = "block";
 }
 
 /* 주문 전송 */
@@ -345,5 +410,4 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
-
 
