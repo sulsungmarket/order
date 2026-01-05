@@ -261,82 +261,6 @@ const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 
-<script>
-/*
-====================================================
-주문 일정 모듈 PATCH
-VERSION: v1.4.5-sale-mode
-※ 기존 상품 / 주문 / GAS 코드 수정 없음
-====================================================
-*/
-
-/*
-모드 설명
-- ALWAYS_OPEN   : 항상 오픈
-- WEEKLY        : 요일 + 시간 기준
-- ALWAYS_CLOSED : 항상 닫힘
-*/
-
-/* 🔧 운영 모드 선택 (지금은 ALWAYS_OPEN으로 테스트) */
-const SALE_MODE = "ALWAYS_OPEN";
-// const SALE_MODE = "WEEKLY";
-// const SALE_MODE = "ALWAYS_CLOSED";
-
-/* WEEKLY 설정 (0=일, 1=월 … 6=토) */
-const WEEKLY_SETTING = {
-  start: { day: 1, hour: 10, minute: 0 }, // 월요일 10:00
-  end:   { day: 3, hour: 16, minute: 0 }  // 수요일 16:00
-};
-
-/* 주문 가능 여부 판단 */
-function isSaleOpen() {
-  const now = new Date();
-
-  if (SALE_MODE === "ALWAYS_OPEN") return true;
-  if (SALE_MODE === "ALWAYS_CLOSED") return false;
-
-  if (SALE_MODE === "WEEKLY") {
-    const day = now.getDay();
-    const h = now.getHours();
-    const m = now.getMinutes();
-
-    const start = WEEKLY_SETTING.start;
-    const end = WEEKLY_SETTING.end;
-
-    // 시작 요일
-    if (
-      day === start.day &&
-      (h > start.hour || (h === start.hour && m >= start.minute))
-    ) return true;
-
-    // 중간 요일
-    if (day > start.day && day < end.day) return true;
-
-    // 종료 요일
-    if (
-      day === end.day &&
-      (h < end.hour || (h === end.hour && m <= end.minute))
-    ) return true;
-
-    return false;
-  }
-
-  return false;
-}
-
-/* 버튼 제어 */
-document.addEventListener("DOMContentLoaded", () => {
-  if (!isSaleOpen()) {
-    orderBtn.disabled = true;
-    orderBtn.innerText = "주문 마감";
-
-    if (SALE_MODE === "ALWAYS_CLOSED") {
-      alert("주문이 끝났습니다. 매주 월요일 새로운 상품이 등록됩니다.");
-    }
-  }
-});
-</script>
-
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
@@ -421,4 +345,5 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
