@@ -266,14 +266,14 @@ VERSION: v1.4.4-sale-weekly-min
 - "WEEKLY"
 - "ALWAYS_CLOSE"
 */
-const SALE_MODE = "ALWAYS_CLOSE";
+const SALE_MODE = "WEEKLY";
 // const SALE_MODE = "WEEKLY";
 // const SALE_MODE = "ALWAYS_CLOSE";
 
 /* WEEKLY 설정 */
-const WEEKLY_OPEN_DAYS = [5, 6]; // 금(5), 토(6)
+const WEEKLY_OPEN_DAYS = [5, 6]; // 금(1), 금(1)
 const WEEKLY_START_HOUR = 10;    // 오전 10시
-const WEEKLY_END_HOUR = 22;      // 오후 10시
+const WEEKLY_END_HOUR = 22;      // 오후 14시
 
 function isSaleOpen() {
   const now = new Date();
@@ -405,5 +405,6 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
