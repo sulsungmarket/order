@@ -3,11 +3,11 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>설성푸드 공동구매</title>
+<title>청담점 공동구매</title>
 
 <!--
 ====================================================
-설성푸드 공동구매 주문서 HTML
+청담점 공동구매 주문서 HTML
 ====================================================
 
 VERSION HISTORY
@@ -242,6 +242,19 @@ textarea {
 <button id="orderBtn" class="action">주문 완료</button>
 <button id="copyBtn" class="action">📋 주문문구 복사</button>
 <textarea id="orderText" readonly></textarea>
+  <!-- 주문 완료 카드 UI (읽기 전용 표시용) -->
+<div id="orderCard" style="
+  display:none;
+  margin-top:14px;
+  padding:16px;
+  border-radius:14px;
+  background:#f8f9fa;
+  font-size:14px;
+  line-height:1.7;
+  white-space:pre-line;
+">
+</div>
+
   <!-- 입금 계좌 안내 (주문 완료 후 노출) -->
 <div id="accountInfo" style="
   display:none;
@@ -399,8 +412,8 @@ orderBtn.onclick = async () => {
     console.error("GAS 전송 실패:", err);
   }
 
-  /* 주문문구 생성 (주문 완료 후 톡방 공유용) */
-orderText.value = `[청담점 공동구매 주문]
+/* 주문문구 생성 (복사용 + 화면 표시용) */
+const orderMessage = `[설성푸드 공동구매 주문]
 
 닉네임: ${nickname}
 수령일: ${visit}
@@ -416,11 +429,15 @@ ${items.map(i => `- ${i.name} × ${i.qty}`).join("\n")}
 
 ※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
 
+orderText.value = orderMessage;                  // 복사용 (숨김)
+document.getElementById("orderCard").innerText = orderMessage; // 화면 표시용
 
-  orderText.style.display = "block";
-  copyBtn.style.display = "block";
-  orderBtn.disabled = true;
-  document.getElementById("accountInfo").style.display = "block";
+
+document.getElementById("orderCard").style.display = "block";
+copyBtn.style.display = "block";
+orderBtn.disabled = true;
+document.getElementById("accountInfo").style.display = "block";
+
 
 };
 
@@ -434,6 +451,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
