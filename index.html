@@ -485,14 +485,13 @@ ${items.map(i => {
 </div>
 `;
 
+orderText.value = orderMessage;
 
-orderText.value = orderMessage;                  // 복사용 (숨김)
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
-  `<pre style="margin:0; padding-top:4px; font-family:inherit;">
+  `<pre style="margin:0; padding-top:4px; font-family:inherit;">${orderMessage}</pre>`;
 
-
-
+   
 document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
 orderBtn.disabled = true;
@@ -544,3 +543,4 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
