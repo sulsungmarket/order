@@ -463,19 +463,23 @@ ${items.map(i => {
   return `• ${cleanName}\n  └ 수량: ${i.qty}개`;
 }).join("\n")}
 
-총 결제금액: ${total.toLocaleString()}원
+──────────────────
+💰 총 결제금액
+👉 ${total.toLocaleString()}원
+──────────────────
 
-입금계좌:
-농협: 301-0297-8175-81
+🏦 입금 계좌
+농협 301-0297-8175-81
 예금주: 설성푸드
 
 ※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
+
 
   const orderStatusHTML = `
 <div style="
   color:#2f80ed;
   font-weight:700;
-  margin-bottom:12px;
+  margin-bottom:6px;
 ">
 ✅ 감사합니다! 주문이 접수되었습니다.
 </div>
@@ -511,10 +515,16 @@ setTimeout(() => {
   card.style.boxShadow = "0 0 0 3px rgba(47,128,237,0.6)";
 }, 300);
 
-// 충분히 인지한 뒤 자연스럽게 해제
+// [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강 - 지속 표시)
+const card = document.getElementById("orderCard");
+
+card.style.transition = "box-shadow 0.4s ease";
+
+// 스크롤 후 시선 도착 타이밍에 맞춰 강조
 setTimeout(() => {
-  card.style.boxShadow = "0 0 0 0 rgba(47,128,237,0)";
-}, 2800);
+  card.style.boxShadow = "0 0 0 3px rgba(47,128,237,0.5)";
+}, 300);
+
 
 
   // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
@@ -544,6 +554,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
