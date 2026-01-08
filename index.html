@@ -492,6 +492,23 @@ document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
 orderBtn.disabled = true;
 document.getElementById("accountInfo").style.display = "block";
+   // [PATCH 1] 주문 완료 후 주문내역 카드로 자동 스크롤
+setTimeout(() => {
+  document.getElementById("orderCard").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}, 150);
+   // [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강)
+const card = document.getElementById("orderCard");
+card.style.boxShadow = "0 0 0 2px #2f80ed inset";
+card.style.transition = "box-shadow 0.3s";
+
+setTimeout(() => {
+  card.style.boxShadow = "0 0 0 0 transparent";
+}, 1200);
+
+
   // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
 nicknameEl.disabled = true;
 visitEl.disabled = true;
@@ -519,6 +536,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
