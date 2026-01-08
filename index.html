@@ -495,7 +495,7 @@ orderText.value = orderMessage;
 
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
-  `<pre style="margin:0; font-family:inherit;">
+ `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
 
    
 document.getElementById("orderCard").style.display = "block";
@@ -510,8 +510,8 @@ setTimeout(() => {
   });
 }, 150);
 
-card.style.animation = "softGlow 2.4s ease-in-out infinite";
-
+const card = document.getElementById("orderCard");
+card.style.animation = "softPulse 2.4s ease-in-out infinite";
 
   // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
 nicknameEl.disabled = true;
@@ -540,5 +540,6 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
