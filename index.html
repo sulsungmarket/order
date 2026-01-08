@@ -499,14 +499,22 @@ setTimeout(() => {
     block: "start"
   });
 }, 150);
-   // [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강)
+// [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강 - 지속형)
 const card = document.getElementById("orderCard");
-card.style.boxShadow = "0 0 0 2px #2f80ed inset";
-card.style.transition = "box-shadow 0.3s";
 
+// 초기 상태 (강조 없음)
+card.style.transition = "box-shadow 0.4s ease";
+card.style.boxShadow = "0 0 0 0 rgba(47,128,237,0)";
+
+// 스크롤 후 시선 도착 타이밍에 맞춰 강조
 setTimeout(() => {
-  card.style.boxShadow = "0 0 0 0 transparent";
-}, 1200);
+  card.style.boxShadow = "0 0 0 3px rgba(47,128,237,0.6)";
+}, 300);
+
+// 충분히 인지한 뒤 자연스럽게 해제
+setTimeout(() => {
+  card.style.boxShadow = "0 0 0 0 rgba(47,128,237,0)";
+}, 2800);
 
 
   // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
@@ -536,6 +544,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
