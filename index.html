@@ -32,6 +32,13 @@ v1.4.4 (STABLE PATCH)
 - fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
 - 기존 구조 / 상품 / 스타일 절대 변경 없음
 
+ v1.5.0 (FUNCTIONAL READY)
+- 주문문구 복사 버튼 위치 확정 (주문내역 바로 아래)
+- 복사 CTA / 성공 메시지 UX 개선
+- 주문 완료 후 재조작 완전 차단
+- 실사용 가능한 주문 플로우 완성
+
+
 ※ 주의
 - HTML은 GitHub Pages 전용
 - SCRIPT_URL 변경 시 반드시 여기서 수정
@@ -268,6 +275,15 @@ textarea {
   white-space:pre-line;
 ">
 </div>
+
+ <button
+  id="copyBtn"
+  class="action"
+  style="display:none; margin-top:12px; background:#27ae60; color:#fff;"
+>
+  📋 주문문구 복사 (톡방에 붙여넣기)
+</button>
+
  
   <!-- 입금 계좌 안내 (주문 완료 후 노출) -->
 <div id="accountInfo" style="
@@ -493,12 +509,14 @@ orderBtn.style.background = "#adb5bd";
 copyBtn.onclick = () => {
   orderText.select();
   document.execCommand("copy");
-  alert("복사 완료");
+  alert("✔ 복사 완료! 톡방에 붙여넣어 주세요");
 };
+
 </script>
 
 </body>
 </html>
+
 
 
 
