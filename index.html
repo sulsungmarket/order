@@ -489,7 +489,8 @@ ${items.map(i => {
 orderText.value = orderMessage;                  // 복사용 (숨김)
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
-  `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
+  `<pre style="margin:0; padding-top:4px; font-family:inherit;">
+
 
 
 document.getElementById("orderCard").style.display = "block";
@@ -503,17 +504,6 @@ setTimeout(() => {
     block: "start"
   });
 }, 150);
-// [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강 - 지속형)
-const card = document.getElementById("orderCard");
-
-// 초기 상태 (강조 없음)
-card.style.transition = "box-shadow 0.4s ease";
-card.style.boxShadow = "0 0 0 0 rgba(47,128,237,0)";
-
-// 스크롤 후 시선 도착 타이밍에 맞춰 강조
-setTimeout(() => {
-  card.style.boxShadow = "0 0 0 3px rgba(47,128,237,0.6)";
-}, 300);
 
 // [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강 - 지속 표시)
 const card = document.getElementById("orderCard");
@@ -554,6 +544,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
