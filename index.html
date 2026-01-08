@@ -176,6 +176,14 @@ textarea {
   top:-9999px;
   opacity:0;
 }
+
+ /* [PATCH 4] 주문내역 카드 은은한 지속 강조 */
+@keyframes softPulse {
+  0%   { box-shadow: 0 0 0 2px rgba(47,128,237,0.35); }
+  50%  { box-shadow: 0 0 0 4px rgba(47,128,237,0.55); }
+  100% { box-shadow: 0 0 0 2px rgba(47,128,237,0.35); }
+}
+
 </style>
 </head>
 
@@ -463,10 +471,7 @@ ${items.map(i => {
   return `• ${cleanName}\n  └ 수량: ${i.qty}개`;
 }).join("\n")}
 
-──────────────────
-💰 총 결제금액
-👉 ${total.toLocaleString()}원
-──────────────────
+💰 총 결제금액: ${total.toLocaleString()}원
 
 🏦 입금 계좌
 농협 301-0297-8175-81
@@ -475,11 +480,12 @@ ${items.map(i => {
 ※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
 
 
-  const orderStatusHTML = `
+const orderStatusHTML = `
 <div style="
   color:#2f80ed;
   font-weight:700;
-  margin-bottom:4px;
+  margin:0;
+  padding:0;
 ">
 ✅ 감사합니다! 주문이 접수되었습니다.
 </div>
@@ -489,7 +495,7 @@ orderText.value = orderMessage;
 
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
-  `<pre style="margin:0; padding-top:4px; font-family:inherit;">${orderMessage}</pre>`;
+  `<pre style="margin:0; font-family:inherit;">
 
    
 document.getElementById("orderCard").style.display = "block";
@@ -504,16 +510,7 @@ setTimeout(() => {
   });
 }, 150);
 
-// [PATCH 2] 주문내역 카드 시각적 강조 (인지 보강 - 지속 표시)
-const card = document.getElementById("orderCard");
-
-card.style.transition = "box-shadow 0.4s ease";
-
-// 스크롤 후 시선 도착 타이밍에 맞춰 강조
-setTimeout(() => {
-  card.style.boxShadow = "0 0 0 3px rgba(47,128,237,0.5)";
-}, 300);
-
+card.style.animation = "softGlow 2.4s ease-in-out infinite";
 
 
   // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
@@ -543,4 +540,5 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
