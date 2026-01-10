@@ -447,17 +447,24 @@ orderBtn.disabled = true;
 orderBtn.style.opacity = "0.7";
 
    
-  /* GAS 전송 – 실패해도 화면은 계속 진행 */
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname, visit, items, total })
-    });
-  } catch (err) {
-    console.error("GAS 전송 실패:", err);
-  }
+/* 
+====================================================
+[PATCH 1] 주문 완료 UX 즉시 반응 처리
+- GAS 응답을 기다리지 않음 (await 제거)
+- 주문 완료 UI는 즉시 표시
+- 서버 전송은 백그라운드에서 처리
+====================================================
+*/
+fetch(SCRIPT_URL, {
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ nickname, visit, items, total })
+}).catch(err => {
+  // 서버 실패해도 사용자 흐름은 중단하지 않음
+  console.error("GAS 전송 실패:", err);
+});
+
 
 /* 주문문구 생성 (복사용 + 화면 표시용) */
 const orderMessage = `[청담점 공동구매 주문서]
@@ -538,6 +545,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
