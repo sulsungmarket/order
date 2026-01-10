@@ -190,6 +190,41 @@ textarea {
 <body>
 <div class="container">
 <h1>청담점 공동구매</h1>
+ <!--
+====================================================
+[PATCH A] 헤더 슬로건 / 캐치프라이즈 / 주문기간 안내
+VERSION: v1.5.1-header-branding
+- 메인 슬로건: 목장에서 식탁까지
+- 캐치프라이즈: 현명한 소비, 청담점 공동구매
+- 주문 기간 인지 보강
+※ 기존 h1 및 레이아웃 변경 없음
+====================================================
+-->
+<div style="text-align:center; margin-bottom:18px;">
+  <div style="
+    font-size:13px;
+    font-weight:700;
+    color:#2f80ed;
+    margin-bottom:4px;
+  ">
+    목장에서 식탁까지
+  </div>
+
+  <div style="
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:6px;
+  ">
+    현명한 소비, 청담점 공동구매
+  </div>
+
+  <div style="
+    font-size:12px;
+    color:#666;
+  ">
+    매주 월요일 ~ 수요일 오후 4시까지 주문
+  </div>
+</div>
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
@@ -503,6 +538,31 @@ orderText.value = orderMessage;
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
  `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
+/* 
+====================================================
+[PATCH B] 주문 완료 후 멤버십 CTA 안내
+VERSION: v1.5.1-postorder-membership
+- 주문 완료 흐름 방해 없음
+- orderMessage(복사용)에는 포함되지 않음
+- 화면 표시용 UI에만 노출
+====================================================
+*/
+document.getElementById("orderCard").innerHTML +=
+`<div style="
+  margin-top:16px;
+  padding-top:12px;
+  border-top:1px dashed #ddd;
+  font-size:13px;
+  line-height:1.6;
+">
+  💡 <strong>월 1,990원으로 누리는 압도적 혜택</strong><br>
+  오늘도 설성 멤버십 오픈<br>
+  👉 <a href="https://www.sulsungmall.com/goods/event_sale.php?sno=119"
+       target="_blank"
+       style="color:#2f80ed; font-weight:700; text-decoration:none;">
+       맛보러 가기
+     </a>
+</div>`;
 
    
 document.getElementById("orderCard").style.display = "block";
@@ -547,6 +607,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
