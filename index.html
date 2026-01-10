@@ -522,6 +522,13 @@ ${items.map(i => {
 
 ※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
 
+────────────
+🎁 오늘도 설성 멤버십 안내
+월 1,990원으로 누리는 압도적 혜택
+👉 https://www.sulsungmall.com/goods/event_sale.php?sno=119
+────────────
+
+
 
 const orderStatusHTML =
 `<div style="
@@ -538,32 +545,6 @@ orderText.value = orderMessage;
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
  `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
-/* 
-====================================================
-[PATCH B] 주문 완료 후 멤버십 CTA 안내
-VERSION: v1.5.1-postorder-membership
-- 주문 완료 흐름 방해 없음
-- orderMessage(복사용)에는 포함되지 않음
-- 화면 표시용 UI에만 노출
-====================================================
-*/
-document.getElementById("orderCard").innerHTML +=
-`<div style="
-  margin-top:16px;
-  padding-top:12px;
-  border-top:1px dashed #ddd;
-  font-size:13px;
-  line-height:1.6;
-">
-  💡 <strong>월 1,990원으로 누리는 압도적 혜택</strong><br>
-  오늘도 설성 멤버십 오픈<br>
-  👉 <a href="https://www.sulsungmall.com/goods/event_sale.php?sno=119"
-       target="_blank"
-       style="color:#2f80ed; font-weight:700; text-decoration:none;">
-       맛보러 가기
-     </a>
-</div>`;
-
    
 document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
@@ -607,6 +588,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
