@@ -185,7 +185,7 @@ textarea {
   opacity:0;
 }
 
- /* [PATCH 4] 주문내역 카드 은은한 지속 강조 */
+ /* [PATCH 4] 주문내역 영역강조 */
 @keyframes softPulse {
   0%   { box-shadow: 0 0 0 3px rgba(47,128,237,0.35); }
   50%  { box-shadow: 0 0 0 5px rgba(47,128,237,0.55); }
@@ -200,15 +200,11 @@ textarea {
 <h1>청담점 공동구매</h1>
  <!--
 ====================================================
-[PATCH A] 헤더 슬로건 / 캐치프라이즈 / 주문기간 안내
+[PATCH A] 헤더 타이틀
 VERSION: v1.5.1-header-branding
-- 메인 슬로건: 목장에서 식탁까지
-- 캐치프라이즈: 현명한 소비, 청담점 공동구매
-- 주문 기간 인지 보강
-※ 기존 h1 및 레이아웃 변경 없음
 ====================================================
 -->
-<!-- [PATCH A-REFINE] 헤더 타이틀 고도화 -->
+<!-- [PATCH A-REFINE] 타이틀 고도화 -->
 <div style="
   text-align:center;
   margin-bottom:22px;
@@ -385,7 +381,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyIGgsSW-FDFg8ji5wMx
 ====================================================
 주문 일정 모듈
 VERSION: v1.4.4-sale-weekly-min
-※ 기존 주문 / 상품 / GAS 코드 수정 없음
 ====================================================
 */
 
@@ -513,10 +508,10 @@ orderBtn.style.opacity = "0.7";
    
 /* 
 ====================================================
-[PATCH 1] 주문 완료 UX 즉시 반응 처리
+[PATCH] 주문 완료 UX 즉시 반응 처리
 - GAS 응답을 기다리지 않음 (await 제거)
 - 주문 완료 UI는 즉시 표시
-- 서버 전송은 백그라운드에서 처리
+- 서버 전송 백그라운드에서 처리
 ====================================================
 */
 fetch(SCRIPT_URL, {
@@ -525,7 +520,7 @@ fetch(SCRIPT_URL, {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ nickname, visit, items, total })
 }).catch(err => {
-  // 서버 실패해도 사용자 흐름은 중단하지 않음
+  // 서버 실패해도 사용자의 흐름은 중단하지 않음
   console.error("GAS 전송 실패:", err);
 });
 
@@ -573,7 +568,7 @@ document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
 orderBtn.disabled = true;
 document.getElementById("accountInfo").style.display = "block";
-   // [PATCH 1] 주문 완료 후 주문내역 카드로 자동 스크롤
+   // [PATCH 1] 주문 완료 후 주문내역으로 자동 스크롤
 setTimeout(() => {
   document.getElementById("orderCard").scrollIntoView({
     behavior: "smooth",
@@ -584,7 +579,7 @@ setTimeout(() => {
 const card = document.getElementById("orderCard");
 card.style.animation = "softPulse 2.4s ease-in-out infinite";
 
-  // 🔒 주문 완료 후 전체 입력 비활성 (재주문 방지)
+  // 🔒 주문 완료 후 전체 입력 비활성 (중복 방지)
 nicknameEl.disabled = true;
 visitEl.disabled = true;
 
@@ -611,13 +606,3 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
