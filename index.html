@@ -2,63 +2,42 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>설성목장 청담점 공동구매</title>
+<title>청담점 공동구매</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<meta property="og:type" content="website">
+<meta property="og:title" content="목장에서 식탁까지">
+<meta property="og:description" content="청담점 공동구매 주문서">
+<meta property="og:image" content="https://sulsungmarket.github.io/order/images/og.png">
+<meta property="og:url" content="https://sulsungmarket.github.io/order/">
+
 <style>
-/* (주)설성목장 브랜드 톤앤매너 적용 */
-:root {
-    --ss-green: #1a472a; /* 설성목장 메인 딥그린 */
-    --ss-light-green: #f2f7f4;
-    --ss-accent: #27ae60;
-    --ss-text: #333333;
-}
-
+/* 전역 스타일 */
 * {box-sizing:border-box}
-body{margin:0;padding:16px;background:#f0f2f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;user-select:none;-webkit-user-select:none;}
-.container{max-width:480px;margin:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
-
-/* 헤더 디자인 */
-h1 {text-align:center;font-size:22px;margin-bottom:20px;color:var(--ss-green);font-weight:800;}
-.branding-card {
-    text-align:center;margin-bottom:22px;padding:16px;border-radius:14px;
-    background:var(--ss-light-green);border:1px solid #e0eee5;
-}
-
-/* 필드 스타일 */
+body{margin:0;padding:16px;background:#f6f7f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;user-select:none;-webkit-user-select:none;}
+.container{max-width:480px;margin:auto;background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+h1 {text-align:center;font-size:22px;margin-bottom:18px;color:#111;}
 .field{margin-bottom:14px}
-.field label{font-size:13px;font-weight:700;display:block;margin-bottom:6px;color:var(--ss-green)}
-.field input, .field select{width:100%;padding:12px;border-radius:10px;border:1.5px solid #eee;outline:none;}
-.field input:focus {border-color:var(--ss-green)}
-
-/* 상품 카드 */
-.product{border:1px solid #eee;border-radius:14px;overflow:hidden;margin-bottom:18px;transition:0.3s;}
-.product img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#fff}
-.product-body{padding:12px;background:#fff}
-.name{font-weight:700;font-size:15px;margin-bottom:6px;color:#222}
-.price{font-weight:800;color:var(--ss-accent);margin-bottom:12px;font-size:17px}
-
-/* 수량 조절 */
-.qty-box{display:flex;align-items:center;gap:15px}
-.qty-box button{width:38px;height:38px;border:none;border-radius:10px;background:var(--ss-light-green);color:var(--ss-green);font-size:20px;font-weight:bold;cursor:pointer}
-.qty{width:35px;text-align:center;font-weight:800;font-size:16px}
-
-.total{text-align:right;font-size:19px;font-weight:800;margin:25px 0 15px;color:var(--ss-green);padding-top:15px;border-top:1px dashed #ddd}
-
-/* 버튼 스타일 */
-button.action{width:100%;padding:18px;font-size:17px;font-weight:700;border:none;border-radius:14px;margin-top:12px;cursor:pointer;transition:0.2s;}
-#orderBtn{background:var(--ss-green);color:#fff}
-#orderBtn:active {transform:scale(0.98)}
-#copyBtn{background:var(--ss-accent);color:#fff;display:none;box-shadow:0 4px 12px rgba(39,174,96,0.3)}
-
-#orderCard{display:none;margin-top:20px;padding:18px;border-radius:14px;background:#f9f9f9;border:1px solid #eee;font-size:14px;line-height:1.7;white-space:pre-line}
-#accountInfo{display:none;margin-top:15px;padding:16px;border-radius:12px;background:var(--ss-light-green);font-size:14px;border-left:4px solid var(--ss-green)}
-
-@keyframes softPulse{0%{box-shadow:0 0 0 0px rgba(26,71,42,0.2)}100%{box-shadow:0 0 0 10px rgba(26,71,42,0)}}
+.field label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+.field input,.field select{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd}
+.product{border:1px solid #eee;border-radius:14px;overflow:hidden;margin-bottom:18px}
+.product img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#f5f5f5}
+.product-body{padding:12px}
+.name{font-weight:700;margin-bottom:4px}
+.price{font-weight:800;color:#2f80ed;margin-bottom:10px}
+.qty-box{display:flex;align-items:center;gap:14px}
+.qty-box button{width:36px;height:36px;border:none;border-radius:8px;background:#f0f0f0;font-size:20px;cursor:pointer}
+.qty{width:32px;text-align:center;font-weight:700}
+.total{text-align:right;font-size:18px;font-weight:800;margin:20px 0 10px}
+button.action{width:100%;padding:16px;font-size:16px;font-weight:700;border:none;border-radius:12px;margin-top:10px;cursor:pointer}
+#orderBtn{background:#2f80ed;color:#fff}
+#copyBtn{background:#27ae60;color:#fff;display:none}
+textarea{position:absolute;left:-9999px;top:-9999px;opacity:0}
+@keyframes softPulse{0%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}50%{box-shadow:0 0 0 5px rgba(47,128,237,0.55)}100%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}}
 </style>
 
 <script>
-/* 보안: 우클릭 방지 */
+/* 보안: 우클릭 및 개발자 도구 차단 */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.onkeydown = function(e) {
     if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
@@ -68,16 +47,16 @@ document.onkeydown = function(e) {
 
 <body>
 <div class="container">
-    <h1>설성목장 청담점</h1>
+    <h1>청담점 공동구매</h1>
 
-    <div class="branding-card">
-        <div style="font-size:15px;font-weight:800;color:var(--ss-green);margin-bottom:4px">목장에서 식탁까지</div>
-        <div style="font-size:13px;font-weight:600;color:var(--ss-accent);margin-bottom:8px">신선함을 담은 청담점 공동구매</div>
-        <div style="display:inline-block;font-size:11px;color:#666;background:#fff;padding:5px 12px;border-radius:20px;border:1px solid #eee">매주 월~수요일 주문 · 일요일까지 수령</div>
+    <div style="text-align:center;margin-bottom:22px;padding:14px 12px 16px;border-radius:14px;background:linear-gradient(180deg,#f8f9fb 0%,#ffffff 100%)">
+        <div style="font-size:16px;font-weight:800;color:#1f2a44;margin-bottom:6px">목장에서 식탁까지</div>
+        <div style="font-size:14px;font-weight:600;color:#2f80ed;margin-bottom:8px">현명한 소비 · 청담점 공동구매</div>
+        <div style="display:inline-block;font-size:12px;color:#555;background:#f1f3f5;padding:6px 10px;border-radius:999px;font-weight:500">매주 월요일 ~ 수요일 · 오후 4시 마감</div>
     </div>
 
-    <div class="field"><label>오픈채팅 닉네임</label><input id="nickname" placeholder="카카오톡 대화명 입력"></div>
-    <div class="field"><label>방문 수령일 선택</label><select id="visit"><option value="">선택해주세요</option><option value="금">금요일</option><option value="토">토요일</option><option value="일">일요일</option></select></div>
+    <div class="field"><label>오픈채팅 닉네임</label><input id="nickname" placeholder="카카오톡 닉네임"></div>
+    <div class="field"><label>방문 수령일</label><select id="visit"><option value="">선택</option><option value="금">금</option><option value="토">토</option><option value="일">일</option></select></div>
 
     <div class="product" data-price="15900">
         <img src="images/product1.png">
@@ -87,7 +66,6 @@ document.onkeydown = function(e) {
             <div class="qty-box"><button class="minus">-</button><div class="qty">0</div><button class="plus">+</button></div>
         </div>
     </div>
-
     <div class="product" data-price="9800">
         <img src="images/product2.png">
         <div class="product-body">
@@ -96,90 +74,107 @@ document.onkeydown = function(e) {
             <div class="qty-box"><button class="minus">-</button><div class="qty">0</div><button class="plus">+</button></div>
         </div>
     </div>
-
-    <div class="total">최종 합계: <span id="total">0</span>원</div>
-    <button id="orderBtn" class="action">주문서 제출하기</button>
-    
-    <div id="orderCard"></div>
-    <button id="copyBtn" class="action">📋 주문문구 복사 (톡방 붙여넣기)</button>
-    
-    <div id="accountInfo">
-        <strong style="color:var(--ss-green)">🏦 입금 계좌 안내</strong><br>
-        농협 301-0297-8175-81 (설성푸드)<br><br>
-        <span style="font-size:12px; color:#666;">문의: 02-830-0062 (청담점)</span>
+    <div class="product" data-price="9900">
+        <img src="images/product3.png">
+        <div class="product-body">
+            <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
+            <div class="price">9,900원</div>
+            <div class="qty-box"><button class="minus">-</button><div class="qty">0</div><button class="plus">+</button></div>
+        </div>
+    </div>
+    <div class="product" data-price="19900">
+        <img src="images/product4.png">
+        <div class="product-body">
+            <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
+            <div class="price">19,900원</div>
+            <div class="qty-box"><button class="minus">-</button><div class="qty">0</div><button class="plus">+</button></div>
+        </div>
     </div>
 
-    <textarea id="orderText" style="position:absolute;left:-9999px;"></textarea>
+    <div class="total">총 합계: <span id="total">0</span>원</div>
+    <button id="orderBtn" class="action">주문 완료</button>
+    
+    <textarea id="orderText" readonly></textarea>
+    <div id="orderCard" style="display:none;margin-top:14px;padding:16px;border-radius:14px;background:#f8f9fa;font-size:14px;line-height:1.7;white-space:pre-line"></div>
+    <button id="copyBtn" class="action">📋 주문문구 복사 (톡방에 붙여넣기)</button>
+    
+    <div id="accountInfo" style="display:none;margin-top:14px;padding:14px;border-radius:12px;background:#f1f3f5;font-size:14px;line-height:1.6">
+        <strong>🏦 입금 계좌 안내</strong><br>농협 301-0297-8175-81<br>예금주: 설성푸드<br><br>📞 매장문의: 02-830-0062
+    </div>
 </div>
 
 <script>
+/* 난독화 로직 (자동 스크롤 기능 포함) */
 (function(){
-    const _url = "https://script.google.com/macros/s/AKfycbyIGgsSW-FDFg8ji5wMxTUTMK8QfShSR4HksGvYvX4cMS6ptT27LIq0M41LeGhkxZ9I/exec";
-    
-    function _updateSum() {
-        let t = 0;
-        document.querySelectorAll(".product").forEach(p => {
-            t += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+    const _sUrl = "https://script.google.com/macros/s/AKfycbyIGgsSW-FDFg8ji5wMxTUTMK8QfShSR4HksGvYvX4cMS6ptT27LIq0M41LeGhkxZ9I/exec";
+    const _txt = "innerText", _sel = "querySelectorAll", _pCls = ".product", _qCls = ".qty";
+
+    function _sum() {
+        let total = 0;
+        document[_sel](_pCls).forEach(p => {
+            const q = p.querySelector(_qCls);
+            total += Number(p.dataset.price) * Number(q[_txt]);
         });
-        document.getElementById("total").innerText = t.toLocaleString();
+        document.getElementById("total")[_txt] = total.toLocaleString();
     }
 
-    document.querySelectorAll(".product").forEach(p => {
-        const q = p.querySelector(".qty");
-        p.querySelector(".plus").onclick = () => { q.innerText = Number(q.innerText) + 1; _updateSum(); };
-        p.querySelector(".minus").onclick = () => { q.innerText = Math.max(0, Number(q.innerText) - 1); _updateSum(); };
+    document[_sel](_pCls).forEach(p => {
+        const q = p.querySelector(_qCls);
+        p.querySelector(".plus").onclick = () => { q[_txt] = Number(q[_txt]) + 1; _sum(); };
+        p.querySelector(".minus").onclick = () => { q[_txt] = Math.max(0, Number(q[_txt]) - 1); _sum(); };
     });
 
-    const ob = document.getElementById("orderBtn");
-    ob.onclick = async () => {
+    const btn = document.getElementById("orderBtn");
+    btn.onclick = async () => {
         const n = document.getElementById("nickname").value.trim();
         const v = document.getElementById("visit").value;
-        if(!n || !v) { alert("닉네임과 수령일을 입력해주세요."); return; }
+        if(!n || !v) { alert("닉네임과 수령일을 입력해주세요"); return; }
 
-        let items = [], totalP = 0;
-        document.querySelectorAll(".product").forEach(p => {
-            const q = Number(p.querySelector(".qty").innerText);
+        let items = [], totalSum = 0;
+        document[_sel](_pCls).forEach(p => {
+            const q = Number(p.querySelector(_qCls)[_txt]);
             if(q > 0) {
                 const pr = Number(p.dataset.price);
-                items.push({ name: p.querySelector(".name").innerText, qty: q, price: pr });
-                totalP += pr * q;
+                items.push({ name: p.querySelector(".name")[_txt], qty: q, price: pr });
+                totalSum += pr * q;
             }
         });
 
-        if(!items.length) { alert("상품을 선택해 주세요."); return; }
+        if(!items.length) { alert("상품을 선택하세요"); return; }
 
-        ob.innerText = "제출 중...";
-        ob.disabled = true;
+        btn[_txt] = "주문 처리 중...";
+        btn.disabled = true;
 
-        fetch(_url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nickname: n, visit: v, items: items, total: totalP }) });
+        fetch(_sUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nickname: n, visit: v, items: items, total: totalSum }) });
 
-        const msg = `[설성목장 청담점 주문서]\n\n닉네임: ${n}\n수령일: ${v}\n\n주문내역:\n${items.map(i => `• ${i.name}\n  └ 수량: ${i.qty}개`).join("\n")}\n\n💰 총 결제금액: ${totalP.toLocaleString()}원\n\n🏦 입금 계좌\n농협 301-0297-8175-81\n예금주: 설성푸드\n\n※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
+        const resultMsg = `[청담점 공동구매 주문서]\n\n닉네임: ${n}\n수령일: ${v}\n\n주문내역:\n${items.map(i => `• ${i.name.replace(/\s*×\s*\d+$/, "")}\n  └ 수량: ${i.qty}개`).join("\n")}\n\n💰 총 결제금액: ${totalSum.toLocaleString()}원\n\n🏦 입금 계좌\n농협 301-0297-8175-81\n예금주: 설성푸드\n\n※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
         
-        document.getElementById("orderText").value = msg;
+        document.getElementById("orderText").value = resultMsg;
         const card = document.getElementById("orderCard");
-        card.innerHTML = `<div style="color:var(--ss-green);font-weight:800;margin-bottom:10px;">✅ 주문이 성공적으로 접수되었습니다.</div><pre style="margin:0;font-family:inherit;font-size:13px;color:#444;">${msg}</pre>`;
+        card.innerHTML = `<div style="color:#2f80ed;font-weight:700">✅ 감사합니다! 주문이 접수되었습니다.</div><pre style="margin:0;font-family:inherit;">${resultMsg}</pre>`;
+        
+        // 데이터 표시 및 버튼 상태 변경
         card.style.display = "block";
         document.getElementById("copyBtn").style.display = "block";
         document.getElementById("accountInfo").style.display = "block";
+        card.style.animation = "softPulse 2.4s ease-in-out infinite";
         
-        // 🔒 입력 비활성화
         document.getElementById("nickname").disabled = document.getElementById("visit").disabled = true;
-        document.querySelectorAll(".plus, .minus").forEach(b => { b.disabled = true; b.style.opacity = 0.3; });
-        ob.innerText = "주문 완료";
-        ob.style.background = "#ccc";
+        document[_sel](".plus, .minus").forEach(b => { b.disabled = true; b.style.opacity = 0.4; });
+        btn[_txt] = "주문 완료됨";
+        btn.style.background = "#adb5bd";
 
-        // ✨ [중요] 자동 스크롤 기능 복구
+        // ✅ 자동 스크롤 추가 
         setTimeout(() => {
-            card.scrollIntoView({ behavior: "smooth", block: "start" });
-            card.style.animation = "softPulse 1.5s infinite";
-        }, 200);
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     };
 
     document.getElementById("copyBtn").onclick = () => {
         const t = document.getElementById("orderText");
         t.select();
         document.execCommand("copy");
-        alert("✔ 주문 내역이 복사되었습니다.\n채팅방에 [붙여넣기] 해주세요!");
+        alert("✔ 복사 완료! 톡방에 붙여넣어 주세요");
     };
 })();
 </script>
