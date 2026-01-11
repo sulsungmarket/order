@@ -38,6 +38,14 @@ v1.4.4 (STABLE PATCH)
 - 주문 완료 후 재조작 완전 차단
 - 실사용 가능한 주문 플로우 완성
 
+ v1.5.1 (STABLE / LIVE)
+- 헤더 브랜딩 슬로건 적용
+- 주문 완료 UX 즉시 반응 처리 (no-cors)
+- 주문문구 / 화면표시 분리
+- 외부 링크 주문문구 제외
+- 주문 완료 후 입력/재주문 완전 차단
+
+
 
 ※ 주의
 - HTML은 GitHub Pages 전용
@@ -200,30 +208,49 @@ VERSION: v1.5.1-header-branding
 ※ 기존 h1 및 레이아웃 변경 없음
 ====================================================
 -->
-<div style="text-align:center; margin-bottom:18px;">
+<!-- [PATCH A-REFINE] 헤더 타이틀 고도화 -->
+<div style="
+  text-align:center;
+  margin-bottom:22px;
+  padding:14px 12px 16px;
+  border-radius:14px;
+  background:linear-gradient(180deg, #f8f9fb 0%, #ffffff 100%);
+">
+
+  <!-- 메인 슬로건 -->
   <div style="
-    font-size:13px;
-    font-weight:700;
-    color:#2f80ed;
-    margin-bottom:4px;
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:-0.3px;
+    color:#1f2a44;
+    margin-bottom:6px;
   ">
     목장에서 식탁까지
   </div>
 
+  <!-- 캐치프라이즈 -->
   <div style="
     font-size:14px;
     font-weight:600;
-    margin-bottom:6px;
+    color:#2f80ed;
+    margin-bottom:8px;
   ">
-    현명한 소비, 청담점 공동구매
+    현명한 소비 · 청담점 공동구매
   </div>
 
+  <!-- 주문 기간 -->
   <div style="
+    display:inline-block;
     font-size:12px;
-    color:#666;
+    color:#555;
+    background:#f1f3f5;
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:500;
   ">
-    매주 월요일 ~ 수요일 오후 4시까지 주문
+    매주 월요일 ~ 수요일 · 오후 4시 마감
   </div>
+
 </div>
 
 <div class="field">
@@ -584,6 +611,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
