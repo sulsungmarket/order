@@ -3,16 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>청담점 공동구매</title>
-<meta property="og:type" content="website">
-<meta property="og:title" content="목장에서 식탁까지">
-<meta property="og:description" content="청담점 공동구매 주문서">
-<meta property="og:image" content="https://sulsungmarket.github.io/order/images/og.png">
-<meta property="og:url" content="https://sulsungmarket.github.io/order/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* 디자인 스타일 유지 */
+/* [디자인 코드] */
 * {box-sizing:border-box}
-body{margin:0;padding:16px;background:#f6f7f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{margin:0;padding:16px;background:#f6f7f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;user-select:none;-webkit-user-select:none;}
 .container{max-width:480px;margin:auto;background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)}
 h1{text-align:center;font-size:22px;margin-bottom:18px}
 .field{margin-bottom:14px}
@@ -33,6 +28,17 @@ button.action{width:100%;padding:16px;font-size:16px;font-weight:700;border:none
 textarea{position:absolute;left:-9999px;top:-9999px;opacity:0}
 @keyframes softPulse{0%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}50%{box-shadow:0 0 0 5px rgba(47,128,237,0.55)}100%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}}
 </style>
+
+<script>
+/* 1. 보안 기능: 우클릭 및 개발자 도구 방지 */
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.onkeydown = function(e) {
+    if(e.keyCode == 123) return false; // F12 방지
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+    if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+};
+</script>
 </head>
 <body>
 <div class="container">
@@ -42,14 +48,8 @@ textarea{position:absolute;left:-9999px;top:-9999px;opacity:0}
         <div style="display:inline-block;font-size:12px;color:#555;background:#f1f3f5;padding:6px 10px;border-radius:999px;font-weight:500">매주 월요일 ~ 수요일 · 오후 4시 마감</div>
     </div>
 
-    <div class="field">
-        <label>오픈채팅 닉네임</label>
-        <input id="nickname" placeholder="카카오톡 닉네임">
-    </div>
-    <div class="field">
-        <label>방문 수령일</label>
-        <select id="visit"><option value="">선택</option><option value="금">금</option><option value="토">토</option><option value="일">일</option></select>
-    </div>
+    <div class="field"><label>오픈채팅 닉네임</label><input id="nickname" placeholder="카카오톡 닉네임"></div>
+    <div class="field"><label>방문 수령일</label><select id="visit"><option value="">선택</option><option value="금">금</option><option value="토">토</option><option value="일">일</option></select></div>
 
     <div class="product" data-price="15900">
         <img src="images/product1.png">
@@ -95,6 +95,74 @@ textarea{position:absolute;left:-9999px;top:-9999px;opacity:0}
 </div>
 
 <script>
-/** * 안정화된 난독화 스크립트 
- */
-(function(){var _0x59c6=['toLocaleString','getElementById','total','querySelectorAll','.product','.qty','dataset','price','innerText','plus','onclick','minus','value','trim','nickname
+/* 2. 실행 로직 */
+(function(){
+    const _0x_u = "https://script.google.com/macros/s/AKfycbyIGgsSW-FDFg8ji5wMxTUTMK8QfShSR4HksGvYvX4cMS6ptT27LIq0M41LeGhkxZ9I/exec";
+    const _0x_a = "innerText", _0x_b = "querySelectorAll", _0x_c = ".product", _0x_d = ".qty";
+
+    // 합계 계산 함수
+    function _calc() {
+        let s = 0;
+        document[_0x_b](_0x_c).forEach(p => {
+            const q = p.querySelector(_0x_d);
+            s += Number(p.dataset.price) * Number(q[_0x_a]);
+        });
+        document.getElementById("total")[_0x_a] = s.toLocaleString();
+    }
+
+    // 버튼 이벤트 연결 (난독화 대응)
+    document[_0x_b](_0x_c).forEach(p => {
+        const q = p.querySelector(_0x_d);
+        p.querySelector(".plus").onclick = () => { q[_0x_a] = Number(q[_0x_a]) + 1; _calc(); };
+        p.querySelector(".minus").onclick = () => { q[_0x_a] = Math.max(0, Number(q[_0x_a]) - 1); _calc(); };
+    });
+
+    const oB = document.getElementById("orderBtn");
+    oB.onclick = async () => {
+        const n = document.getElementById("nickname").value.trim();
+        const v = document.getElementById("visit").value;
+        if(!n || !v) { alert("닉네임과 수령일을 입력해주세요"); return; }
+
+        let it = [], tt = 0;
+        document[_0x_b](_0x_c).forEach(p => {
+            const q = Number(p.querySelector(_0x_d)[_0x_a]);
+            if(q > 0) {
+                const pr = Number(p.dataset.price);
+                it.push({ name: p.querySelector(".name")[_0x_a], qty: q, price: pr });
+                tt += pr * q;
+            }
+        });
+
+        if(!it.length) { alert("상품을 선택하세요"); return; }
+
+        oB[_0x_a] = "주문 처리 중...";
+        oB.disabled = true;
+
+        fetch(_0x_u, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nickname: n, visit: v, items: it, total: tt }) });
+
+        const msg = `[청담점 공동구매 주문서]\n\n닉네임: ${n}\n수령일: ${v}\n\n주문내역:\n${it.map(i => `• ${i.name.replace(/\s*×\s*\d+$/, "")}\n  └ 수량: ${i.qty}개`).join("\n")}\n\n💰 총 결제금액: ${tt.toLocaleString()}원\n\n🏦 입금 계좌\n농협 301-0297-8175-81\n예금주: 설성푸드\n\n※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
+        
+        document.getElementById("orderText").value = msg;
+        const card = document.getElementById("orderCard");
+        card.innerHTML = `<div style="color:#2f80ed;font-weight:700">✅ 주문이 접수되었습니다.</div><pre style="margin:0;font-family:inherit;">${msg}</pre>`;
+        card.style.display = "block";
+        document.getElementById("copyBtn").style.display = "block";
+        document.getElementById("accountInfo").style.display = "block";
+        card.style.animation = "softPulse 2.4s ease-in-out infinite";
+        
+        document.getElementById("nickname").disabled = document.getElementById("visit").disabled = true;
+        document[_0x_b](".plus, .minus").forEach(b => { b.disabled = true; b.style.opacity = 0.4; });
+        oB[_0x_a] = "주문 완료됨";
+        oB.style.background = "#adb5bd";
+    };
+
+    document.getElementById("copyBtn").onclick = () => {
+        const t = document.getElementById("orderText");
+        t.select();
+        document.execCommand("copy");
+        alert("✔ 복사 완료! 톡방에 붙여넣어 주세요");
+    };
+})();
+</script>
+</body>
+</html>
