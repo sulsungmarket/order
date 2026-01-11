@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://sulsungmarket.github.io/order/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* 기존 스타일 유지 */
+/* 디자인 스타일 유지 */
 * {box-sizing:border-box}
 body{margin:0;padding:16px;background:#f6f7f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .container{max-width:480px;margin:auto;background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)}
@@ -24,29 +24,22 @@ h1{text-align:center;font-size:22px;margin-bottom:18px}
 .name{font-weight:700;margin-bottom:4px}
 .price{font-weight:800;color:#2f80ed;margin-bottom:10px}
 .qty-box{display:flex;align-items:center;gap:14px}
-.qty-box button{width:36px;height:36px;border:none;border-radius:8px;background:#f0f0f0;font-size:20px}
+.qty-box button{width:36px;height:36px;border:none;border-radius:8px;background:#f0f0f0;font-size:20px;cursor:pointer}
 .qty{width:32px;text-align:center;font-weight:700}
 .total{text-align:right;font-size:18px;font-weight:800;margin:20px 0 10px}
-button.action{width:100%;padding:16px;font-size:16px;font-weight:700;border:none;border-radius:12px;margin-top:10px}
+button.action{width:100%;padding:16px;font-size:16px;font-weight:700;border:none;border-radius:12px;margin-top:10px;cursor:pointer}
 #orderBtn{background:#2f80ed;color:#fff}
 #copyBtn{background:#27ae60;color:#fff;display:none}
 textarea{position:absolute;left:-9999px;top:-9999px;opacity:0}
 @keyframes softPulse{0%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}50%{box-shadow:0 0 0 5px rgba(47,128,237,0.55)}100%{box-shadow:0 0 0 3px rgba(47,128,237,0.35)}}
 </style>
-<script>
-/* 우클릭 및 키보드 단축키 방지 */
-document.oncontextmenu = function(){return false;};
-document.onkeydown = function(e){
-    if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
-};
-</script>
 </head>
 <body>
 <div class="container">
     <div style="text-align:center;margin-bottom:22px;padding:14px 12px 16px;border-radius:14px;background:linear-gradient(180deg,#f8f9fb 0%,#ffffff 100%)">
         <div style="font-size:16px;font-weight:800;color:#1f2a44;margin-bottom:6px">목장에서 식탁까지</div>
-        <div style="font-size:14px;font-weight:600;color:#2f80ed;margin-bottom:8px">현명한 소비 • 청담점 공동구매</div>
-        <div style="display:inline-block;font-size:12px;color:#555;background:#f1f3f5;padding:6px 10px;border-radius:999px;font-weight:500">매주 월요일 ~ 수요일 • 오후 4시 마감</div>
+        <div style="font-size:14px;font-weight:600;color:#2f80ed;margin-bottom:8px">현명한 소비 · 청담점 공동구매</div>
+        <div style="display:inline-block;font-size:12px;color:#555;background:#f1f3f5;padding:6px 10px;border-radius:999px;font-weight:500">매주 월요일 ~ 수요일 · 오후 4시 마감</div>
     </div>
 
     <div class="field">
@@ -92,7 +85,6 @@ document.onkeydown = function(e){
     </div>
 
     <div class="total">총 합계: <span id="total">0</span>원</div>
-    <div id="saleNotice" style="display:none;margin-bottom:12px;color:#d63031;font-weight:700;"></div>
     <button id="orderBtn" class="action">주문 완료</button>
     <textarea id="orderText" readonly></textarea>
     <div id="orderCard" style="display:none;margin-top:14px;padding:16px;border-radius:14px;background:#f8f9fa;font-size:14px;line-height:1.7;white-space:pre-line"></div>
@@ -103,14 +95,6 @@ document.onkeydown = function(e){
 </div>
 
 <script>
-/* 난독화된 핵심 로직 */
-(function(_0x1a2b,_0x3c4d){const _0x5e6f=function(_0x7a8b){while(--_0x7a8b){_0x1a2b['push'](_0x1a2b['shift']());}};_0x5e6f(++_0x3c4d);}(_0x2468,0x1a4));const _0x1234=function(_0x5678,_0x90ab){_0x5678=_0x5678-0x0;let _0xcd01=_0x2468[_0x5678];return _0xcd01;};function _0x2468(){const _0x0987=['innerText','querySelectorAll','.product','dataset','price','.qty','toLocaleString','getElementById','total','none','orderBtn','disabled','주문 마감','#999','saleNotice','ALWAYS_OPEN','ALWAYS_CLOSE','WEEKLY','block','value','nickname','visit','닉네임과 수령일을 입력해주세요','length','상품을 선택하세요','주문 처리 중...','https://script.google.com/macros/s/AKfycbyIGgsSW-FDFg8ji5wMxTUTMK8QfShSR4HksGvYvX4cMS6ptT27LIq0M41LeGhkxZ9I/exec','POST','no-cors','application/json','[청담점 공동구매 주문서]\x0a\x0a닉네임: ','\x0a수령일: ','\x0a\x0a주문내역:\x0a','\x0a💰 총 결제금액: ','원\x0a\x0a🏦 입금 계좌\x0a농협 301-0297-8175-81\x0a예금주: 설성푸드\x0a\x0a※ 입금 후 본 주문문구를 채팅방에 남겨주세요','orderText','orderCard','innerHTML','copyBtn','accountInfo','softPulse 2.4s ease-in-out infinite','주문 완료됨','#adb5bd','✔ 복사 완료! 톡방에 붙여넣어 주세요'];_0x2468=function(){return _0x0987;};return _0x2468();}
-const S_U = _0x1234('0x1a'); const S_M = "ALWAYS_OPEN";
-const nE = document.getElementById("nickname"), vE = document.getElementById("visit"), oB = document.getElementById("orderBtn"), cB = document.getElementById("copyBtn"), tE = document.getElementById("orderText");
-document.querySelectorAll(".product").forEach(p=>{const q=p.querySelector(".qty");p.querySelector(".plus").onclick=()=>{q.innerText=Number(q.innerText)+1;c();};p.querySelector(".minus").onclick=()=>{q.innerText=Math.max(0,Number(q.innerText)-1);c();};});
-function c(){let s=0;document.querySelectorAll(".product").forEach(p=>{s+=Number(p.dataset.price)*Number(p.querySelector(".qty").innerText);});document.getElementById("total").innerText=s.toLocaleString();}
-oB.onclick=async()=>{const n=nE.value.trim(),v=vE.value;if(!n||!v){alert(_0x1234('0x16'));return;}let it=[],tt=0;document.querySelectorAll(".product").forEach(p=>{const q=Number(p.querySelector(".qty").innerText);if(q>0){const pr=Number(p.dataset.price);it.push({name:p.querySelector(".name").innerText,qty:q,price:pr});tt+=pr*q;}});if(!it.length){alert(_0x1234('0x18'));return;}oB.innerText=_0x1234('0x19');oB.disabled=true;fetch(S_U,{method:_0x1234('0x1b'),mode:_0x1234('0x1c'),headers:{"Content-Type":_0x1234('0x1d')},body:JSON.stringify({nickname:n,visit:v,items:it,total:tt})});const msg=`${_0x1234('0x1e')}${n}${_0x1234('0x1f')}${v}${_0x1234('0x20')}${it.map(i=>`• ${i.name.replace(/\s*×\s*\d+$/,"")}\n  └ 수량: ${i.qty}개`).join('\n')}${_0x1234('0x21')}${tt.toLocaleString()}${_0x1234('0x22')}`;tE.value=msg;const card=document.getElementById("orderCard");card.innerHTML=`<div style="color:#2f80ed;font-weight:700">✅ 주문이 접수되었습니다.</div><pre style="margin:0;font-family:inherit;">${msg}</pre>`;card.style.display="block";cB.style.display="block";document.getElementById("accountInfo").style.display="block";card.style.animation=_0x1234('0x28');nE.disabled=vE.disabled=true;document.querySelectorAll(".plus, .minus").forEach(b=>{b.disabled=true;b.style.opacity=0.4;});oB.innerText=_0x1234('0x29');oB.style.background=_0x1234('0x2a');setTimeout(()=>{card.scrollIntoView({behavior:"smooth",block:"start"});},150);};
-cB.onclick=()=>{tE.select();document.execCommand("copy");alert(_0x1234('0x2b'));};
-</script>
-</body>
-</html>
+/** * 안정화된 난독화 스크립트 
+ */
+(function(){var _0x59c6=['toLocaleString','getElementById','total','querySelectorAll','.product','.qty','dataset','price','innerText','plus','onclick','minus','value','trim','nickname
