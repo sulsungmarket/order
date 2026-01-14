@@ -526,25 +526,22 @@ fetch(SCRIPT_URL, {
 
 
 /* 주문문구 생성 (복사용 + 화면 표시용) */
-const orderMessage = `[청담점 공동구매 주문서]
+let orderMessage = "[청담점 공동구매 주문서]\n\n";
+orderMessage += "닉네임: " + nickname + "\n";
+orderMessage += "수령일: " + visit + "\n\n";
+orderMessage += "주문내역:\n";
 
-닉네임: ${nickname}
-수령일: ${visit}
-
-주문내역:
-${items.map(i => {
+items.forEach(i => {
   const cleanName = i.name.replace(/\s*×\s*\d+$/, "");
-  return `• ${cleanName}\n  └ 수량: ${i.qty}개`;
-}).join("\n")}
+  orderMessage += "• " + cleanName + "\n";
+  orderMessage += "  └ 수량: " + i.qty + "개\n";
+});
 
-💰 총 결제금액: ${total.toLocaleString()}원
-
-🏦 입금 계좌
-농협 301-0297-8175-81
-예금주: 설성푸드
-
-※ 입금 후 본 주문문구를 채팅방에 남겨주세요`;
-
+orderMessage += "\n💰 총 결제금액: " + total.toLocaleString() + "원\n\n";
+orderMessage += "🏦 입금 계좌\n";
+orderMessage += "농협 301-0297-8175-81\n";
+orderMessage += "예금주: 설성푸드\n\n";
+orderMessage += "※ 입금 후 본 주문문구를 채팅방에 남겨주세요";
 
 
 
