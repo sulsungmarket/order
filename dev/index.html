@@ -288,7 +288,9 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 2 -->
-<div class="product" data-price="10000">
+<div class="product"
+     data-product-id="p002"
+     data-price="10000">
   <img src="images/product2.png">
   <div class="product-body">
     <div class="name">존쿡 크림치즈 쌀베이글 4개구성 </div>
@@ -305,7 +307,9 @@ VERSION: v1.5.1-header-branding
 
  <!--
 상품 3 임시 비활성 (내일 주문 제외)
-<div class="product" data-price="9900">
+<div class="product"
+     data-product-id="p003"
+     data-price="9900">
   <img src="images/product3.png">
   <div class="product-body">
     <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
@@ -323,7 +327,9 @@ VERSION: v1.5.1-header-branding
 <!-- 상품 4 -->
  <!--
 상품 4 임시 비활성 (내일 주문 제외)
-<div class="product" data-price="19900">
+<div class="product"
+     data-product-id="p004"
+     data-price="19900">
   <img src="images/product4.png">
   <div class="product-body">
     <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
@@ -504,8 +510,8 @@ if (!isSaleOpen()) {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
       const price = Number(p.dataset.price);
-  items.push({
-  id: p.dataset.productId || null,   // ⭐ 이 줄 추가
+ items.push({
+  product_id: p.dataset.productId || null,
   name: p.querySelector(".name").innerText,
   qty,
   price
@@ -527,22 +533,60 @@ orderBtn.style.opacity = "0.7";
 
    
 /* 
-====================================================
-[PATCH] 주문 완료 UX 즉시 반응 처리
-- GAS 응답을 기다리지 않음 (await 제거)
-- 주문 완료 UI는 즉시 표시
-- 서버 전송 백그라운드에서 처리
-====================================================
-*/
+// ====================================================
+// [PATCH v1.5.3] 응답 기반 전송으로 전환 (DEV)
+// - no-cors 제거
+// - success 응답 후에만 "주문 접수" UI 표시
+// - 실패 시 버튼 복구 + 안내
+// - items.product_id 스펙 기준
+// ====================================================
+
+// (보관용) 기존 no-cors 방식은 삭제 금지 → 참고용 주석 처리
+/*
 fetch(SCRIPT_URL, {
   method: "POST",
   mode: "no-cors",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ nickname, visit, items, total })
 }).catch(err => {
-  // 서버 실패해도 사용자의 흐름은 중단하지 않음
   console.error("GAS 전송 실패:", err);
 });
+*/
+
+const payload = { nickname, visit, items, total };
+
+let result = null;
+
+try {
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  result = await res.json().catch(() => null);
+
+  if (!res.ok || !result) {
+    throw new Error("서버 응답 오류");
+  }
+
+  if (!result.success) {
+    throw new Error(result.message || "주문 처리 실패");
+  }
+
+  // ✅ 여기서부터 성공 UI (서버 승인 후)
+  // --------------------------------------------------
+
+} catch (err) {
+  console.error("주문 실패:", err);
+
+  alert("❌ 주문 실패: " + (err.message || "서버 오류"));
+
+  orderBtn.disabled = false;
+  orderBtn.innerText = "주문 완료";
+  orderBtn.style.opacity = "1";
+  return; // 실패면 여기서 종료
+}
 
 
 /* 주문문구 생성 (복사용 + 화면 표시용) */
@@ -564,7 +608,6 @@ orderMessage += "예금주: 설성푸드\n\n";
 orderMessage += "※ 입금 후 본 주문문구를 채팅방에 남겨주세요";
 
 
-
 const orderStatusHTML =
 `<div style="
   color:#2f80ed;
@@ -572,7 +615,7 @@ const orderStatusHTML =
   margin:0;
   padding:0;
 ">
-✅ 감사합니다! 주문이 접수되었습니다.
+✅ 감사합니다! 주문이 접수되었습니다. (주문번호: ${(result && result.order_no) ? result.order_no : "확인중"})
 </div>`;
 
 orderText.value = orderMessage;
