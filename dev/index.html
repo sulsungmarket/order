@@ -45,6 +45,12 @@ v1.4.4 (STABLE PATCH)
 - 외부 링크 주문문구 제외
 - 주문 완료 후 입력/재주문 완전 차단
 
+ v1.5.2 (STOCK LINK PATCH)
+- 상품 DOM에 data-id 추가
+- items payload에 product_id(id) 포함
+- GAS 재고 검증 / 차감 로직 연동 완료
+
+
 
 
 ※ 주의
@@ -266,9 +272,8 @@ VERSION: v1.5.1-header-branding
 
 <!-- 상품 1 (한정수량) -->
 <div class="product limited"
-     data-price="15900"
-     data-stock="50"
-     data-product-id="P001">
+     data-id="P001"
+     data-price="10900">
   <img src="images/product1.png">
    <div class="product-body">
     <div class="name">1++등급 무항생제 한우사태 300g</div>
@@ -283,7 +288,7 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 2 -->
-<div class="product" data-price="9800">
+<div class="product" data-price="10000">
   <img src="images/product2.png">
   <div class="product-body">
     <div class="name">존쿡 크림치즈 쌀베이글 4개구성 </div>
@@ -387,7 +392,7 @@ VERSION: v1.5.1-header-branding
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4nunnBTV6KG4FSn_p63MEF8oXevIfefiYvNlba2Aec3UyejHulflc4NoKv1wXHKjW/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7H3rDNebI7gGXzsBnvar0fEKEG6DJGE1guLl9h5lS8XitlMPx_2GIv0WOiqYOvpQh/exec";
 
 /*
 ====================================================
@@ -500,10 +505,12 @@ if (!isSaleOpen()) {
     if (qty > 0) {
       const price = Number(p.dataset.price);
       items.push({
-        name: p.querySelector(".name").innerText,
-        qty,
-        price
-      });
+  id: p.dataset.id, // 🔑 재고 연동 키
+  name: p.querySelector(".name").innerText,
+  qty,
+  price
+});
+
       total += price * qty;
     }
   });
