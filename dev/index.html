@@ -264,11 +264,15 @@ VERSION: v1.5.1-header-branding
   </select>
 </div>
 
-<!-- 상품 1 -->
-<div class="product" data-price="15900">
+<!-- 상품 1 (한정수량) -->
+<div class="product limited"
+     data-price="15900"
+     data-stock="50"
+     data-product-id="P001">
   <img src="images/product1.png">
-  <div class="product-body">
+   <div class="product-body">
     <div class="name">무항생제 한우 1등급 등심 200g</div>
+    <div class="stock-badge">한정 50팩</div>
     <div class="price">15,900원</div>
     <div class="qty-box">
       <button class="minus">-</button>
@@ -293,6 +297,9 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 3 -->
+
+ <!--
+상품 3 임시 비활성 (내일 주문 제외)
 <div class="product" data-price="9900">
   <img src="images/product3.png">
   <div class="product-body">
@@ -305,8 +312,12 @@ VERSION: v1.5.1-header-branding
     </div>
   </div>
 </div>
+-->
 
+ 
 <!-- 상품 4 -->
+ <!--
+상품 4 임시 비활성 (내일 주문 제외)
 <div class="product" data-price="19900">
   <img src="images/product4.png">
   <div class="product-body">
@@ -319,6 +330,7 @@ VERSION: v1.5.1-header-branding
     </div>
   </div>
 </div>
+-->
 
 <div class="total">
   총 합계: <span id="total">0</span>원
@@ -375,7 +387,7 @@ VERSION: v1.5.1-header-branding
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpT6HkR1oQm-GKzcvsNU2Z9sZZ2qiae-1lo3fB7zWzjYmvdY51IMBqWbYRNcVvyfFo/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4nunnBTV6KG4FSn_p63MEF8oXevIfefiYvNlba2Aec3UyejHulflc4NoKv1wXHKjW/exec";
 
 /*
 ====================================================
