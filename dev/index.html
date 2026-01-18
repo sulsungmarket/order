@@ -531,68 +531,8 @@ orderBtn.innerText = "주문 처리 중...";
 orderBtn.disabled = true;
 orderBtn.style.opacity = "0.7";
 
-   
-/* 
-// ====================================================
-// [PATCH v1.5.3] 응답 기반 전송으로 전환 (DEV)
-// - no-cors 제거
-// - success 응답 후에만 "주문 접수" UI 표시
-// - 실패 시 버튼 복구 + 안내
-// - items.product_id 스펙 기준
-// ====================================================
+// [NOTE] DEV 응답 기반 전송(try/catch + res.json) 보관 구간 (중첩 주석 금지로 제거함)
 
-// (보관용) 기존 no-cors 방식은 삭제 금지 → 참고용 주석 처리
-/*
-fetch(SCRIPT_URL, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ nickname, visit, items, total })
-}).catch(err => {
-  console.error("GAS 전송 실패:", err);
-});
-*/
-
-   /*
-// ===== 기존 응답 기반 전송 (CORS로 실패 가능) 보관 =====
-
-const payload = { nickname, visit, items, total };
-
-let result = null;
-
-try {
-const res = await fetch(SCRIPT_URL, {
-  method: "POST",
-  // ✅ preflight(OPTIONS) 안 생기게
-  headers: { "Content-Type": "text/plain;charset=utf-8" },
-  body: JSON.stringify(payload)
-});
-
-
-  result = await res.json().catch(() => null);
-
-  if (!res.ok || !result) {
-    throw new Error("서버 응답 오류");
-  }
-
-  if (!result.success) {
-    throw new Error(result.message || "주문 처리 실패");
-  }
-
-  // ✅ 여기서부터 성공 UI (서버 승인 후)
-  // --------------------------------------------------
-
-} catch (err) {
-  console.error("주문 실패:", err);
-
-  alert("❌ 주문 실패: " + (err.message || "서버 오류"));
-
-  orderBtn.disabled = false;
-  orderBtn.innerText = "주문 완료";
-  orderBtn.style.opacity = "1";
-  return; // 실패면 여기서 종료
-}
-*/
 
 // ===== 운영용 전송(no-cors) =====
 fetch(SCRIPT_URL, {
