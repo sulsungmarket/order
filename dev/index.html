@@ -269,6 +269,13 @@ VERSION: v1.5.1-header-branding
     <option value="일">일</option>
   </select>
 </div>
+ <div class="field">
+  <label>현금 영수증</label>
+  <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
+    <input type="checkbox" id="cashReceipt">
+    현금 영수증 발급 원해요
+  </label>
+</div>
 
 <!-- 상품 1 (한정수량) -->
 <div class="product limited"
@@ -446,6 +453,7 @@ const visitEl = document.getElementById("visit");
 const orderBtn = document.getElementById("orderBtn");
 const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
+const cashReceiptEl = document.getElementById("cashReceipt");
 
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
@@ -539,7 +547,14 @@ fetch(SCRIPT_URL, {
   method: "POST",
   mode: "no-cors",
   headers: { "Content-Type": "text/plain;charset=utf-8" },
-  body: JSON.stringify({ nickname, visit, items, total })
+  body: JSON.stringify({
+  nickname,
+  visit,
+  items,
+  total,
+  cashReceipt: cashReceiptEl ? cashReceiptEl.checked : false
+})
+
 }).catch(err => {
   console.error("GAS 전송 실패:", err);
 });
@@ -548,7 +563,8 @@ fetch(SCRIPT_URL, {
 /* 주문문구 생성 (복사용 + 화면 표시용) */
 let orderMessage = "[청담점 공동구매 주문서]\n\n";
 orderMessage += "닉네임: " + nickname + "\n";
-orderMessage += "수령일: " + visit + "\n\n";
+orderMessage += "수령일: " + visit + "\n";
+orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "발급 원해요" : "미신청") + "\n\n";
 orderMessage += "주문내역:\n";
 
 items.forEach(i => {
