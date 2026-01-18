@@ -269,13 +269,37 @@ VERSION: v1.5.1-header-branding
     <option value="일">일</option>
   </select>
 </div>
- <div class="field">
-  <label>현금 영수증</label>
-  <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
-    <input type="checkbox" id="cashReceipt">
-    현금 영수증 발급 원해요
-  </label>
+<div class="field">
+  <label for="cashReceipt">현금 영수증</label>
+
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    justify-content:flex-start;
+  ">
+    <input
+      type="checkbox"
+      id="cashReceipt"
+      style="
+        width:18px;
+        height:18px;
+        margin:0;
+        flex:0 0 auto;
+      "
+    >
+    <span style="
+      font-size:14px;
+      font-weight:600;
+      color:#333;
+      line-height:1.2;
+      white-space:nowrap;
+    ">
+      현금영수증 발급 원해요
+    </span>
+  </div>
 </div>
+
 
 <!-- 상품 1 (한정수량) -->
 <div class="product limited"
