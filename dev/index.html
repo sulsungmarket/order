@@ -574,7 +574,7 @@ fetch(SCRIPT_URL, {
 let orderMessage = "[청담점 공동구매 주문서]\n\n";
 orderMessage += "닉네임: " + nickname + "\n";
 orderMessage += "수령일: " + visit + "\n";
-orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "발급 원해요" : "미신청") + "\n\n";
+orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "원해요" : "미신청") + "\n\n";
 orderMessage += "주문내역:\n";
 
 items.forEach(i => {
