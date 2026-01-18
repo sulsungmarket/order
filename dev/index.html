@@ -558,11 +558,13 @@ const payload = { nickname, visit, items, total };
 let result = null;
 
 try {
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+const res = await fetch(SCRIPT_URL, {
+  method: "POST",
+  // ✅ preflight(OPTIONS) 안 생기게
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify(payload)
+});
+
 
   result = await res.json().catch(() => null);
 
