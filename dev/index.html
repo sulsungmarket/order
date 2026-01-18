@@ -55,8 +55,8 @@ v1.4.4 (STABLE PATCH)
 
 ※ 주의
 - HTML은 GitHub Pages 전용
-- SCRIPT_URL 변경 시 반드시 여기서 수정
-- 기존 코드 삭제 금지
+- SCRIPT_URL 변경 시 꼭수정하기
+- 코드 삭제 X
 ====================================================
 -->
 
@@ -199,6 +199,35 @@ textarea {
 }
 
 </style>
+
+<script>
+/* 우클릭 + 개발자도구 단축키 */
+(function () {
+  document.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
+  document.addEventListener("selectstart", function (e) { e.preventDefault(); return false; });
+  document.addEventListener("dragstart", function (e) { e.preventDefault(); return false; });
+  document.addEventListener("copy", function (e) { e.preventDefault(); return false; });
+
+  document.addEventListener("keydown", function (e) {
+    const key = (e.key || "").toLowerCase();
+
+    if (e.keyCode === 123) { e.preventDefault(); return false; } // F12
+    if (e.ctrlKey && e.shiftKey && (key === "i" || key === "j" || key === "c")) { e.preventDefault(); return false; }
+    if (e.ctrlKey && key === "u") { e.preventDefault(); return false; } // Ctrl+U
+    if (e.ctrlKey && (key === "s" || key === "p")) { e.preventDefault(); return false; } // Ctrl+S/P
+  });
+
+  document.addEventListener("gesturestart", function (e) { e.preventDefault(); return false; });
+
+  try {
+    document.documentElement.style.userSelect = "none";
+    document.documentElement.style.webkitUserSelect = "none";
+    document.documentElement.style.msUserSelect = "none";
+    document.documentElement.style.mozUserSelect = "none";
+  } catch (e) {}
+})();
+</script>
+
 </head>
 
 <body>
