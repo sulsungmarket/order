@@ -510,7 +510,7 @@ if (!isSaleOpen()) {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
       const price = Number(p.dataset.price);
- items.push({
+items.push({
   product_id: p.dataset.productId || null,
   name: p.querySelector(".name").innerText,
   qty,
@@ -553,6 +553,9 @@ fetch(SCRIPT_URL, {
 });
 */
 
+   /*
+// ===== 기존 응답 기반 전송 (CORS로 실패 가능) 보관 =====
+
 const payload = { nickname, visit, items, total };
 
 let result = null;
@@ -589,6 +592,17 @@ const res = await fetch(SCRIPT_URL, {
   orderBtn.style.opacity = "1";
   return; // 실패면 여기서 종료
 }
+*/
+
+// ===== 운영용 전송(no-cors) =====
+fetch(SCRIPT_URL, {
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify({ nickname, visit, items, total })
+}).catch(err => {
+  console.error("GAS 전송 실패:", err);
+});
 
 
 /* 주문문구 생성 (복사용 + 화면 표시용) */
