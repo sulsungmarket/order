@@ -504,12 +504,13 @@ if (!isSaleOpen()) {
     const qty = Number(p.querySelector(".qty").innerText);
     if (qty > 0) {
       const price = Number(p.dataset.price);
-      items.push({
-  id: p.dataset.id, // 🔑 재고 연동 키
+  items.push({
+  id: p.dataset.productId || null,   // ⭐ 이 줄 추가
   name: p.querySelector(".name").innerText,
   qty,
   price
 });
+
 
       total += price * qty;
     }
