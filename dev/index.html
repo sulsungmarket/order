@@ -216,6 +216,10 @@ textarea {
   font-size:12px;
   font-weight:900;
 }
+
+ /* 총합계 컬러 */
+.money-red { color:#d63031; font-weight:900; }
+.money-blue { color:#2f80ed; font-weight:900; }
  
 </style>
 
@@ -353,7 +357,6 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 2 -->
-<!-- 상품 2 -->
 <div class="product limited" data-product-id="p002" data-price="99000" data-regular-price="139000">
   <img src="images/product2.png">
   <div class="product-body">
@@ -362,7 +365,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정상구매가 <span>139,000원</span></div>
   <div class="price-sale">공동구매가 <span>99,000원</span></div>
-  <div class="price-save">정가 대비 40,000원 ↓</div>
+<div class="price-save" data-save-line="1" style="display:none;"></div>
 </div>
 
     <div class="qty-box">
@@ -374,7 +377,7 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 3 -->
-<div class="product limited" data-product-id="p003" data-price="39980" data-regular-price="58800">
+<div class="product limited" data-product-id="p003" data-price="39980" data-regular-price="59800">
   <img src="images/product3.png">
   <div class="product-body">
     <div class="name">설성한우 우족탕 선물세트</div>
@@ -382,7 +385,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정상구매가 <span>58,800원</span></div>
   <div class="price-sale">공동구매가 <span>39,980원</span></div>
-  <div class="price-save">정가 대비 18,820원 ↓</div>
+  <div class="price-save" data-save-line="1" style="display:none;"></div>
 </div>
 
     <div class="qty-box">
@@ -403,7 +406,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정성구매가 <span>59,800원</span></div>
   <div class="price-sale">공동구매가 <span>39,980원</span></div>
-  <div class="price-save">정가 대비 19,820원 ↓</div>
+  <div class="price-save" data-save-line="1" style="display:none;"></div>
 </div>
 
     <div class="qty-box">
@@ -424,7 +427,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정상구가 <span>130,000원</span></div>
   <div class="price-sale">공동구매가 <span>79,980원</span></div>
-  <div class="price-save">정가 대비 50,020원 ↓</div>
+ <div class="price-save" data-save-line="1" style="display:none;"></div>
 </div>
     <div class="qty-box">
       <button class="minus">-</button>
@@ -436,10 +439,16 @@ VERSION: v1.5.1-header-branding
 
 
 <div class="total">
+  <div class="total">
   <div>상품금액합계: <span id="regularTotal">0</span>원</div>
-  <div>공동구매가 할인: -<span id="discountTotal">0</span>원</div>
+
+  <div id="discountRow" style="display:none;">
+    공동구매가 할인:
+    <span id="discountValue" class="money-red">-0</span>원
+  </div>
+
   <div style="margin-top:6px; font-size:18px; font-weight:800;">
-    총 결제금액: <span id="total">0</span>원
+    총 결제금액: <span id="total" class="money-blue">0</span>원
   </div>
 </div>
 
@@ -574,8 +583,22 @@ function calc() {
     regularSum += regularPrice * qty;
 
     if (hasRegular) {
-      discountSum += (regularPrice - salePrice) * qty;
-    }
+  discountSum += (regularPrice - salePrice) * qty;
+}
+
+const saveEl = p.querySelector('[data-save-line="1"]');
+if (saveEl) {
+  if (hasRegular) {
+    const unitSave = (regularPrice - salePrice);
+    const shownQty = Math.max(1, qty);
+    saveEl.style.display = "inline-block";
+    saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+  } else {
+    saveEl.style.display = "none";
+    saveEl.innerText = "";
+  }
+}
+
   });
 
   // 총 결제금액
