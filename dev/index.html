@@ -624,7 +624,31 @@ function calc() {
       } else {
         saveEl.style.display = "none";
         saveEl.innerText = "";
-      }
+
+           // 카드별 상품합계 표시(수량 0이면 숨김)
+    let lineTotalEl = p.querySelector('[data-line-total="1"]');
+    if (!lineTotalEl) {
+      lineTotalEl = document.createElement("div");
+      lineTotalEl.setAttribute("data-line-total", "1");
+      lineTotalEl.style.marginTop = "6px";
+      lineTotalEl.style.fontSize = "13px";
+      lineTotalEl.style.fontWeight = "800";
+      lineTotalEl.style.textAlign = "right";
+
+      const body = p.querySelector(".product-body") || p;
+      const qtyBox = body.querySelector(".qty-box");
+      if (qtyBox) body.insertBefore(lineTotalEl, qtyBox);
+      else body.appendChild(lineTotalEl);
+    }
+
+    if (qty > 0) {
+      lineTotalEl.style.display = "block";
+      lineTotalEl.innerHTML =
+        '합계 <span class="money-blue">' +
+        (salePrice * qty).toLocaleString() +
+        '</span>원';
+    } else {
+      lineTotalEl.style.display = "none";
     }
   });
 
