@@ -457,7 +457,7 @@ VERSION: v1.5.1-header-branding
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzH_sdNvBTA3TlROEsP6orcEftovLF1m3ZQQBeDQBlO22ZO9xxp3a2-lsAx826y_xbh/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0SUKbp05CwUovG111sbzrBA00SdTRbEU2xPwvz9lCabUYOdZkJyJr9jaxucVojh43/exec";
 
 /*
 ====================================================
@@ -600,6 +600,7 @@ fetch(SCRIPT_URL, {
   mode: "no-cors",
   headers: { "Content-Type": "text/plain;charset=utf-8" },
   body: JSON.stringify({
+  pageEnv: "DEV",
   nickname,
   visit,
   items,
