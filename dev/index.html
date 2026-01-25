@@ -198,6 +198,25 @@ textarea {
   100% { box-shadow: 0 0 0 3px rgba(47,128,237,0.35); }
 }
 
+/* ====================================
+   [PATCH-PRICE] 정가/공동구매가 임팩트 UI
+   ==================================== */
+.price { margin-bottom:10px; }
+.price-regular { font-size:12px; color:#777; font-weight:600; }
+.price-regular span { text-decoration: line-through; }
+.price-sale { margin-top:2px; font-size:14px; font-weight:900; color:#2f80ed; }
+.price-sale span { font-size:18px; }
+.price-save {
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#fff0f0;
+  color:#c0392b;
+  font-size:12px;
+  font-weight:900;
+}
+ 
 </style>
 
 <script>
@@ -337,11 +356,17 @@ VERSION: v1.5.1-header-branding
 <div class="product limited"
      data-product-id="p002"
      data-price="99000">
+     data-regular-price="139000">
   <img src="images/product2.png">
   <div class="product-body">
     <div class="name">설성한우 정성3호 세트</div>
     <div class="stock-badge">한정 30세트</div>
-    <div class="price">99,000원</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>139,000원</span></div>
+  <div class="price-sale">공동구매가 <span>99,000원</span></div>
+  <div class="price-save">정가 대비 40,000원 ↓</div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -354,11 +379,17 @@ VERSION: v1.5.1-header-branding
 <div class="product limited"
      data-product-id="p003"
      data-price="39980">
+     data-regular-price="58800">
   <img src="images/product3.png">
   <div class="product-body">
     <div class="name">설성한우 우족탕 선물세트</div>
     <div class="stock-badge">한정 30세트</div>
-    <div class="price">39,980원</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>58,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+  <div class="price-save">정가 대비 18,820원 ↓</div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -371,11 +402,17 @@ VERSION: v1.5.1-header-branding
 <div class="product limited"
      data-product-id="p004"
      data-price="39980">
+     data-regular-price="59800">
   <img src="images/product4.png">
   <div class="product-body">
     <div class="name">설성목장 제주 설성햄 선물세트</div>
     <div class="stock-badge">한정 30세트</div>
-    <div class="price">39,980원</div>
+    <div class="price">
+  <div class="price-regular">정성구매가 <span>59,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+  <div class="price-save">정가 대비 19,820원 ↓</div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -388,11 +425,16 @@ VERSION: v1.5.1-header-branding
 <div class="product limited"
      data-product-id="p005"
      data-price="79980">
+     data-regular-price="130000">
   <img src="images/product5.png">
   <div class="product-body">
     <div class="name">설성한우 명품 한우육포 선물세트</div>
     <div class="stock-badge">한정 30세트</div>
-    <div class="price">79,980원</div>
+    <div class="price">
+  <div class="price-regular">정상구가 <span>130,000원</span></div>
+  <div class="price-sale">공동구매가 <span>79,980원</span></div>
+  <div class="price-save">정가 대비 50,020원 ↓</div>
+</div>
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -403,7 +445,11 @@ VERSION: v1.5.1-header-branding
 
 
 <div class="total">
-  총 합계: <span id="total">0</span>원
+  <div>상품금액합계: <span id="regularTotal">0</span>원</div>
+  <div>공동구매가 할인: -<span id="discountTotal">0</span>원</div>
+  <div style="margin-top:6px; font-size:18px; font-weight:800;">
+    총 결제금액: <span id="total">0</span>원
+  </div>
 </div>
 
 <div id="saleNotice" style="display:none; margin-bottom:12px; color:#d63031; font-weight:700;"></div>
@@ -521,12 +567,39 @@ document.querySelectorAll(".product").forEach(p => {
 });
 
 function calc() {
-  let sum = 0;
+  let saleSum = 0;      // 총 결제금액(판매가 합)
+  let regularSum = 0;   // 상품금액합계(정상구매가 있으면 정상구매가, 없으면 판매가)
+  let discountSum = 0;  // 공동구매가 할인(정상구매가 있는 품목만)
+
   document.querySelectorAll(".product").forEach(p => {
-    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (!qty) return;
+
+    const salePrice = Number(p.dataset.price);
+    const hasRegular = (p.dataset.regularPrice !== undefined && p.dataset.regularPrice !== "");
+    const regularPrice = hasRegular ? Number(p.dataset.regularPrice) : salePrice;
+
+    saleSum += salePrice * qty;
+    regularSum += regularPrice * qty;
+
+    if (hasRegular) {
+      discountSum += (regularPrice - salePrice) * qty;
+    }
   });
-  document.getElementById("total").innerText = sum.toLocaleString();
+
+  // 총 결제금액
+  document.getElementById("total").innerText = saleSum.toLocaleString();
+
+  // 3줄 합계(요소가 있을 때만 반영: HTML이 아직이면 에러 방지)
+  const regularEl = document.getElementById("regularTotal");
+  const discountEl = document.getElementById("discountTotal");
+  if (regularEl) regularEl.innerText = regularSum.toLocaleString();
+  if (discountEl) discountEl.innerText = discountSum.toLocaleString();
+
+  // 딸기 금요일 강제 UX가 추가된 경우 함께 실행
+  if (typeof applyStrawberryRule === "function") applyStrawberryRule();
 }
+
 if (!isSaleOpen()) {
   orderBtn.disabled = true;
   orderBtn.innerText = "주문 마감";
@@ -619,6 +692,8 @@ orderMessage += "닉네임: " + nickname + "\n";
 orderMessage += "수령일: " + visit + "\n";
 orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "원해요" : "미신청") + "\n\n";
 orderMessage += "주문내역:\n";
+orderMessage += "※ 공동구매가 적용\n\n";
+
 
 items.forEach(i => {
   const cleanName = i.name.replace(/\s*×\s*\d+$/, "");
