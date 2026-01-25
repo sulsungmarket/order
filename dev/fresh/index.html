@@ -1,1 +1,850 @@
-11111
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+ 
+<meta charset="UTF-8">
+<title>청담점 공동구매</title>
+
+  <!-- OG 메타 태그 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="목장에서 식탁까지">
+  <meta property="og:description" content="청담점 공동구매 주문서">
+  <meta property="og:image" content="https://sulsungmarket.github.io/order/images/og.png">
+  <meta property="og:url" content="https://sulsungmarket.github.io/order/">
+
+
+<!--
+====================================================
+청담점 공동구매 주문서 HTML
+====================================================
+
+VERSION HISTORY
+
+v1.4.3 (ORIGINAL)
+- 상품 카드형 UI
+- 수량 증감 / 합계 계산
+- 주문문구 생성
+- GAS doPost 연동 검증 완료
+
+v1.4.4 (STABLE PATCH)
+- JS 템플릿 문자열 문법 에러 수정 (주문문구 생성 중단 이슈 해결)
+- fetch 실패 시에도 화면 멈추지 않도록 try/catch 추가
+- 기존 구조 / 상품 / 스타일 절대 변경 없음
+
+ v1.5.0 (FUNCTIONAL READY)
+- 주문문구 복사 버튼 위치 확정 (주문내역 바로 아래)
+- 복사 CTA / 성공 메시지 UX 개선
+- 주문 완료 후 재조작 완전 차단
+- 실사용 가능한 주문 플로우 완성
+
+ v1.5.1 (STABLE / LIVE)
+- 헤더 브랜딩 슬로건 적용
+- 주문 완료 UX 즉시 반응 처리 (no-cors)
+- 주문문구 / 화면표시 분리
+- 외부 링크 주문문구 제외
+- 주문 완료 후 입력/재주문 완전 차단
+
+ v1.5.2 (STOCK LINK PATCH)
+- 상품 DOM에 data-id 추가
+- items payload에 product_id(id) 포함
+- GAS 재고 검증 / 차감 로직 연동 완료
+
+
+
+
+※ 주의
+- HTML은 GitHub Pages 전용
+- SCRIPT_URL 변경 시 꼭수정하기
+- 코드 삭제 X
+====================================================
+-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* [PATCH 1] 전역 정렬 안정화 */
+* {
+  box-sizing: border-box;
+}
+
+  body {
+  margin:0;
+  padding:16px;
+  background:#f6f7f9;
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.container {
+  max-width:480px;
+  margin:auto;
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+}
+
+h1 {
+  text-align:center;
+  font-size:22px;
+  margin-bottom:18px;
+}
+
+.field {
+  margin-bottom:14px;
+}
+.field label {
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+.field input,
+.field select {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+/* 상품 카드 */
+.product {
+  border:1px solid #eee;
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+
+/* [PATCH 3] 상품 이미지 비율 안정 */
+.product img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: #f5f5f5;
+}
+
+
+.product-body {
+  padding:12px;
+}
+
+.name {
+  font-weight:700;
+  margin-bottom:4px;
+}
+.price {
+  font-weight:800;
+  color:#2f80ed;
+  margin-bottom:10px;
+}
+
+.qty-box {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.qty-box button {
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:8px;
+  background:#f0f0f0;
+  font-size:20px;
+}
+.qty {
+  width:32px;
+  text-align:center;
+  font-weight:700;
+}
+
+.total {
+  text-align:right;
+  font-size:18px;
+  font-weight:800;
+  margin:20px 0 10px;
+}
+
+button.action {
+  width:100%;
+  padding:16px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+#orderBtn {
+  background:#2f80ed;
+  color:#fff;
+}
+#copyBtn {
+  background:#27ae60;
+  color:#fff;
+  display:none;
+}
+
+textarea {
+  position:absolute;
+  left:-9999px;
+  top:-9999px;
+  opacity:0;
+}
+
+ /* [PATCH 4] 주문내역 영역강조 */
+@keyframes softPulse {
+  0%   { box-shadow: 0 0 0 3px rgba(47,128,237,0.35); }
+  50%  { box-shadow: 0 0 0 5px rgba(47,128,237,0.55); }
+  100% { box-shadow: 0 0 0 3px rgba(47,128,237,0.35); }
+}
+
+/* ====================================
+   [PATCH-PRICE] 정가/공동구매가 임팩트 UI
+   ==================================== */
+.price { margin-bottom:10px; }
+.price-regular { font-size:12px; color:#777; font-weight:600; }
+.price-regular span { text-decoration: line-through; }
+.price-sale { margin-top:2px; font-size:14px; font-weight:900; color:#2f80ed; }
+.price-sale span { font-size:18px; }
+.price-save {
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#fff0f0;
+  color:#c0392b;
+  font-size:12px;
+  font-weight:900;
+}
+
+ /* 총합계 컬러 */
+.money-red { color:#d63031; font-weight:900; }
+.money-blue { color:#2f80ed; font-weight:900; }
+ 
+</style>
+
+<script>
+/* 우클릭 + 개발자도구 단축키 */
+(function () {
+  document.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
+  document.addEventListener("selectstart", function (e) { e.preventDefault(); return false; });
+  document.addEventListener("dragstart", function (e) { e.preventDefault(); return false; });
+  //document.addEventListener("copy", function (e) { e.preventDefault(); return false; });
+
+  document.addEventListener("keydown", function (e) {
+    const key = (e.key || "").toLowerCase();
+
+    if (e.keyCode === 123) { e.preventDefault(); return false; } // F12
+    if (e.ctrlKey && e.shiftKey && (key === "i" || key === "j" || key === "c")) { e.preventDefault(); return false; }
+    if (e.ctrlKey && key === "u") { e.preventDefault(); return false; } // Ctrl+U
+    if (e.ctrlKey && (key === "s" || key === "p")) { e.preventDefault(); return false; } // Ctrl+S/P
+  });
+
+  document.addEventListener("gesturestart", function (e) { e.preventDefault(); return false; });
+
+  try {
+    document.documentElement.style.userSelect = "none";
+    document.documentElement.style.webkitUserSelect = "none";
+    document.documentElement.style.msUserSelect = "none";
+    document.documentElement.style.mozUserSelect = "none";
+  } catch (e) {}
+})();
+</script>
+
+</head>
+
+<body>
+<div class="container">
+<h1>청담점 공동구매</h1>
+ <!--
+====================================================
+[PATCH A] 헤더 타이틀
+VERSION: v1.5.1-header-branding
+====================================================
+-->
+<!-- [PATCH A-REFINE] 타이틀 고도화 -->
+<div style="
+  text-align:center;
+  margin-bottom:22px;
+  padding:14px 12px 16px;
+  border-radius:14px;
+  background:linear-gradient(180deg, #f8f9fb 0%, #ffffff 100%);
+">
+
+  <!-- 메인 슬로건 -->
+  <div style="
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:-0.3px;
+    color:#1f2a44;
+    margin-bottom:6px;
+  ">
+    목장에서 식탁까지
+  </div>
+
+  <!-- 캐치프라이즈 -->
+  <div style="
+    font-size:14px;
+    font-weight:600;
+    color:#2f80ed;
+    margin-bottom:8px;
+  ">
+    현명한 소비의 시작
+  </div>
+
+  <!-- 주문 기간 -->
+  <div style="
+    display:inline-block;
+    font-size:12px;
+    color:#555;
+    background:#f1f3f5;
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:500;
+  ">
+    매주 월요일 ~ 수요일 • 오후 4시 마감
+  </div>
+
+</div>
+
+<div class="field">
+  <label>오픈채팅 닉네임</label>
+  <input id="nickname" placeholder="채팅방닉네임+전화번호뒷4자리">
+</div>
+
+<div class="field">
+  <label>방문 수령일</label>
+  <select id="visit">
+    <option value="">선택</option>
+    <option value="금">금</option>
+    <option value="토">토</option>
+    <option value="일">일</option>
+  </select>
+</div>
+<div class="field">
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    justify-content:flex-start;
+  ">
+    <input
+      type="checkbox"
+      id="cashReceipt"
+      style="width:18px; height:18px; margin:0;"
+    >
+    <span style="font-size:14px; font-weight:600; color:#333;">
+      현금영수증 원해요
+    </span>
+  </div>
+</div>
+
+<!-- 상품 1 -->
+<div class="product limited"
+     data-product-id="p001"
+     data-price="6900">
+  <img src="images/product1.png">
+  <div class="product-body">
+    <div class="name">설향딸기 500g (3×5 사이즈)</div>
+    <div class="stock-badge">한정 100팩 · 금요일 방문수령만</div>
+    <div class="price">6,900원</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 2 -->
+<div class="product limited" data-product-id="p002" data-price="99000" data-regular-price="139000">
+  <img src="images/product2.png">
+  <div class="product-body">
+    <div class="name">설성한우 정성3호 세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>139,000원</span></div>
+  <div class="price-sale">공동구매가 <span>99,000원</span></div>
+<div class="price-save" data-save-line="1"></div>
+</div>
+
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 3 -->
+<div class="product limited" data-product-id="p003" data-price="39980" data-regular-price="59800">
+  <img src="images/product3.png">
+  <div class="product-body">
+    <div class="name">설성한우 우족탕 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>59,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+ <div class="price-save" data-save-line="1"></div>
+</div>
+
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 4 -->
+<div class="product limited" data-product-id="p004" data-price="39980" data-regular-price="59800">
+  <img src="images/product4.png">
+  <div class="product-body">
+    <div class="name">설성목장 제주 설성햄 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정성구매가 <span>59,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+  <div class="price-save" data-save-line="1"></div>
+</div>
+
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 5 -->
+<div class="product limited" data-product-id="p005" data-price="79980" data-regular-price="130000">
+  <img src="images/product5.png">
+  <div class="product-body">
+    <div class="name">설성한우 명품 한우육포 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정상구가 <span>130,000원</span></div>
+  <div class="price-sale">공동구매가 <span>79,980원</span></div>
+<div class="price-save" data-save-line="1"></div>
+</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="total">
+  <div>상품금액합계: <span id="regularTotal">0</span>원</div>
+
+  <div id="discountRow" style="display:none;">
+    공동구매가 할인:
+    <span id="discountValue" class="money-red">-0</span>원
+  </div>
+
+  <div style="margin-top:6px; font-size:18px; font-weight:800;">
+    총 결제금액: <span id="total" class="money-blue">0</span>원
+  </div>
+</div>
+
+<div id="saleNotice" style="display:none; margin-bottom:12px; color:#d63031; font-weight:700;"></div>
+
+<button id="orderBtn" class="action">주문 완료</button>
+
+<textarea id="orderText" readonly></textarea>
+  <!-- 주문 완료 카드 UI (읽기 전용 표시용) -->
+<div id="orderCard" style="
+  display:none;
+  margin-top:14px;
+  padding:0 16px 16px 16px;
+  border-radius:14px;
+  background:#f8f9fa;
+  font-size:14px;
+  line-height:1.7;
+  white-space:pre-line;
+">
+</div>
+
+ <button
+  id="copyBtn"
+  class="action"
+  style="display:none; margin-top:12px; background:#27ae60; color:#fff;"
+>
+  📋 주문문구 복사 (톡방에 붙여넣기)
+</button>
+
+ 
+  <!-- 입금 계좌 안내 (주문 완료 후 노출) -->
+<div id="accountInfo" style="
+  display:none;
+  margin-top:14px;
+  padding:14px;
+  border-radius:12px;
+  background:#f1f3f5;
+  font-size:14px;
+  line-height:1.6;
+">
+<strong>🏦 입금 계좌 안내</strong><br>
+농협 301-0297-8175-81<br>
+예금주: 설성푸드<br><br>
+📞 매장문의: 02-830-0062
+
+
+</div>
+
+<script>
+/*
+====================================================
+GAS 연동 설정
+====================================================
+*/
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0SUKbp05CwUovG111sbzrBA00SdTRbEU2xPwvz9lCabUYOdZkJyJr9jaxucVojh43/exec";
+
+/*
+====================================================
+주문 일정 모듈
+VERSION: v1.4.4-sale-weekly-min
+====================================================
+*/
+
+/*
+모드 값
+- "ALWAYS_OPEN"
+- "WEEKLY"
+- "ALWAYS_CLOSE"
+*/
+const SALE_MODE = "ALWAYS_OPEN";
+// const SALE_MODE = "WEEKLY";
+// const SALE_MODE = "ALWAYS_CLOSE";
+
+/* WEEKLY 설정 */
+const WEEKLY_OPEN_DAYS = [5, 6]; // 월(1), 월(1)
+const WEEKLY_START_HOUR = 10;    // 오전 10시
+const WEEKLY_END_HOUR = 22;      // 오후 16시
+
+function isSaleOpen() {
+  const now = new Date();
+
+  if (SALE_MODE === "ALWAYS_OPEN") return true;
+  if (SALE_MODE === "ALWAYS_CLOSE") return false;
+
+  if (SALE_MODE === "WEEKLY") {
+    const day = now.getDay();
+    const hour = now.getHours();
+    return (
+      WEEKLY_OPEN_DAYS.includes(day) &&
+      hour >= WEEKLY_START_HOUR &&
+      hour < WEEKLY_END_HOUR
+    );
+  }
+
+  return false;
+}
+
+const nicknameEl = document.getElementById("nickname");
+const visitEl = document.getElementById("visit");
+const orderBtn = document.getElementById("orderBtn");
+const copyBtn = document.getElementById("copyBtn");
+const orderText = document.getElementById("orderText");
+const cashReceiptEl = document.getElementById("cashReceipt");
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildOrderMessageHTML(orderMessage) {
+  let s = escapeHtml(orderMessage);
+
+  // 총 결제금액: 금액만 강조
+  s = s.replace(
+    /(💰\s*총\s*결제금액:\s*)([0-9,]+원)/,
+    `$1<span style="color:#2f80ed; font-weight:900;">$2</span>`
+  );
+
+  // 입금 계좌 3줄 강조(타이틀+농협+예금주)
+  s = s.replace(
+    /🏦\s*입금\s*계좌\n(농협[^\n]*)\n(예금주:[^\n]*)/,
+    `<span style="color:#27ae60; font-weight:900;">🏦 입금 계좌</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$1</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$2</span>`
+  );
+
+  return s.replace(/\n/g, "<br>");
+}
+ 
+/* 수량 조절 */
+document.querySelectorAll(".product").forEach(p => {
+  const qtyEl = p.querySelector(".qty");
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+    calc();
+  };
+  p.querySelector(".minus").onclick = () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+    calc();
+  };
+});
+
+function calc() {
+  let saleSum = 0;      // 총 결제금액(판매가 합)
+  let regularSum = 0;   // 상품금액합계(정상구매가 있으면 정상구매가, 없으면 판매가)
+  let discountSum = 0;  // 공동구매가 할인(정상구매가 있는 품목만)
+
+  document.querySelectorAll(".product").forEach(p => {
+    const qty = Number(p.querySelector(".qty").innerText);
+    const salePrice = Number(p.dataset.price);
+    const hasRegular = (p.dataset.regularPrice !== undefined && p.dataset.regularPrice !== "");
+    const regularPrice = hasRegular ? Number(p.dataset.regularPrice) : salePrice;
+
+    // 합계는 수량이 있는 경우에만 반영
+    if (qty > 0) {
+      saleSum += salePrice * qty;
+      regularSum += regularPrice * qty;
+
+      if (hasRegular) {
+        discountSum += (regularPrice - salePrice) * qty;
+      }
+    }
+
+    // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+    const saveEl = p.querySelector('[data-save-line="1"]');
+    if (saveEl) {
+      if (hasRegular) {
+        const unitSave = (regularPrice - salePrice);
+        const shownQty = Math.max(1, qty);
+        saveEl.style.display = "inline-block";
+        saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+      } else {
+        saveEl.style.display = "none";
+        saveEl.innerText = "";
+      }
+    }
+
+    // 카드별 상품합계(수량 0이면 숨김)
+    let lineTotalEl = p.querySelector('[data-line-total="1"]');
+    if (!lineTotalEl) {
+      lineTotalEl = document.createElement("div");
+      lineTotalEl.setAttribute("data-line-total", "1");
+      lineTotalEl.style.marginTop = "6px";
+      lineTotalEl.style.fontSize = "13px";
+      lineTotalEl.style.fontWeight = "800";
+      lineTotalEl.style.textAlign = "right";
+
+      const body = p.querySelector(".product-body") || p;
+      const qtyBox = body.querySelector(".qty-box");
+      if (qtyBox) body.insertBefore(lineTotalEl, qtyBox);
+      else body.appendChild(lineTotalEl);
+    }
+
+    if (qty > 0) {
+      lineTotalEl.style.display = "block";
+      lineTotalEl.innerHTML =
+        '합계 <span class="money-blue">' +
+        (salePrice * qty).toLocaleString() +
+        '</span>원';
+    } else {
+      lineTotalEl.style.display = "none";
+    }
+  });
+
+  // 총 결제금액
+  const totalEl = document.getElementById("total");
+  if (totalEl) totalEl.innerText = saleSum.toLocaleString();
+
+  // 상품금액합계
+  const regularEl = document.getElementById("regularTotal");
+  if (regularEl) regularEl.innerText = regularSum.toLocaleString();
+
+  // 공동구매가 할인: 할인 대상이 있을 때만 노출(- 포함 빨강)
+  const discountRow = document.getElementById("discountRow");
+  const discountValue = document.getElementById("discountValue");
+  if (discountRow && discountValue) {
+    if (discountSum > 0) {
+      discountRow.style.display = "block";
+      discountValue.innerText = "-" + discountSum.toLocaleString();
+    } else {
+      discountRow.style.display = "none";
+    }
+  }
+
+  // 신선상품 수령일 고정 UX는 다음 단계에서 연결(현재는 미구현이면 자동 무시)
+  if (typeof applyStrawberryRule === "function") applyStrawberryRule();
+}
+
+
+calc();
+ 
+if (!isSaleOpen()) {
+  orderBtn.disabled = true;
+  orderBtn.innerText = "주문 마감";
+  orderBtn.style.background = "#999";
+}
+const noticeEl = document.getElementById("saleNotice");
+
+if (!isSaleOpen()) {
+  let msg = "현재 주문이 불가능합니다.";
+
+  if (SALE_MODE === "ALWAYS_CLOSE") {
+    msg = "주문이 끝났습니다. 매주 월요일 새로운 상품이 등록됩니다.";
+  }
+
+  if (SALE_MODE === "WEEKLY") {
+    msg = "주문이 끝났습니다. 매주 월요일 새로운 상품이 등록됩니다";
+  }
+
+  noticeEl.innerText = msg;
+  noticeEl.style.display = "block";
+}
+
+
+
+  orderBtn.onclick = async () => {
+    // [PATCH 2] 주문 처리 중 UX
+
+
+  const nickname = nicknameEl.value.trim();
+  const visit = visitEl.value;
+
+  if (!nickname || !visit) {
+    alert("닉네임과 수령일을 입력해주세요");
+    return;
+  }
+
+  let items = [];
+  let total = 0;
+
+  document.querySelectorAll(".product").forEach(p => {
+    const qty = Number(p.querySelector(".qty").innerText);
+    if (qty > 0) {
+      const price = Number(p.dataset.price);
+items.push({
+  product_id: p.dataset.productId || null,
+  name: p.querySelector(".name").innerText,
+  qty,
+  price
+});
+
+
+      total += price * qty;
+    }
+  });
+
+  if (!items.length) {
+    alert("상품을 선택하세요");
+    return;
+  }
+
+orderBtn.innerText = "주문 처리 중...";
+orderBtn.disabled = true;
+orderBtn.style.opacity = "0.7";
+
+// [NOTE] DEV 응답 기반 전송(try/catch + res.json) 보관 구간 (중첩 주석 금지로 제거함)
+
+
+// ===== 운영용 전송(no-cors) =====
+fetch(SCRIPT_URL, {
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify({
+  pageEnv: "DEV",
+  nickname,
+  visit,
+  items,
+  total,
+  cashReceipt: cashReceiptEl ? cashReceiptEl.checked : false
+})
+
+}).catch(err => {
+  console.error("GAS 전송 실패:", err);
+});
+
+
+/* 주문문구 생성 (복사용 + 화면 표시용) */
+let orderMessage = "[청담점 공동구매 주문서]\n\n";
+orderMessage += "닉네임: " + nickname + "\n";
+orderMessage += "수령일: " + visit + "\n";
+orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "원해요" : "미신청") + "\n\n";
+orderMessage += "주문내역:\n";
+
+
+items.forEach(i => {
+  const cleanName = i.name.replace(/\s*×\s*\d+$/, "");
+  orderMessage += "• " + cleanName + "\n";
+  orderMessage += "  └ 수량: " + i.qty + "개\n";
+});
+
+orderMessage += "\n💰 총 결제금액: " + total.toLocaleString() + "원\n\n";
+orderMessage += "🏦 입금 계좌\n";
+orderMessage += "농협 301-0297-8175-81\n";
+orderMessage += "예금주: 설성푸드\n\n";
+orderMessage += "※ 입금 후 본 주문문구를 채팅방에 남겨주세요";
+
+   const result = null; // no-cors 운영: 응답을 읽지 않으므로 null 고정
+
+
+const orderStatusHTML =
+`<div style="
+  color:#2f80ed;
+  font-weight:700;
+  margin:0;
+  padding:0;
+">
+✅ 감사합니다! 주문이 접수되었습니다.
+</div>`;
+
+orderText.value = orderMessage;
+
+document.getElementById("orderCard").innerHTML =
+  orderStatusHTML +
+  `<div style="margin:0; font-family:inherit; line-height:1.7;">${buildOrderMessageHTML(orderMessage)}</div>`;
+   
+document.getElementById("orderCard").style.display = "block";
+copyBtn.style.display = "block";
+orderBtn.disabled = true;
+document.getElementById("accountInfo").style.display = "block";
+   // [PATCH 1] 주문 완료 후 주문내역으로 자동 스크롤
+setTimeout(() => {
+  document.getElementById("orderCard").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}, 150);
+
+const card = document.getElementById("orderCard");
+card.style.animation = "softPulse 2.4s ease-in-out infinite";
+
+  // 🔒 주문 완료 후 전체 입력 비활성 (중복 방지)
+nicknameEl.disabled = true;
+visitEl.disabled = true;
+
+document.querySelectorAll(".plus, .minus").forEach(btn => {
+  btn.disabled = true;
+  btn.style.opacity = 0.4;
+});
+
+// 버튼 상태 명확화
+orderBtn.innerText = "주문 완료됨";
+orderBtn.style.background = "#adb5bd";
+
+
+};
+
+/* 복사 */
+copyBtn.onclick = () => {
+  orderText.select();
+  document.execCommand("copy");
+  alert("✔ 복사 완료! 톡방에 붙여넣어 주세요");
+};
+
+</script>
+
+</body>
+</html>
