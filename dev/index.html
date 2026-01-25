@@ -550,6 +550,35 @@ const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 const cashReceiptEl = document.getElementById("cashReceipt");
 
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildOrderMessageHTML(orderMessage) {
+  let s = escapeHtml(orderMessage);
+
+  // 총 결제금액: 금액만 강조
+  s = s.replace(
+    /(💰\s*총\s*결제금액:\s*)([0-9,]+원)/,
+    `$1<span style="color:#2f80ed; font-weight:900;">$2</span>`
+  );
+
+  // 입금 계좌 3줄 강조(타이틀+농협+예금주)
+  s = s.replace(
+    /🏦\s*입금\s*계좌\n(농협[^\n]*)\n(예금주:[^\n]*)/,
+    `<span style="color:#27ae60; font-weight:900;">🏦 입금 계좌</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$1</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$2</span>`
+  );
+
+  return s.replace(/\n/g, "<br>");
+}
+ 
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
@@ -749,7 +778,7 @@ orderText.value = orderMessage;
 
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
- `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
+  `<div style="margin:0; font-family:inherit; line-height:1.7;">${buildOrderMessageHTML(orderMessage)}</div>`;
    
 document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
