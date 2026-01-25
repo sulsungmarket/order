@@ -624,8 +624,10 @@ function calc() {
       } else {
         saveEl.style.display = "none";
         saveEl.innerText = "";
+      }
+    }
 
-           // 카드별 상품합계 표시(수량 0이면 숨김)
+    // 카드별 상품합계(수량 0이면 숨김)
     let lineTotalEl = p.querySelector('[data-line-total="1"]');
     if (!lineTotalEl) {
       lineTotalEl = document.createElement("div");
@@ -672,7 +674,7 @@ function calc() {
     }
   }
 
-  // 신선상품 금요일 수령 강제 UX가 들어간 경우만 실행(없으면 무시)
+  // 신선상품 수령일 고정 UX는 다음 단계에서 연결(현재는 미구현이면 자동 무시)
   if (typeof applyStrawberryRule === "function") applyStrawberryRule();
 }
 
