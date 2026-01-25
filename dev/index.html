@@ -365,7 +365,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정상구매가 <span>139,000원</span></div>
   <div class="price-sale">공동구매가 <span>99,000원</span></div>
-<div class="price-save" data-save-line="1" style="display:none;"></div>
+<div class="price-save" data-save-line="1"></div>
 </div>
 
     <div class="qty-box">
@@ -383,9 +383,9 @@ VERSION: v1.5.1-header-branding
     <div class="name">설성한우 우족탕 선물세트</div>
     <div class="stock-badge">한정 30세트</div>
     <div class="price">
-  <div class="price-regular">정상구매가 <span>58,800원</span></div>
+  <div class="price-regular">정상구매가 <span>59,800원</span></div>
   <div class="price-sale">공동구매가 <span>39,980원</span></div>
-  <div class="price-save" data-save-line="1" style="display:none;"></div>
+ <div class="price-save" data-save-line="1"></div>
 </div>
 
     <div class="qty-box">
@@ -396,7 +396,6 @@ VERSION: v1.5.1-header-branding
   </div>
 </div>
 
-<!-- 상품 4 -->
 <!-- 상품 4 -->
 <div class="product limited" data-product-id="p004" data-price="39980" data-regular-price="59800">
   <img src="images/product4.png">
@@ -406,7 +405,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정성구매가 <span>59,800원</span></div>
   <div class="price-sale">공동구매가 <span>39,980원</span></div>
-  <div class="price-save" data-save-line="1" style="display:none;"></div>
+  <div class="price-save" data-save-line="1"></div>
 </div>
 
     <div class="qty-box">
@@ -418,7 +417,6 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 5 -->
-<!-- 상품 5 -->
 <div class="product limited" data-product-id="p005" data-price="79980" data-regular-price="130000">
   <img src="images/product5.png">
   <div class="product-body">
@@ -427,7 +425,7 @@ VERSION: v1.5.1-header-branding
     <div class="price">
   <div class="price-regular">정상구가 <span>130,000원</span></div>
   <div class="price-sale">공동구매가 <span>79,980원</span></div>
- <div class="price-save" data-save-line="1" style="display:none;"></div>
+<div class="price-save" data-save-line="1"></div>
 </div>
     <div class="qty-box">
       <button class="minus">-</button>
@@ -439,7 +437,6 @@ VERSION: v1.5.1-header-branding
 
 
 <div class="total">
-  <div class="total">
   <div>상품금액합계: <span id="regularTotal">0</span>원</div>
 
   <div id="discountRow" style="display:none;">
@@ -573,47 +570,62 @@ function calc() {
 
   document.querySelectorAll(".product").forEach(p => {
     const qty = Number(p.querySelector(".qty").innerText);
-    if (!qty) return;
-
     const salePrice = Number(p.dataset.price);
     const hasRegular = (p.dataset.regularPrice !== undefined && p.dataset.regularPrice !== "");
     const regularPrice = hasRegular ? Number(p.dataset.regularPrice) : salePrice;
 
-    saleSum += salePrice * qty;
-    regularSum += regularPrice * qty;
+    // 합계는 수량이 있는 경우에만 반영
+    if (qty > 0) {
+      saleSum += salePrice * qty;
+      regularSum += regularPrice * qty;
 
-    if (hasRegular) {
-  discountSum += (regularPrice - salePrice) * qty;
-}
+      if (hasRegular) {
+        discountSum += (regularPrice - salePrice) * qty;
+      }
+    }
 
-const saveEl = p.querySelector('[data-save-line="1"]');
-if (saveEl) {
-  if (hasRegular) {
-    const unitSave = (regularPrice - salePrice);
-    const shownQty = Math.max(1, qty);
-    saveEl.style.display = "inline-block";
-    saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
-  } else {
-    saveEl.style.display = "none";
-    saveEl.innerText = "";
-  }
-}
-
+    // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+    const saveEl = p.querySelector('[data-save-line="1"]');
+    if (saveEl) {
+      if (hasRegular) {
+        const unitSave = (regularPrice - salePrice);
+        const shownQty = Math.max(1, qty);
+        saveEl.style.display = "inline-block";
+        saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+      } else {
+        saveEl.style.display = "none";
+        saveEl.innerText = "";
+      }
+    }
   });
 
   // 총 결제금액
-  document.getElementById("total").innerText = saleSum.toLocaleString();
+  const totalEl = document.getElementById("total");
+  if (totalEl) totalEl.innerText = saleSum.toLocaleString();
 
-  // 3줄 합계(요소가 있을 때만 반영: HTML이 아직이면 에러 방지)
+  // 상품금액합계
   const regularEl = document.getElementById("regularTotal");
-  const discountEl = document.getElementById("discountTotal");
   if (regularEl) regularEl.innerText = regularSum.toLocaleString();
-  if (discountEl) discountEl.innerText = discountSum.toLocaleString();
 
-  // 딸기 금요일 강제 UX가 추가된 경우 함께 실행
+  // 공동구매가 할인: 할인 대상이 있을 때만 노출(- 포함 빨강)
+  const discountRow = document.getElementById("discountRow");
+  const discountValue = document.getElementById("discountValue");
+  if (discountRow && discountValue) {
+    if (discountSum > 0) {
+      discountRow.style.display = "block";
+      discountValue.innerText = "-" + discountSum.toLocaleString();
+    } else {
+      discountRow.style.display = "none";
+    }
+  }
+
+  // 신선상품 금요일 수령 강제 UX가 들어간 경우만 실행(없으면 무시)
   if (typeof applyStrawberryRule === "function") applyStrawberryRule();
 }
 
+
+calc();
+ 
 if (!isSaleOpen()) {
   orderBtn.disabled = true;
   orderBtn.innerText = "주문 마감";
