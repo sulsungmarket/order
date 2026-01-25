@@ -502,6 +502,8 @@ GAS 연동 설정
 */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0SUKbp05CwUovG111sbzrBA00SdTRbEU2xPwvz9lCabUYOdZkJyJr9jaxucVojh43/exec";
 
+const ORDER_TYPE = "FRESH";
+
 /*
 ====================================================
 주문 일정 모듈
@@ -755,6 +757,9 @@ fetch(SCRIPT_URL, {
   headers: { "Content-Type": "text/plain;charset=utf-8" },
   body: JSON.stringify({
   pageEnv: "DEV",
+  // FRESH / GIFT 분기 저장용
+  orderType: ORDER_TYPE,
+
   nickname,
   visit,
   items,
