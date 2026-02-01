@@ -198,8 +198,33 @@ textarea {
   100% { box-shadow: 0 0 0 3px rgba(47,128,237,0.35); }
 }
 
+/* ====================================
+   [PATCH-PRICE] 정가/공동구매가 임팩트 UI
+   ==================================== */
+.price { margin-bottom:10px; }
+.price-regular { font-size:12px; color:#777; font-weight:600; }
+.price-regular span { text-decoration: line-through; }
+.price-sale { margin-top:2px; font-size:14px; font-weight:900; color:#2f80ed; }
+.price-sale span { font-size:18px; }
+.price-save {
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#fff0f0;
+  color:#c0392b;
+  font-size:12px;
+  font-weight:900;
+}
+
+ /* 총합계 컬러 */
+.money-red { color:#d63031; font-weight:900; }
+.money-blue { color:#2f80ed; font-weight:900; }
+ 
 </style>
 
+<script src="config.js"></script>
+ 
 <script>
 /* 우클릭 + 개발자도구 단축키 */
 (function () {
@@ -286,7 +311,7 @@ VERSION: v1.5.1-header-branding
 
 <div class="field">
   <label>오픈채팅 닉네임</label>
-  <input id="nickname" placeholder="카카오톡 닉네임">
+  <input id="nickname" placeholder="채팅방닉네임+전화번호뒷4자리">
 </div>
 
 <div class="field">
@@ -316,15 +341,19 @@ VERSION: v1.5.1-header-branding
   </div>
 </div>
 
-<!-- 상품 1 (한정수량) -->
-<div class="product limited"
-     data-product-id="p001"
-     data-price="10900">
+<!-- 상품 1 -->
+<div class="product" data-product-id="p001" data-price="5980" data-regular-price="8500">
   <img src="images/product1.png">
-   <div class="product-body">
-    <div class="name">1++등급 무항생제 한우사태 300g</div>
-    <div class="stock-badge">한정 50팩</div>
-    <div class="price">10,900원</div>
+  <div class="product-body">
+    <div class="name">현미유 바른김 선물세트(도시락김4gx15구성)</div>
+    <div class="stock-badge">바삭바삭 고소한 현미유!*품절주의!</div>
+
+    <div class="price">
+      <div class="price-regular">정상구매가 <span>8,500원</span></div>
+      <div class="price-sale">공동구매가 <span>5,980원</span></div>
+      <div class="price-save" data-save-line="1"></div>
+    </div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -334,13 +363,17 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 2 -->
-<div class="product"
-     data-product-id="p002"
-     data-price="10000">
+<div class="product limited" data-product-id="p002" data-price="10980" data-regular-price="31500">
   <img src="images/product2.png">
   <div class="product-body">
-    <div class="name">존쿡 크림치즈 쌀베이글 4개구성 </div>
-    <div class="price">10,000원</div>
+    <div class="name">1+등급 무항생제 한우 등심국거리300g</div>
+    <div class="stock-badge">한정 50세트!</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>31,500원</span></div>
+  <div class="price-sale">공동구매가 <span>10,980원</span></div>
+<div class="price-save" data-save-line="1"></div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -349,17 +382,18 @@ VERSION: v1.5.1-header-branding
   </div>
 </div>
 
-<!-- 상품 3 -->
-
- <!--
-상품 3 임시 비활성 (내일 주문 제외)
-<div class="product"
-     data-product-id="p003"
-     data-price="9900">
+<!-- 상품 3
+<div class="product limited" data-product-id="p003" data-price="39980" data-regular-price="59800">
   <img src="images/product3.png">
   <div class="product-body">
-    <div class="name">우된장 한우된장찌개 밀키트 × 2</div>
-    <div class="price">9,900원</div>
+    <div class="name">설성한우 우족탕 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정상구매가 <span>59,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+ <div class="price-save" data-save-line="1"></div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -367,19 +401,21 @@ VERSION: v1.5.1-header-branding
     </div>
   </div>
 </div>
--->
 
- 
-<!-- 상품 4 -->
- <!--
-상품 4 임시 비활성 (내일 주문 제외)
-<div class="product"
-     data-product-id="p004"
-     data-price="19900">
+ -->
+
+<!-- 상품 4
+<div class="product limited" data-product-id="p004" data-price="39980" data-regular-price="59800">
   <img src="images/product4.png">
   <div class="product-body">
-    <div class="name">피터루거 스테이크 하우스 밀키트 × 4</div>
-    <div class="price">19,900원</div>
+    <div class="name">설성목장 제주 설성햄 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정성구매가 <span>59,800원</span></div>
+  <div class="price-sale">공동구매가 <span>39,980원</span></div>
+  <div class="price-save" data-save-line="1"></div>
+</div>
+
     <div class="qty-box">
       <button class="minus">-</button>
       <div class="qty">0</div>
@@ -387,10 +423,41 @@ VERSION: v1.5.1-header-branding
     </div>
   </div>
 </div>
+
 -->
 
+<!-- 상품 5
+<div class="product limited" data-product-id="p005" data-price="79980" data-regular-price="130000">
+  <img src="images/product5.png">
+  <div class="product-body">
+    <div class="name">설성한우 명품 한우육포 선물세트</div>
+    <div class="stock-badge">한정 30세트</div>
+    <div class="price">
+  <div class="price-regular">정상구가 <span>130,000원</span></div>
+  <div class="price-sale">공동구매가 <span>79,980원</span></div>
+<div class="price-save" data-save-line="1"></div>
+</div>
+    <div class="qty-box">
+      <button class="minus">-</button>
+      <div class="qty">0</div>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+ -->
+ 
 <div class="total">
-  총 합계: <span id="total">0</span>원
+  <div>상품금액합계: <span id="regularTotal">0</span>원</div>
+
+  <div id="discountRow" style="display:none;">
+    공동구매가 할인:
+    <span id="discountValue" class="money-red">-0</span>원
+  </div>
+
+  <div style="margin-top:6px; font-size:18px; font-weight:800;">
+    총 결제금액: <span id="total" class="money-blue">0</span>원
+  </div>
 </div>
 
 <div id="saleNotice" style="display:none; margin-bottom:12px; color:#d63031; font-weight:700;"></div>
@@ -444,8 +511,8 @@ VERSION: v1.5.1-header-branding
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKhIH1smdYwZ7HLACMFKVTArkLfRqvkKlVMiBszBcvZf3n7fv_1KGPssyzMplyo-K6/exec";
-
+const SCRIPT_URL = window.__ENV__?.SCRIPT_URL;
+const PAGE_ENV = window.__ENV__?.TAG; // "DEV" or "LIVE"
 /*
 ====================================================
 주문 일정 모듈
@@ -494,6 +561,35 @@ const copyBtn = document.getElementById("copyBtn");
 const orderText = document.getElementById("orderText");
 const cashReceiptEl = document.getElementById("cashReceipt");
 
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildOrderMessageHTML(orderMessage) {
+  let s = escapeHtml(orderMessage);
+
+  // 총 결제금액: 금액만 강조
+  s = s.replace(
+    /(💰\s*총\s*결제금액:\s*)([0-9,]+원)/,
+    `$1<span style="color:#2f80ed; font-weight:900;">$2</span>`
+  );
+
+  // 입금 계좌 3줄 강조(타이틀+농협+예금주)
+  s = s.replace(
+    /🏦\s*입금\s*계좌\n(농협[^\n]*)\n(예금주:[^\n]*)/,
+    `<span style="color:#27ae60; font-weight:900;">🏦 입금 계좌</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$1</span>\n` +
+    `<span style="color:#27ae60; font-weight:800;">$2</span>`
+  );
+
+  return s.replace(/\n/g, "<br>");
+}
+ 
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
@@ -508,12 +604,94 @@ document.querySelectorAll(".product").forEach(p => {
 });
 
 function calc() {
-  let sum = 0;
+  let saleSum = 0;      // 총 결제금액(판매가 합)
+  let regularSum = 0;   // 상품금액합계(정상구매가 있으면 정상구매가, 없으면 판매가)
+  let discountSum = 0;  // 공동구매가 할인(정상구매가 있는 품목만)
+
   document.querySelectorAll(".product").forEach(p => {
-    sum += Number(p.dataset.price) * Number(p.querySelector(".qty").innerText);
+    const qty = Number(p.querySelector(".qty").innerText);
+    const salePrice = Number(p.dataset.price);
+    const hasRegular = (p.dataset.regularPrice !== undefined && p.dataset.regularPrice !== "");
+    const regularPrice = hasRegular ? Number(p.dataset.regularPrice) : salePrice;
+
+    // 합계는 수량이 있는 경우에만 반영
+    if (qty > 0) {
+      saleSum += salePrice * qty;
+      regularSum += regularPrice * qty;
+
+      if (hasRegular) {
+        discountSum += (regularPrice - salePrice) * qty;
+      }
+    }
+
+    // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+    const saveEl = p.querySelector('[data-save-line="1"]');
+    if (saveEl) {
+      if (hasRegular) {
+        const unitSave = (regularPrice - salePrice);
+        const shownQty = Math.max(1, qty);
+        saveEl.style.display = "inline-block";
+        saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+      } else {
+        saveEl.style.display = "none";
+        saveEl.innerText = "";
+      }
+    }
+
+    // 카드별 상품합계(수량 0이면 숨김)
+    let lineTotalEl = p.querySelector('[data-line-total="1"]');
+    if (!lineTotalEl) {
+      lineTotalEl = document.createElement("div");
+      lineTotalEl.setAttribute("data-line-total", "1");
+      lineTotalEl.style.marginTop = "6px";
+      lineTotalEl.style.fontSize = "13px";
+      lineTotalEl.style.fontWeight = "800";
+      lineTotalEl.style.textAlign = "right";
+
+      const body = p.querySelector(".product-body") || p;
+      const qtyBox = body.querySelector(".qty-box");
+      if (qtyBox) body.insertBefore(lineTotalEl, qtyBox);
+      else body.appendChild(lineTotalEl);
+    }
+
+    if (qty > 0) {
+      lineTotalEl.style.display = "block";
+      lineTotalEl.innerHTML =
+        '합계 <span class="money-blue">' +
+        (salePrice * qty).toLocaleString() +
+        '</span>원';
+    } else {
+      lineTotalEl.style.display = "none";
+    }
   });
-  document.getElementById("total").innerText = sum.toLocaleString();
+
+  // 총 결제금액
+  const totalEl = document.getElementById("total");
+  if (totalEl) totalEl.innerText = saleSum.toLocaleString();
+
+  // 상품금액합계
+  const regularEl = document.getElementById("regularTotal");
+  if (regularEl) regularEl.innerText = regularSum.toLocaleString();
+
+  // 공동구매가 할인: 할인 대상이 있을 때만 노출(- 포함 빨강)
+  const discountRow = document.getElementById("discountRow");
+  const discountValue = document.getElementById("discountValue");
+  if (discountRow && discountValue) {
+    if (discountSum > 0) {
+      discountRow.style.display = "block";
+      discountValue.innerText = "-" + discountSum.toLocaleString();
+    } else {
+      discountRow.style.display = "none";
+    }
+  }
+
+  // 신선상품 수령일 고정 UX는 다음 단계에서 연결(미구현 자동 무시)
+  if (typeof applyStrawberryRule === "function") applyStrawberryRule();
 }
+
+
+calc();
+ 
 if (!isSaleOpen()) {
   orderBtn.disabled = true;
   orderBtn.innerText = "주문 마감";
@@ -541,6 +719,11 @@ if (!isSaleOpen()) {
   orderBtn.onclick = async () => {
     // [PATCH 2] 주문 처리 중 UX
 
+     // 설정 누락 방지(주문 누락/오발송 차단)
+  if (!SCRIPT_URL || !PAGE_ENV) {
+    alert("주문서 설정 오류입니다. 새로고침 후 다시 시도해주세요.");
+    return;
+  }
 
   const nickname = nicknameEl.value.trim();
   const visit = visitEl.value;
@@ -578,7 +761,7 @@ orderBtn.innerText = "주문 처리 중...";
 orderBtn.disabled = true;
 orderBtn.style.opacity = "0.7";
 
-// [NOTE] DEV 응답 기반 전송(try/catch + res.json) 보관 구간 (중첩 주석 금지로 제거함)
+// [NOTE] DEV 응답 기반 전송(try/catch + res.json) 보관 구간 (중첩 주석 제거)
 
 
 // ===== 운영용 전송(no-cors) =====
@@ -587,6 +770,7 @@ fetch(SCRIPT_URL, {
   mode: "no-cors",
   headers: { "Content-Type": "text/plain;charset=utf-8" },
   body: JSON.stringify({
+  pageEnv: PAGE_ENV,
   nickname,
   visit,
   items,
@@ -605,6 +789,7 @@ orderMessage += "닉네임: " + nickname + "\n";
 orderMessage += "수령일: " + visit + "\n";
 orderMessage += "🧾 현금영수증: " + ((cashReceiptEl && cashReceiptEl.checked) ? "원해요" : "미신청") + "\n\n";
 orderMessage += "주문내역:\n";
+
 
 items.forEach(i => {
   const cleanName = i.name.replace(/\s*×\s*\d+$/, "");
@@ -635,7 +820,7 @@ orderText.value = orderMessage;
 
 document.getElementById("orderCard").innerHTML =
   orderStatusHTML +
- `<pre style="margin:0; font-family:inherit;">${orderMessage}</pre>`;
+  `<div style="margin:0; font-family:inherit; line-height:1.7;">${buildOrderMessageHTML(orderMessage)}</div>`;
    
 document.getElementById("orderCard").style.display = "block";
 copyBtn.style.display = "block";
@@ -679,8 +864,3 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
-
-
-
-
-
