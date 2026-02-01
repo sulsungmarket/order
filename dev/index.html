@@ -223,6 +223,8 @@ textarea {
  
 </style>
 
+<script src="config.js"></script>
+ 
 <script>
 /* 우클릭 + 개발자도구 단축키 */
 (function () {
@@ -509,9 +511,8 @@ VERSION: v1.5.1-header-branding
 GAS 연동 설정
 ====================================================
 */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0SUKbp05CwUovG111sbzrBA00SdTRbEU2xPwvz9lCabUYOdZkJyJr9jaxucVojh43/exec";
-
-
+const SCRIPT_URL = window.__ENV__?.SCRIPT_URL;
+const PAGE_ENV = window.__ENV__?.TAG; // "DEV" or "LIVE"
 /*
 ====================================================
 주문 일정 모듈
@@ -718,6 +719,11 @@ if (!isSaleOpen()) {
   orderBtn.onclick = async () => {
     // [PATCH 2] 주문 처리 중 UX
 
+     // 설정 누락 방지(주문 누락/오발송 차단)
+  if (!SCRIPT_URL || !PAGE_ENV) {
+    alert("주문서 설정 오류입니다. 새로고침 후 다시 시도해주세요.");
+    return;
+  }
 
   const nickname = nicknameEl.value.trim();
   const visit = visitEl.value;
@@ -764,7 +770,7 @@ fetch(SCRIPT_URL, {
   mode: "no-cors",
   headers: { "Content-Type": "text/plain;charset=utf-8" },
   body: JSON.stringify({
-  pageEnv: "DEV",
+  pageEnv: PAGE_ENV,
   nickname,
   visit,
   items,
