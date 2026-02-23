@@ -665,12 +665,10 @@ function calc() {
       }
     }
 
-   // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+// 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
 const saveEl = p.querySelector('[data-save-line="1"]');
 if (saveEl) {
-  const mode = String(p.dataset.priceMode || "sale").toLowerCase();
-
-  if (mode !== "sale" && hasRegular) {
+  if (hasRegular) {
     const unitSave = (regularPrice - salePrice);
     const shownQty = Math.max(1, qty);
     saveEl.style.display = "inline-block";
