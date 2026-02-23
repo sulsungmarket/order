@@ -304,7 +304,7 @@ VERSION: v1.5.1-header-branding
     border-radius:999px;
     font-weight:500;
   ">
-    23일(목) ~ 25일(수) • 오후 4시 마감
+    23일() ~ 25일(수) • 오후 4시 마감
   </div>
 
 </div>
@@ -651,19 +651,21 @@ function calc() {
       }
     }
 
-    // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
-    const saveEl = p.querySelector('[data-save-line="1"]');
-    if (saveEl) {
-      if (hasRegular) {
-        const unitSave = (regularPrice - salePrice);
-        const shownQty = Math.max(1, qty);
-        saveEl.style.display = "inline-block";
-        saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
-      } else {
-        saveEl.style.display = "none";
-        saveEl.innerText = "";
-      }
-    }
+   // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+const saveEl = p.querySelector('[data-save-line="1"]');
+if (saveEl) {
+  const mode = String(p.dataset.priceMode || "sale").toLowerCase();
+
+  if (mode !== "sale" && hasRegular) {
+    const unitSave = (regularPrice - salePrice);
+    const shownQty = Math.max(1, qty);
+    saveEl.style.display = "inline-block";
+    saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+  } else {
+    saveEl.style.display = "none";
+    saveEl.innerText = "";
+  }
+}
 
     // 카드별 상품합계(수량 0이면 숨김)
     let lineTotalEl = p.querySelector('[data-line-total="1"]');
@@ -891,6 +893,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
