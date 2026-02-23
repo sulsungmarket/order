@@ -453,7 +453,7 @@ VERSION: v1.5.1-header-branding
  -->
  
 <div class="total">
-  <div>상품금액합계: <span id="regularTotal">0</span>원</div>
+ <div id="regularRow">상품금액합계: <span id="regularTotal">0</span>원</div>
 
   <div id="discountRow" style="display:none;">
     공동구매가 할인:
@@ -714,6 +714,25 @@ if (saveEl) {
     }
   }
 
+ // [PATCH-PRICE-MODE] 하단 합계 UI 표시 제어
+// - 기본(sale): 비교/할인 행 숨김 (총 결제금액만)
+// - full 상품이 하나라도 있으면: 비교/할인 행 표시(할인행은 기존 조건 유지)
+const anyFull = Array.from(document.querySelectorAll(".product")).some(p =>
+  String(p.dataset.priceMode || "sale").toLowerCase() === "full"
+);
+
+const regularRow = document.getElementById("regularRow");
+const discountRowEl = document.getElementById("discountRow");
+
+if (!anyFull) {
+  // 전 상품이 sale 모드 → 비교/할인 자체를 UI에서 제거
+  if (regularRow) regularRow.style.display = "none";
+  if (discountRowEl) discountRowEl.style.display = "none";
+} else {
+  // full이 하나라도 있으면 정상가 합계는 보이게
+  if (regularRow) regularRow.style.display = "block";
+  // discountRow는 위 로직(discountSum>0일 때만 block)이 이미 결정함
+
   // 신선상품 수령일 고정 UX는 다음 단계에서 연결(미구현 자동 무시)
   if (typeof applyStrawberryRule === "function") applyStrawberryRule();
 }
@@ -893,6 +912,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
