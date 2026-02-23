@@ -978,6 +978,8 @@ function setBar(msg) {
   document.addEventListener("click", function (e) {
     const t = e.target;
 
+   if (t && t.classList && (t.classList.contains("plus") || t.classList.contains("minus"))) alert("CLICKED: " + (t.classList.contains("plus") ? "+" : "-"));
+
     // 오버레이가 클릭을 가로채는지 검사(가장 흔한 원인)
     if (t && (t.classList.contains("plus") || t.classList.contains("minus"))) {
       const rect = t.getBoundingClientRect();
