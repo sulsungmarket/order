@@ -304,7 +304,7 @@ VERSION: v1.5.1-header-branding
     border-radius:999px;
     font-weight:500;
   ">
-    23일() ~ 25일(수) • 오후 4시 마감
+    23일(목) ~ 25일(수) • 오후 4시 마감
   </div>
 
 </div>
@@ -341,18 +341,15 @@ VERSION: v1.5.1-header-branding
   </div>
 </div>
 
-
- 
 <!-- 상품 1 -->
-
-<div class="product" data-product-id="p001" data-price="5980" data-regular-price="8500" data-price-mode="sale">
+<div class="product" data-product-id="p001" data-price="15900" data-regular-price="15900">
   <img src="images/product1.png">
   <div class="product-body">
-    <div class="name">무항생제 한우1++300g세절 + 골든커리(순한맛) </div>
+    <div class="name">1++무항생제 한우세절 300g + 골든커리(순한맛)</div>
     <div class="stock-badge">*100세트한정! 상품수령일 선택 후 입금해주세요*</div>
 
     <div class="price">
-      <div class="price-regular">정상구매가 <span>44,700원</span></div>
+      <div class="price-regular">정상구매가 <span>원</span></div>
       <div class="price-sale">공동구매가 <span>15,900원</span></div>
       <div class="price-save" data-save-line="1"></div>
     </div>
@@ -366,7 +363,7 @@ VERSION: v1.5.1-header-branding
 </div>
 
 <!-- 상품 2
-<div class="product limited" data-product-id="p002" data-price="10980" data-regular-price="31500" data-price-mode="sale">
+<div class="product limited" data-product-id="p002" data-price="10980" data-regular-price="31500">
   <img src="images/product2.png">
   <div class="product-body">
     <div class="name">1+등급 무항생제 한우 등심국거리300g</div>
@@ -453,7 +450,7 @@ VERSION: v1.5.1-header-branding
  -->
  
 <div class="total">
- <div id="regularRow">상품금액합계: <span id="regularTotal">0</span>원</div>
+  <div>상품금액합계: <span id="regularTotal">0</span>원</div>
 
   <div id="discountRow" style="display:none;">
     공동구매가 할인:
@@ -598,55 +595,22 @@ function buildOrderMessageHTML(orderMessage) {
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
-  const plusBtn = p.querySelector(".plus");
-  const minusBtn = p.querySelector(".minus");
-
-  if (!qtyEl || !plusBtn || !minusBtn) {
-    // 카드 구조가 다르면 이벤트 바인딩을 건너뜀(스크립트 전체가 죽는 것 방지)
-    return;
-  }
-
-  plusBtn.onclick = () => {
-    if (plusBtn.disabled) return;
-    qtyEl.innerText = String(Number(qtyEl.innerText) + 1);
+  p.querySelector(".plus").onclick = () => {
+    qtyEl.innerText = Number(qtyEl.innerText) + 1;
     calc();
   };
-
-  minusBtn.onclick = () => {
-    if (minusBtn.disabled) return;
-    qtyEl.innerText = String(Math.max(0, Number(qtyEl.innerText) - 1));
+  p.querySelector(".minus").onclick = () => {
+    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
     calc();
   };
 });
- 
-// [PATCH-PRICE-MODE] 가격 표시 모드
-// 기본: sale (공동구매가만 표시)
-// full: 정상가 + 공동구매가 + 할인배지 표시
-function applyPriceMode(card) {
-  const mode = String(card.dataset.priceMode || "sale").toLowerCase();
-  const regularLine = card.querySelector(".price-regular");
-  const saveEl = card.querySelector('[data-save-line="1"]');
 
-  if (mode === "sale") {
-    if (regularLine) regularLine.style.display = "none";
-    if (saveEl) {
-      saveEl.style.display = "none";
-      saveEl.innerText = "";
-    }
-  } else {
-    if (regularLine) regularLine.style.display = "";
-  }
-}
-
-
- 
 function calc() {
   let saleSum = 0;      // 총 결제금액(판매가 합)
   let regularSum = 0;   // 상품금액합계(정상구매가 있으면 정상구매가, 없으면 판매가)
   let discountSum = 0;  // 공동구매가 할인(정상구매가 있는 품목만)
 
   document.querySelectorAll(".product").forEach(p => {
-    applyPriceMode(p); 
     const qty = Number(p.querySelector(".qty").innerText);
     const salePrice = Number(p.dataset.price);
     const hasRegular = (p.dataset.regularPrice !== undefined && p.dataset.regularPrice !== "");
@@ -662,21 +626,19 @@ function calc() {
       }
     }
 
-   // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
-const saveEl = p.querySelector('[data-save-line="1"]');
-if (saveEl) {
-  const mode = String(p.dataset.priceMode || "sale").toLowerCase();
-
-  if (mode !== "sale" && hasRegular) {
-    const unitSave = (regularPrice - salePrice);
-    const shownQty = Math.max(1, qty);
-    saveEl.style.display = "inline-block";
-    saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
-  } else {
-    saveEl.style.display = "none";
-    saveEl.innerText = "";
-  }
-}
+    // 카드 할인 문구: 정상구매가 있는 품목만 표시(0일 때도 1개 기준 표시)
+    const saveEl = p.querySelector('[data-save-line="1"]');
+    if (saveEl) {
+      if (hasRegular) {
+        const unitSave = (regularPrice - salePrice);
+        const shownQty = Math.max(1, qty);
+        saveEl.style.display = "inline-block";
+        saveEl.innerText = "할인 " + (unitSave * shownQty).toLocaleString() + "원 ↓";
+      } else {
+        saveEl.style.display = "none";
+        saveEl.innerText = "";
+      }
+    }
 
     // 카드별 상품합계(수량 0이면 숨김)
     let lineTotalEl = p.querySelector('[data-line-total="1"]');
@@ -724,25 +686,6 @@ if (saveEl) {
       discountRow.style.display = "none";
     }
   }
-
- // [PATCH-PRICE-MODE] 하단 합계 UI 표시 제어
-// - 기본(sale): 비교/할인 행 숨김 (총 결제금액만)
-// - full 상품이 하나라도 있으면: 비교/할인 행 표시(할인행은 기존 조건 유지)
-const anyFull = Array.from(document.querySelectorAll(".product")).some(p =>
-  String(p.dataset.priceMode || "sale").toLowerCase() === "full"
-);
-
-const regularRow = document.getElementById("regularRow");
-const discountRowEl = document.getElementById("discountRow");
-
-if (!anyFull) {
-  // 전 상품이 sale 모드 → 비교/할인 자체를 UI에서 제거
-  if (regularRow) regularRow.style.display = "none";
-  if (discountRowEl) discountRowEl.style.display = "none";
-} else {
-  // full이 하나라도 있으면 정상가 합계는 보이게
-  if (regularRow) regularRow.style.display = "block";
-  // discountRow는 위 로직(discountSum>0일 때만 block)이 이미 결정함
 
   // 신선상품 수령일 고정 UX는 다음 단계에서 연결(미구현 자동 무시)
   if (typeof applyStrawberryRule === "function") applyStrawberryRule();
@@ -923,10 +866,6 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
-
-
-
-
 
 
 
