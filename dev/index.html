@@ -1017,6 +1017,8 @@ function setBar(msg) {
     const next = isPlus ? (cur + 1) : Math.max(0, cur - 1);
     qtyEl.innerText = String(next);
 
+   alert("QTY: " + cur + " -> " + next + " (now=" + qtyEl.innerText + ")");
+
     try {
       window.calc();
       setBar((isPlus ? "+" : "-") + " ok qty=" + next);
