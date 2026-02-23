@@ -622,7 +622,10 @@ document.querySelectorAll(".product").forEach(p => {
 // [PATCH-PRICE-MODE] 가격 표시 모드
 // 기본: sale (공동구매가만 표시)
 // full: 정상가 + 공동구매가 + 할인배지 표시
-function applyPriceMode(card) {
+
+ /*
+ 
+ function applyPriceMode(card) {
   const mode = String(card.dataset.priceMode || "sale").toLowerCase();
   const regularLine = card.querySelector(".price-regular");
   const saveEl = card.querySelector('[data-save-line="1"]');
@@ -638,7 +641,7 @@ function applyPriceMode(card) {
   }
 }
 
-
+*/
  
 function calc() {
   let saleSum = 0;      // 총 결제금액(판매가 합)
