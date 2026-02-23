@@ -598,16 +598,27 @@ function buildOrderMessageHTML(orderMessage) {
 /* 수량 조절 */
 document.querySelectorAll(".product").forEach(p => {
   const qtyEl = p.querySelector(".qty");
-  p.querySelector(".plus").onclick = () => {
-    qtyEl.innerText = Number(qtyEl.innerText) + 1;
+  const plusBtn = p.querySelector(".plus");
+  const minusBtn = p.querySelector(".minus");
+
+  if (!qtyEl || !plusBtn || !minusBtn) {
+    // 카드 구조가 다르면 이벤트 바인딩을 건너뜀(스크립트 전체가 죽는 것 방지)
+    return;
+  }
+
+  plusBtn.onclick = () => {
+    if (plusBtn.disabled) return;
+    qtyEl.innerText = String(Number(qtyEl.innerText) + 1);
     calc();
   };
-  p.querySelector(".minus").onclick = () => {
-    qtyEl.innerText = Math.max(0, Number(qtyEl.innerText) - 1);
+
+  minusBtn.onclick = () => {
+    if (minusBtn.disabled) return;
+    qtyEl.innerText = String(Math.max(0, Number(qtyEl.innerText) - 1));
     calc();
   };
 });
-
+ 
 // [PATCH-PRICE-MODE] 가격 표시 모드
 // 기본: sale (공동구매가만 표시)
 // full: 정상가 + 공동구매가 + 할인배지 표시
@@ -912,6 +923,7 @@ copyBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
